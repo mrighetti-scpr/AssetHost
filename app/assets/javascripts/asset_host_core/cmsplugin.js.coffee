@@ -203,7 +203,7 @@ class AssetHost.CMSPlugin
             console.log("evt is ",evt)
             evt.originalEvent.stopPropagation()
             evt.originalEvent.preventDefault()
-            newwindow = window.open("http://#{AssetHost.SERVER}/a/chooser", 'chooser', 'height=620,width=1000')
+            newwindow = window.open("http://#{AssetHost.SERVER}/a/chooser", 'chooser', 'height=620,width=1000,scrollbars=yes')
             
             # attach a listener to wait for the LOADED message
             window.addEventListener "message", (evt) => 
