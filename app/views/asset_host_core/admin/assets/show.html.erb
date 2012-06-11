@@ -2,6 +2,20 @@
 	@PAGE_TITLE = "Asset: #{@asset.title}"
 %>
 
+<ul class="pager">
+	<% if @prev %>
+		<li class="previous">
+			<%= link_to "&larr; #{@prev.title.blank? ? "Previous Asset" : @prev.title}".html_safe, a_asset_path(@prev) %>
+		</li>
+	<% end %>
+	
+	<% if @next %>
+		<li class="next">
+			<%= link_to "#{@next.title.blank? ? "Next Asset" : @next.title} &rarr;".html_safe, a_asset_path(@next) %>
+		</li>
+	<% end %>
+</ul>
+
 <div id="asset"></div>
 
 <br/>
@@ -23,8 +37,7 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="span8">	
-			
+		<div class="span8">
 			<%= f.inputs :name => "Rights" do %>
 				<%= f.input :owner, :hint => @asset.image_copyright? ? "From Image: #{@asset.image_copyright}" : nil %>
 				<%= f.input :url %>

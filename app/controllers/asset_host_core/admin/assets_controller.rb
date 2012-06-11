@@ -87,6 +87,10 @@ module AssetHostCore
     #----------
 
     def show
+      # Use "visible" here because we are choosing next/prev based on the index listing
+      @assets = AssetHostCore::Asset.visible.order('updated_at desc')
+      @next = @assets.where('updated_at < ?', @asset.updated_at).first
+      @prev = @assets.where('updated_at > ?', @asset.updated_at).last
     end
 
     #----------
