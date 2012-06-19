@@ -92,8 +92,8 @@ module AssetHostCore
       # ORDER option is passed in, which it currently isn't, so the grid is ordered by
       # ID.
       @assets = AssetHostCore::Asset.visible.order('id desc')
-      @next = @assets.where('id < ?', @asset.id).first
       @prev = @assets.where('id > ?', @asset.id).last
+      @next = @assets.where('id < ?', @asset.id).first
     end
 
     #----------
