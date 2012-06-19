@@ -88,9 +88,12 @@ module AssetHostCore
 
     def show
       # Use "visible" here because we are choosing next/prev based on the index listing
-      @assets = AssetHostCore::Asset.visible.order('updated_at desc')
-      @next = @assets.where('updated_at < ?', @asset.updated_at).first
-      @prev = @assets.where('updated_at > ?', @asset.updated_at).last
+      # Hard-coding the order here (ID) because the AssetHostBrowserUI uses ID if no
+      # ORDER option is passed in, which it currently isn't, so the grid is ordered by
+      # ID.
+      @assets = AssetHostCore::Asset.visible.order('id desc')
+      @next = @assets.where('id < ?', @asset.id).first
+      @prev = @assets.where('id > ?', @asset.id).last
     end
 
     #----------
