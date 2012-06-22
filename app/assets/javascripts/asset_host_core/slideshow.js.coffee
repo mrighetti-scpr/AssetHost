@@ -26,17 +26,16 @@ class AssetHost.Slideshow
             # -- set up our slides -- #
             @slides = new Slideshow.Slides 
                 collection: @assets
-                initial:    @options.initial
                 nav:        @nav
 
             @el.html @slides.el
             @slides.render()
 
             # -- bind slides and nav together -- #
-            @nav.bind "slide", (idx) => @slides.slideTo(idx)
-            @slides.bind "slide", (idx) => 
+            @nav.bind "switch", (idx) => @slides.switchTo(idx)
+            @slides.bind "switch", (idx) =>
                 @nav.setCurrent idx
-                @trigger "slide", idx
+                @trigger "switch", idx
 
     #----------
 
@@ -55,11 +54,13 @@ class AssetHost.Slideshow
     @Slide:
         Backbone.View.extend
             className: "slide"
-
+            attributes:
+                style: "text-align: center; width: 100%;"
+                
             template:
                 '''
-                <img src="<%= url %>" />
-                <div class="text" style="margin: 0 auto">
+                <img src="<%= url %>"/>
+                <div class="text" style="text-align: left">
                     <div class="credit"><%= credit %></div>
                     <p><%= caption %></p>
                 </div>
@@ -99,10 +100,9 @@ class AssetHost.Slideshow
                     s = new Slideshow.Slide model:a, index:idx
                     @slides[idx] = s
 
-                @active = false
-                @current = null
+                @current = 0
                 @hasmouse = false
-
+                    
                 $(window).bind "keydown", (evt) => @_keyhandler(evt)
 
             #----------
@@ -114,8 +114,13 @@ class AssetHost.Slideshow
                     $(@el).html @options.nav.el
                     @options.nav.render()
 
+                # TODO use SCPR classes for this
+                title = $("<h6/>", style: "display: inline-block;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif")
+                        .html "Slideshow"
+                $(@el).prepend title
+                
                 # create view tray
-                @view = $ '<div/>', style:"background-color:#000"
+                @view = $ '<div/>', style:""
 
                 # drop view into element
                 $(@el).append @view
@@ -136,44 +141,36 @@ class AssetHost.Slideshow
                 if @hasmouse
                     # is this a keypress we care about?
                     if e.which == 37
-                        @slideBy(-1)
+                        @switchTo(@current - 1)
                     else if e.which == 39
-                        @slideBy(1)
+                        @switchTo(@current + 1)
 
             #----------
 
-            slideTo: (idx) ->
-                # figure out where slide[idx] is at
-                @current = idx
-                @trigger "slide", idx
-
-            #----------
-
-            slideBy: (idx) ->
-                t = @current + idx
-
-                if @slides[t]
-                    @slideTo(t)
+            switchTo: (idx) ->
+                $(@slides[@current].el).fadeOut 'slow', =>  
+                    @current = idx
+                    @trigger "switch", idx
+                    $(@slides[idx].el).fadeIn 'slow'
 
     #----------
 
     @NavigationLinks:
         Backbone.View.extend
-            className: "nav"
-
+            className: "pager-nav"
+            attributes:
+                style: "padding: 0 5px;"
+                    
             events:
-                'click button': '_buttonClick'
+                'click a.active': '_buttonClick'
 
+            # The "next" and "prev" classes are being styled by SCPR's stylesheet
+            # TODO: copy that style over to AH
             template:
                 '''
-                <div style="width: 15%;">
-                    <button <% print(prev ? "data-idx='"+prev+"' class='prev-arrow'" : "class='disabled prev-arrow'"); %> >Prev</button>
-                </div>
-                <div class="buttons" style="width:70%;"></div>
-                <div style="width: 15%">
-                    <button <% print(next ? "data-idx='"+next+"' class='next-arrow'" : "class='disabled next-arrow'"); %> >Next</button>
-                </div>
-                <br style="clear:both;line-height:0;height:0"/>
+                <a <% print(prev ? "data-idx='"+prev+"' class='prev active'" : "class='prev disabled'"); %>></a>
+                <span style="color:#ccc;vertical-align: middle;height:30px;display:inline-block;padding:0 5px;"><%= current %> of <%= total %></span>
+                <a <% print(next ? "data-idx='"+next+"' class='next active'" : "class='next disabled'"); %>></a>
                 '''
 
             #----------
@@ -181,7 +178,6 @@ class AssetHost.Slideshow
             initialize: ->
                 @total = @options.total
                 @current = Number(@options.current) + 1
-
                 @render()
 
             #----------
@@ -191,7 +187,7 @@ class AssetHost.Slideshow
 
                 if idx
                     idx = Number(idx) - 1
-                    @trigger "slide", idx
+                    @trigger "switch", idx
 
             #----------
 
@@ -202,13 +198,9 @@ class AssetHost.Slideshow
             #----------
 
             render: ->
-                buttons = _([1..@total]).map (i) =>
-                    $("<button/>", {"data-idx":i, text:i, class:if @current == i then "current" else ""})[0]
-
                 $(@el).html _.template @template,
                     current:    @current,
                     total:      @total,
                     prev:       if @current - 1 > 0 then @current - 1 else null
                     next:       if @current + 1 <= @total then @current + 1 else null
-
-                @$(".buttons").html buttons
+                
