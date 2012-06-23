@@ -120,7 +120,7 @@ class AssetHost.Slideshow
                 $(@el).prepend title
                 
                 # create view tray
-                @view = $ '<div/>', style:""
+                @view = $ '<div/>', style:"clear:both;"
 
                 # drop view into element
                 $(@el).append @view
