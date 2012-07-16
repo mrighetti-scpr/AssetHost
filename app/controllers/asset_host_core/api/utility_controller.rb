@@ -11,20 +11,28 @@ module AssetHostCore
     
       # see if we have a loader for this URL
       if asset = AssetHostCore.as_asset(params[:url])
-        if params[:note] && param[:note] != ''
+        if params[:note] && params[:note] != ''
           asset.notes += "\n#{params[:note]}"
-          asset.save()
         end
       
         # set hidden flag if desired
         if params[:hidden] && params[:hidden] != ""
           asset.is_hidden = true
-          asset.save()
         end
-      
+        
+        if params[:caption] && params[:caption] != ""
+          asset.caption = params[:caption]
+        end
+        
+        if params[:owner] && params[:owner] != ""
+          asset.owner = params[:owner]
+        end
+        
+        asset.save
+              
         render :json => { 
           :id => asset.id, 
-          :title => asset.title, 
+          :title => asset.title,
           :caption => asset.caption, 
           :owner => asset.owner,
           :tags => asset.image.tags,
