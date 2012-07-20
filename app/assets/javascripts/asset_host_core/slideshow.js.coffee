@@ -148,10 +148,11 @@ class AssetHost.Slideshow
             #----------
 
             switchTo: (idx) ->
-                $(@slides[@current].el).fadeOut 'fast', =>  
-                    @current = idx
-                    @trigger "switch", idx
-                    $(@slides[idx].el).fadeIn 'fast'
+                if idx >= 0 and idx <= _(@slides).size() - 1
+                    $(@slides[@current].el).fadeOut 'fast', =>  
+                        @current = idx
+                        @trigger "switch", idx
+                        $(@slides[idx].el).fadeIn 'fast'
 
     #----------
 
