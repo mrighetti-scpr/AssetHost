@@ -21,25 +21,60 @@ class AssetHost.Slideshow
             @assets = new Slideshow.Assets @options.assets
             
             # -- create our nav buttons -- #
-            @nav = new Slideshow.NavigationLinks current:@options.start,total:@assets.length
-            @overlayNav = new Slideshow.OverlayNav current:@options.start,total:@assets.length
+            @nav = new Slideshow.NavigationLinks 
+                current:    @options.start
+                total:      @assets.length
+                
+            @overlayNav = new Slideshow.OverlayNav
+                current:    @options.start
+                total:      @assets.length
 
             # -- set up our slides -- #
             @slides = new Slideshow.Slides 
-                collection: @assets
-                nav:        @nav
-                overlayNav: @overlayNav
-                
-            @el.html @slides.el
+                collection:   @assets
+                nav:          @nav
+                overlayNav:   @overlayNav
+            
+            # Fill the slideview in with the different elements
+            @el.html    @nav.el
+            @el.append  @slides.el
+            
+            # Setup the title
+            title = $("<h6/>", style: "display: inline-block;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif")
+                    .html "Slideshow"
+            @el.prepend title
+            
+            # Render the elements
+            @nav.render()
             @slides.render()
 
             # -- bind slides and nav together -- #
-            @nav.bind "switch", (idx) => @slides.switchTo(idx)
-            @overlayNav.bind "switch", (idx) => @slides.switchTo(idx)
-            @slides.bind "switch", (idx) =>
+            @nav.bind           "switch", (idx) => @slides.switchTo(idx)
+            @overlayNav.bind    "switch", (idx) => @slides.switchTo(idx)
+            
+            @slides.bind        "switch", (idx) =>
                 @nav.setCurrent idx
                 @overlayNav.setCurrent idx
                 @trigger "switch", idx
+
+            # Keyboard Navigation
+            @hasmouse = false
+            $(window).bind "keydown", (e) => 
+                if @hasmouse
+                    # is this a keypress we care about?
+                    if e.which == 37
+                        @slides.switchTo(@slides.current - 1)
+                    else if e.which == 39
+                        @slides.switchTo(@slides.current + 1)
+
+            @el.on
+                mouseenter: (e) =>
+                    if @hasmouse is false
+                        @hasmouse = true
+
+                mouseleave: (e) =>
+                    if @hasmouse is true
+                        @hasmouse = false
 
     #----------
 
@@ -51,10 +86,10 @@ class AssetHost.Slideshow
     @Assets:
         Backbone.Collection.extend
             url: "/"
-            model: @Asset
-
+            model: @Asset                
+        
     #----------
-
+        
     @Slide:
         Backbone.View.extend
             className: "slide"
@@ -91,78 +126,66 @@ class AssetHost.Slideshow
 
     @Slides:
         Backbone.View.extend
-            className: "slideview"
+            className: "slides"
+            attributes:
+                style: "clear: both;"
 
             events:
-                'mouseenter': '_mouseenter'
-                'mouseleave': '_mouseleave'
-    
+                "mouseenter": "_mouseenter"
+                "mouseleave": "_mouseleave"
+                
             initialize: ->
                 @slides = []
-
-                @collection.each (a,idx) => 
-                    s = new Slideshow.Slide model:a, index:idx
-                    @slides[idx] = s
-
                 @current = 0
                 @hasmouse = false
 
-                $(window).bind "keydown", (evt) => @_keyhandler(evt)
-
+                @collection.each (a,idx) => 
+                    s = new Slideshow.Slide 
+                        model:  a
+                        index:  idx
+                        
+                    @slides[idx] = s
             #----------
 
             render: () ->
-                if @options.nav
-                    $(@el).html @options.nav.el
-                    @options.nav.render()
-
-                # TODO use SCPR classes for this
-                title = $("<h6/>", style: "display: inline-block;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif")
-                        .html "Slideshow"
-                $(@el).prepend title
-                
-                # create view tray
-                @view = $ '<div/>', style:"clear:both;", class: "slides"
-
-                # drop view into element
-                $(@el).append @view
-
                 # add our slides
                 _(@slides).each (s,idx) =>
-                    $(@view).append s.render().el
+                    $(@el).append s.render().el
+                    
+                @options.nav.render()
 
-                if @options.overlayNav
-                    $(@el).append @options.overlayNav.el
-                    @options.overlayNav.render()
-
+                # Add in the overlay navigation
+                $(@el).append @options.overlayNav.el
+                @options.overlayNav.render()
 
             _mouseenter: (e) ->
+                console.log "mouseenter, hasmouse is", @hasmouse
                 if @hasmouse is false
                     @hasmouse = true
                     @options.overlayNav._show @el
                 
             _mouseleave: (e) ->
+                console.log "mouseenter, hasmouse is", @hasmouse
                 if @hasmouse is true
                     @hasmouse = false
                     @options.overlayNav._hide @el
-
-            _keyhandler: (e) ->
-                if @hasmouse
-                    # is this a keypress we care about?
-                    if e.which == 37
-                        @switchTo(@current - 1)
-                    else if e.which == 39
-                        @switchTo(@current + 1)
         
-
             #----------
 
             switchTo: (idx) ->
                 if idx >= 0 and idx <= _(@slides).size() - 1
-                    $(@slides[@current].el).fadeOut 'fast', =>  
+                    @currentEl  = $ @slides[@current].el
+                    @nextEl     = $ @slides[idx].el
+                    
+                    # Stop the animations
+                    @currentEl.stop false, true
+                    @nextEl.stop false, true
+
+                    # Fade out, send switch signal, fade in
+                    @currentEl.fadeOut 'fast', =>
                         @current = idx
                         @trigger "switch", idx
-                        $(@slides[idx].el).fadeIn 'fast'
+                        @nextEl.fadeIn 'fast'
 
     #----------
     
@@ -176,8 +199,12 @@ class AssetHost.Slideshow
             # This is being styled by SCPR's stylesheet
             template:
                 '''
-                <a style="top:<%=top%>" <% print(prev ? "data-idx='"+prev+"' class='prev active'" : "class='prev disabled'"); %>></a>
-                <a style="top:<%=top%>" <% print(next ? "data-idx='"+next+"' class='next active'" : "class='next disabled'"); %>></a>
+                <a <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
+                    <span class="arrow" style="top:<%=top%>"></div>
+                </a>
+                <a <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
+                    <span class="arrow" style="top:<%=top%>"></div>
+                </a>
                 '''
                
             #----------
@@ -220,15 +247,19 @@ class AssetHost.Slideshow
             # Lock/Unlock the button's top position
                 
             lock: (slidesEl) ->
-                @top = ($(slidesEl).height() * .4) + "px"
+                # .84 is from "84%" height in CSS in SCPRv4
+                height = $(slidesEl).height() * .84
+                @top = (height * .4) + "px"
                 @_setTop @top
+                console.log "locked, top is", @top
 
             unlock: (slidesEl) ->
                 @top = "40%"
                 @_setTop @top
+                console.log "unlocked"
 
             _setTop: (top) ->
-                @.$('a').css top: @top
+                @.$('.arrow').css top: @top
                 
             #----------
 
