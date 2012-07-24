@@ -22,7 +22,7 @@ class AssetHost.Slideshow
             
             #----------
             # Create the elements we need for the complete slideshow
-            
+                        
             @nav = new Slideshow.NavigationLinks 
                 current:    @options.start
                 total:      @assets.length
@@ -33,6 +33,7 @@ class AssetHost.Slideshow
 
             @slides = new Slideshow.Slides
                 collection:   @assets
+                start:        @options.start
 
             @slides.overlayNav = @overlayNav
             @overlayNav.slides = @slides
@@ -54,18 +55,19 @@ class AssetHost.Slideshow
             # -- bind slides and nav together -- #
             # Click on a next button, send switchTo() to Slides
             @nav.bind           "switch", (idx) =>
-                @slides.switchTo(idx)
+                @slides.switchTo idx
                 
             @overlayNav.bind    "switch", (idx) =>
-                @slides.switchTo(idx)
+                @slides.switchTo idx
             
             # switchTo() emits "switch" on slides, which sends setCurrent()
             # to those who need it. Also emits "switch" on Slideshow for
             # Google Analytics
             @slides.bind        "switch", (idx) =>
-                @nav.setCurrent idx
-                @overlayNav.setCurrent idx
-                @trigger "switch", idx
+                @nav.setCurrent         idx
+                @overlayNav.setCurrent  idx
+                @slides.setCurrent      idx
+                @trigger "switch",      idx
 
 
             # Keyboard Navigation
@@ -105,7 +107,7 @@ class AssetHost.Slideshow
         
     @Slide:
         Backbone.View.extend
-            className: "slide asset-block"
+            className: "slide"
     
             template:
                 '''
@@ -120,20 +122,8 @@ class AssetHost.Slideshow
 
             initialize: ->
                 @index = @options.index
-                $(@el).hide()
-    
-            #----------
+                @start = @options.start
 
-            transition: ->
-                $(@el).css
-                    visibility: "hidden"
-                    display: "block"
-
-            _show: ->
-                $(@el).css
-                    visibility: "visible"
-                .fadeIn 'fast'
-               
             #----------
 
             render: ->
@@ -143,8 +133,8 @@ class AssetHost.Slideshow
                     caption:    @model.get("caption")
                     url:        @model.get("urls")['eight']
 
-                if @index is 0
-                    $(@el).addClass("active").show()
+                if @index is @start
+                    $(@el).addClass("active")
 
                 @
 
@@ -152,44 +142,36 @@ class AssetHost.Slideshow
 
     @Slides:
         Backbone.View.extend
-            className: "slides"
+            className: "slides asset-block"
                 
             #----------
 
             initialize: ->
                 @slides = []
-                @current = 0
-
+                @current = @options.start
+                
                 @collection.each (a,idx) => 
                     s = new Slideshow.Slide 
                         model:  a
                         index:  idx
-                        
+                        start: @options.start
+
                     @slides[idx] = s
+                
+                @total = _(@slides).size()
  
            #----------
 
             switchTo: (idx) ->
-                if idx >= 0 and idx <= _(@slides).size() - 1
-                    currentSlide  = @slides[@current]
-                    nextSlide     = @slides[idx]
-
-                    currentEl  = $ currentSlide.el
-                    nextEl     = $ nextSlide.el
-                    
-                    # Stop the animations
-                    currentEl.stop false, true
-                    nextEl.stop false, true
-
-                    # Fade out, stage the next slide, send switch signal, fade in
-                    currentEl.fadeOut 'fast', =>
-                        @_switchActive currentEl, nextEl
-                        nextSlide.transition()
-
-                        @current = idx
+                if idx >= 0 and idx <= @total - 1
+                    @currentEl  = $ @slides[@current].el
+                    @nextEl     = $ @slides[idx].el
+                                        
+                    @currentEl.stop(true, true).fadeOut 'fast', =>
+                        @currentEl.removeClass('active')
                         @trigger "switch", idx
-
-                        nextSlide._show()
+                        @nextEl.fadeIn('fast')
+                               .addClass('active')
 
             #----------
 
@@ -197,16 +179,9 @@ class AssetHost.Slideshow
                 # add our slides
                 _(@slides).each (s,idx) =>
                     $(@el).append s.render().el
-        
 
-            #----------
-            # Private
-            
-            _switchActive: (currentEl, nextEl) ->
-                currentEl.removeClass 'active'
-                nextEl.addClass 'active'
-
-        #----------
+            setCurrent: (idx) ->
+                @current = Number(idx)
 
     #----------
     
@@ -215,7 +190,7 @@ class AssetHost.Slideshow
             className: "overlay-nav"
             
             events:
-                'click div.active': "_buttonClick"
+                'click .active': "_buttonClick"
     
             # This is being styled by SCPR's stylesheet
             template:
@@ -235,7 +210,7 @@ class AssetHost.Slideshow
                 @top        = 0
 
                 @total      = @options.total
-                @current    = Number(@options.current) + 1
+                @current    = Number(@options.current)
                 
                 @buttonHeight = $(@el).find('.arrow.prev').height() || 48
                 
@@ -256,7 +231,7 @@ class AssetHost.Slideshow
             #----------
             
             setCurrent: (idx) ->
-                @current = Number(idx) + 1
+                @current = Number(idx)
                 @render()
     
             #----------
@@ -287,7 +262,7 @@ class AssetHost.Slideshow
                 idx = $(evt.currentTarget).attr "data-idx"
 
                 if idx
-                    idx = Number(idx) - 1
+                    idx = Number(idx)
                     @trigger "switch", idx
 
             #----------
@@ -316,7 +291,7 @@ class AssetHost.Slideshow
 
             initialize: ->
                 @total = @options.total
-                @current = Number(@options.current) + 1
+                @current = Number(@options.current)
                 @render()
 
             #----------
@@ -325,13 +300,13 @@ class AssetHost.Slideshow
                 idx = $(evt.currentTarget).attr "data-idx"
 
                 if idx
-                    idx = Number(idx) - 1
+                    idx = Number(idx)
                     @trigger "switch", idx
 
             #----------
 
             setCurrent: (idx) ->
-                @current = Number(idx) + 1
+                @current = Number(idx)
                 @render()
 
             #----------
