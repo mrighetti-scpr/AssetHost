@@ -160,19 +160,18 @@ class AssetHost.Slideshow
                     @slides[idx] = s
                 
                 @total = @slides.length
- 
+
            #----------
 
             switchTo: (idx) ->
                 if idx >= 0 and idx <= @total - 1
                     @currentEl  = $ @slides[@current].el
                     @nextEl     = $ @slides[idx].el
-                                        
+
                     @currentEl.stop(true, true).fadeOut 'fast', =>
-                        @currentEl.removeClass('active')
+                        @currentEl.removeClass 'active'
                         @trigger "switch", idx
-                        @nextEl.fadeIn('fast')
-                               .addClass('active')
+                        @nextEl.fadeIn 'fast', -> $(@).addClass 'active'
 
             #----------
 
@@ -196,11 +195,9 @@ class AssetHost.Slideshow
             # This is being styled by SCPR's stylesheet
             template:
                 '''
-                <div style="height:<%=height%>px" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
-                    <span class="arrow" style="top:<%=top%>px"></div>
+                <div style="height:<%=height%>px;background-position-y:<%=top%>px;" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
                 </div>
-                <div style="height:<%=height%>px" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
-                    <span class="arrow" style="top:<%=top%>px"></div>
+                <div style="height:<%=height%>px;background-position-y:<%=top%>px;" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
                 </div>
                 '''
                
@@ -212,9 +209,11 @@ class AssetHost.Slideshow
 
                 @total      = @options.total
                 @current    = @options.start
-                
-                @buttonHeight = $(@el).find('.arrow.prev').height() || 48
-                
+
+                # Just split the difference between 48 and 24
+                # since we're using a background image for the arrow now
+                @buttonHeight = 36
+
             #----------
             # Handle the hiding and showing of the buttons
             # Only for mouseenter and mouseleave
@@ -224,10 +223,10 @@ class AssetHost.Slideshow
                 @height = @_getTargetHeight()
                 @top = @_getArrowTop(@height, @buttonHeight)
                 @render()
+                $(@el).css opacity: 1
                 
             hideTargets: ->
-                $(@el).stop false, true
-                $(@el).find('.arrow').fadeOut 'fast'
+                $(@el).stop(true, true).animate opacity: 0, 'fast'
 
             #----------
             
@@ -260,7 +259,7 @@ class AssetHost.Slideshow
             #----------
             
             _buttonClick: (evt) ->
-                idx = $(evt.currentTarget).attr "data-idx"
+                idx = $(evt.target).attr "data-idx"
 
                 if idx
                     idx = Number(idx)
@@ -298,7 +297,7 @@ class AssetHost.Slideshow
             #----------
 
             _buttonClick: (evt) ->
-                idx = $(evt.currentTarget).attr "data-idx"
+                idx = $(evt.target).attr "data-idx"
 
                 if idx
                     idx = Number(idx)
