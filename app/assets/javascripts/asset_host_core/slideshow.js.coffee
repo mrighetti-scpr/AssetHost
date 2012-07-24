@@ -24,7 +24,8 @@ class AssetHost.Slideshow
             @nav = new Slideshow.NavigationLinks 
                 current:    @options.start
                 total:      @assets.length
-                
+            
+            # Create the overlay navigation
             @overlayNav = new Slideshow.OverlayNav
                 current:    @options.start
                 total:      @assets.length
@@ -32,12 +33,14 @@ class AssetHost.Slideshow
             # -- set up our slides -- #
             @slides = new Slideshow.Slides 
                 collection:   @assets
-                nav:          @nav
                 overlayNav:   @overlayNav
+            
+            @overlayNav.slides = @slides
             
             # Fill the slideview in with the different elements
             @el.html    @nav.el
             @el.append  @slides.el
+            $(@slides.el).append @overlayNav.el
             
             # Setup the title
             title = $("<h6/>", style: "display: inline-block;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif")
@@ -54,7 +57,7 @@ class AssetHost.Slideshow
             
             @slides.bind        "switch", (idx) =>
                 @nav.setCurrent idx
-                @overlayNav.setCurrent idx
+                @overlayNav.setCurrent idx, @slides.el
                 @trigger "switch", idx
 
             # Keyboard Navigation
@@ -119,7 +122,11 @@ class AssetHost.Slideshow
                     caption:    @model.get("caption")
                     url:        @model.get("urls")['eight']
 
-                $(@el).hide() unless @index is 0
+                if @index is 0
+                    $(@el).addClass("active").show()
+                else if @index isnt 0
+                    $(@el).hide()
+
                 @
 
     #----------
@@ -147,25 +154,19 @@ class AssetHost.Slideshow
                     @slides[idx] = s
             #----------
 
-            render: () ->
+            render: ->
                 # add our slides
                 _(@slides).each (s,idx) =>
                     $(@el).append s.render().el
-                    
-                @options.nav.render()
-
-                # Add in the overlay navigation
-                $(@el).append @options.overlayNav.el
-                @options.overlayNav.render()
-
+                
+                @options.overlayNav._show()
+                                
             _mouseenter: (e) ->
-                console.log "mouseenter, hasmouse is", @hasmouse
                 if @hasmouse is false
                     @hasmouse = true
                     @options.overlayNav._show @el
                 
             _mouseleave: (e) ->
-                console.log "mouseenter, hasmouse is", @hasmouse
                 if @hasmouse is true
                     @hasmouse = false
                     @options.overlayNav._hide @el
@@ -183,8 +184,12 @@ class AssetHost.Slideshow
 
                     # Fade out, send switch signal, fade in
                     @currentEl.fadeOut 'fast', =>
+                        @currentEl.removeClass 'active'
+                        @nextEl.addClass 'active'
+
                         @current = idx
                         @trigger "switch", idx
+
                         @nextEl.fadeIn 'fast'
 
     #----------
@@ -194,31 +199,31 @@ class AssetHost.Slideshow
             className: "overlay-nav"
             
             events:
-                'click a.active': "_buttonClick"
+                'click div.active': "_buttonClick"
     
             # This is being styled by SCPR's stylesheet
             template:
                 '''
-                <a <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
+                <div style="height:<%=height%>" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
                     <span class="arrow" style="top:<%=top%>"></div>
-                </a>
-                <a <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
+                </div>
+                <div style="height:<%=height%>" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
                     <span class="arrow" style="top:<%=top%>"></div>
-                </a>
+                </div>
                 '''
                
             #----------
 
             initialize: ->
-                @total = @options.total
-                @current = Number(@options.current) + 1
-                
-                # set default "top" position
-                @top = "40%"
+                @height     = 0
+                @top        = 0
 
+                @total      = @options.total
+                @current    = Number(@options.current) + 1
+                
                 $(@el).hide()
-                @render()
-                $(@el).fadeIn(1000)
+
+                @buttonHeight = $(@el).find('.arrow.prev').height()
                 
             #----------
 
@@ -233,34 +238,38 @@ class AssetHost.Slideshow
             #----------
             # Handle the hiding and showing of the buttons
             
-            _show: (slidesEl) ->
-                $(@el).stop(false, true)
-                @lock slidesEl
-                $(@el).fadeIn 'fast'
+            _show: ->
+                if !$(@el).is(":visible")
+                    $(@el).stop false, true
+                    @__lock()
+                    @render()
+                    $(@el).fadeIn 'fast'
                 
-            _hide: (slidesEl) ->
-                $(@el).stop(false, true)
-                $(@el).fadeOut 'fast', => @unlock slidesEl
+            _hide: ->
+                $(@el).stop false, true
+                $(@el).fadeOut 'fast'
             
-
             #----------
             # Lock/Unlock the button's top position
                 
-            lock: (slidesEl) ->
-                # .84 is from "84%" height in CSS in SCPRv4
-                height = $(slidesEl).height() * .84
-                @top = (height * .4) + "px"
-                @_setTop @top
-                console.log "locked, top is", @top
+            __lock: ->
+                console.log "image is", $(@slides.el).find(".slide.active img")
+                height = $(@slides.el).find(".slide.active img").height()
+                top = ((height - @.$(".text").height()) / 2) - (@buttonHeight / 2)
+                                
+                @__setTop top
+                @__setTargetHeight height
 
-            unlock: (slidesEl) ->
-                @top = "40%"
-                @_setTop @top
-                console.log "unlocked"
+            __setTop: (top) ->
+                @top = top + "px"
+                # @.$('.arrow').css top: @top
+                # console.log "_setTop with", @top
 
-            _setTop: (top) ->
-                @.$('.arrow').css top: @top
-                
+            __setTargetHeight: (height) ->
+                @height = height + "px"
+                # @.$('.bar').css height: @height
+                # console.log "_setTargetHeight with", @height            
+            
             #----------
 
             setCurrent: (idx) ->
@@ -269,11 +278,15 @@ class AssetHost.Slideshow
 
             #----------
 
+            
             render: ->
+                console.log "rendering overlay nav, top, height is", @top, @height
                 $(@el).html _.template @template,
                     prev:       if @current - 1 > 0 then @current - 1 else null
                     next:       if @current + 1 <= @total then @current + 1 else null
                     top:        @top
+                    height:     @height
+                                
                 
                 
                 
