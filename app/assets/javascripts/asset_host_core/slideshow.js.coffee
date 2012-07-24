@@ -16,7 +16,8 @@ class AssetHost.Slideshow
         $ => 
             # -- get our parent element -- #
             @el = $ @options.el
-        
+            @start = Number(@options.start) - 1
+
             # -- create asset collection -- #
             @assets = new Slideshow.Assets @options.assets
             
@@ -24,16 +25,16 @@ class AssetHost.Slideshow
             # Create the elements we need for the complete slideshow
                         
             @nav = new Slideshow.NavigationLinks 
-                current:    @options.start
-                total:      @assets.length
+                start:  @start
+                total:  @assets.length
             
             @overlayNav = new Slideshow.OverlayNav
-                current:    @options.start
-                total:      @assets.length
+                start:  @start
+                total:  @assets.length
 
             @slides = new Slideshow.Slides
                 collection:   @assets
-                start:        @options.start
+                start:        @start
 
             @slides.overlayNav = @overlayNav
             @overlayNav.slides = @slides
@@ -158,7 +159,7 @@ class AssetHost.Slideshow
 
                     @slides[idx] = s
                 
-                @total = _(@slides).size()
+                @total = @slides.length
  
            #----------
 
@@ -181,7 +182,7 @@ class AssetHost.Slideshow
                     $(@el).append s.render().el
 
             setCurrent: (idx) ->
-                @current = Number(idx)
+                @current = idx
 
     #----------
     
@@ -210,7 +211,7 @@ class AssetHost.Slideshow
                 @top        = 0
 
                 @total      = @options.total
-                @current    = Number(@options.current)
+                @current    = @options.start
                 
                 @buttonHeight = $(@el).find('.arrow.prev').height() || 48
                 
@@ -231,17 +232,17 @@ class AssetHost.Slideshow
             #----------
             
             setCurrent: (idx) ->
-                @current = Number(idx)
+                @current = idx
                 @render()
     
             #----------
 
             render: ->
                 $(@el).html _.template @template,
-                    prev:       if @current - 1 > 0 then @current - 1 else null
-                    next:       if @current + 1 <= @total then @current + 1 else null
-                    top:        @top
-                    height:     @height
+                    prev:     if @current > 0 then String(@current - 1) else null
+                    next:     if @current < @total - 1 then String(@current + 1) else null
+                    top:      @top
+                    height:   @height
 
 
             #----------
@@ -283,7 +284,7 @@ class AssetHost.Slideshow
             template:
                 '''
                 <a <% print(prev ? "data-idx='"+prev+"' class='prev active'" : "class='prev disabled'"); %>></a>
-                <span class="page-count"><%= current %> of <%= total %></span>
+                <span class="page-count"><%= count %> of <%= total %></span>
                 <a <% print(next ? "data-idx='"+next+"' class='next active'" : "class='next disabled'"); %>></a>
                 '''
 
@@ -291,7 +292,7 @@ class AssetHost.Slideshow
 
             initialize: ->
                 @total = @options.total
-                @current = Number(@options.current)
+                @current = @options.start
                 @render()
 
             #----------
@@ -306,17 +307,17 @@ class AssetHost.Slideshow
             #----------
 
             setCurrent: (idx) ->
-                @current = Number(idx)
+                @current = idx
                 @render()
 
             #----------
 
             render: ->
                 $(@el).html _.template @template,
-                    current:    @current,
-                    total:      @total,
-                    prev:       if @current - 1 > 0 then @current - 1 else null
-                    next:       if @current + 1 <= @total then @current + 1 else null
+                    count:    @current + 1,
+                    total:    @total,
+                    prev:     if @current > 0 then String(@current - 1) else null
+                    next:     if @current < @total - 1 then String(@current + 1) else null
                
     #----------
     
