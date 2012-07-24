@@ -20,45 +20,53 @@ class AssetHost.Slideshow
             # -- create asset collection -- #
             @assets = new Slideshow.Assets @options.assets
             
-            # -- create our nav buttons -- #
+            #----------
+            # Create the elements we need for the complete slideshow
+            
             @nav = new Slideshow.NavigationLinks 
                 current:    @options.start
                 total:      @assets.length
             
-            # Create the overlay navigation
             @overlayNav = new Slideshow.OverlayNav
                 current:    @options.start
                 total:      @assets.length
 
-            # -- set up our slides -- #
-            @slides = new Slideshow.Slides 
+            @slides = new Slideshow.Slides
                 collection:   @assets
-                overlayNav:   @overlayNav
-            
+
+            @slides.overlayNav = @overlayNav
             @overlayNav.slides = @slides
             
-            # Fill the slideview in with the different elements
-            @el.html    @nav.el
-            @el.append  @slides.el
-            $(@slides.el).append @overlayNav.el
+            # Fill in the main element with all the pieces
+            @el.html      $("<h6/>").html "Slideshow"
+            @el.append    @nav.el
+            @el.append    @slides.el
+            @el.append    @overlayNav.el
             
-            # Setup the title
-            title = $("<h6/>", style: "display: inline-block;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif")
-                    .html "Slideshow"
-            @el.prepend title
             
             # Render the elements
             @nav.render()
             @slides.render()
+            setTimeout () =>
+                @overlayNav.showTargets()
+            , 2000
 
             # -- bind slides and nav together -- #
-            @nav.bind           "switch", (idx) => @slides.switchTo(idx)
-            @overlayNav.bind    "switch", (idx) => @slides.switchTo(idx)
+            # Click on a next button, send switchTo() to Slides
+            @nav.bind           "switch", (idx) =>
+                @slides.switchTo(idx)
+                
+            @overlayNav.bind    "switch", (idx) =>
+                @slides.switchTo(idx)
             
+            # switchTo() emits "switch" on slides, which sends setCurrent()
+            # to those who need it. Also emits "switch" on Slideshow for
+            # Google Analytics
             @slides.bind        "switch", (idx) =>
                 @nav.setCurrent idx
-                @overlayNav.setCurrent idx, @slides.el
+                @overlayNav.setCurrent idx
                 @trigger "switch", idx
+
 
             # Keyboard Navigation
             @hasmouse = false
@@ -74,10 +82,12 @@ class AssetHost.Slideshow
                 mouseenter: (e) =>
                     if @hasmouse is false
                         @hasmouse = true
+                        @overlayNav.showTargets()
 
                 mouseleave: (e) =>
                     if @hasmouse is true
                         @hasmouse = false
+                        @overlayNav.hideTargets()
 
     #----------
 
@@ -96,13 +106,11 @@ class AssetHost.Slideshow
     @Slide:
         Backbone.View.extend
             className: "slide"
-            attributes:
-                style: "text-align: center; width: 100%;"
     
             template:
                 '''
                 <img src="<%= url %>"/>
-                <div class="text" style="text-align: left">
+                <div class="text">
                     <div class="credit"><%= credit %></div>
                     <p><%= caption %></p>
                 </div>
@@ -112,7 +120,22 @@ class AssetHost.Slideshow
 
             initialize: ->
                 @index = @options.index
+                $(@el).hide()
     
+            #----------
+
+            transition: ->
+                $(@el).css
+                    visibility: "hidden"
+                    display: "block"
+
+            show_: ->
+                $(@el).hide()
+                $(@el).css
+                    visibility: "visibile"
+                
+                $(@el).fadeIn 'fast'
+               
             #----------
 
             render: ->
@@ -124,8 +147,6 @@ class AssetHost.Slideshow
 
                 if @index is 0
                     $(@el).addClass("active").show()
-                else if @index isnt 0
-                    $(@el).hide()
 
                 @
 
@@ -134,17 +155,12 @@ class AssetHost.Slideshow
     @Slides:
         Backbone.View.extend
             className: "slides"
-            attributes:
-                style: "clear: both;"
-
-            events:
-                "mouseenter": "_mouseenter"
-                "mouseleave": "_mouseleave"
                 
+            #----------
+
             initialize: ->
                 @slides = []
                 @current = 0
-                @hasmouse = false
 
                 @collection.each (a,idx) => 
                     s = new Slideshow.Slide 
@@ -152,45 +168,47 @@ class AssetHost.Slideshow
                         index:  idx
                         
                     @slides[idx] = s
+ 
+           #----------
+
+            switchTo: (idx) ->
+                if idx >= 0 and idx <= _(@slides).size() - 1
+                    @currentSlide  = @slides[@current]
+                    @nextSlide     = @slides[idx]
+
+                    @currentEl  = $ @currentSlide.el
+                    @nextEl     = $ @nextSlide.el
+                    
+                    # Stop the animations
+                    @currentEl.stop false, true
+                    @nextEl.stop false, true
+
+                    # Fade out, stage the next slide, send switch signal, fade in
+                    @currentEl.fadeOut 'fast', =>
+                        @_switchActive @currentEl, @nextEl
+                        @nextSlide.transition()
+
+                        @current = idx
+                        @trigger "switch", idx
+        
+                        @nextSlide.show_()
+
             #----------
 
             render: ->
                 # add our slides
                 _(@slides).each (s,idx) =>
                     $(@el).append s.render().el
-                
-                @options.overlayNav._show()
-                                
-            _mouseenter: (e) ->
-                if @hasmouse is false
-                    @hasmouse = true
-                    @options.overlayNav._show @el
-                
-            _mouseleave: (e) ->
-                if @hasmouse is true
-                    @hasmouse = false
-                    @options.overlayNav._hide @el
         
+
             #----------
+            # Private
+            
+            _switchActive: (currentEl, nextEl) ->
+                currentEl.removeClass 'active'
+                nextEl.addClass 'active'
 
-            switchTo: (idx) ->
-                if idx >= 0 and idx <= _(@slides).size() - 1
-                    @currentEl  = $ @slides[@current].el
-                    @nextEl     = $ @slides[idx].el
-                    
-                    # Stop the animations
-                    @currentEl.stop false, true
-                    @nextEl.stop false, true
-
-                    # Fade out, send switch signal, fade in
-                    @currentEl.fadeOut 'fast', =>
-                        @currentEl.removeClass 'active'
-                        @nextEl.addClass 'active'
-
-                        @current = idx
-                        @trigger "switch", idx
-
-                        @nextEl.fadeIn 'fast'
+        #----------
 
     #----------
     
@@ -204,11 +222,11 @@ class AssetHost.Slideshow
             # This is being styled by SCPR's stylesheet
             template:
                 '''
-                <div style="height:<%=height%>" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
-                    <span class="arrow" style="top:<%=top%>"></div>
+                <div style="height:<%=height%>px" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
+                    <span class="arrow" style="top:<%=top%>px"></div>
                 </div>
-                <div style="height:<%=height%>" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
-                    <span class="arrow" style="top:<%=top%>"></div>
+                <div style="height:<%=height%>px" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
+                    <span class="arrow" style="top:<%=top%>px"></div>
                 </div>
                 '''
                
@@ -221,12 +239,54 @@ class AssetHost.Slideshow
                 @total      = @options.total
                 @current    = Number(@options.current) + 1
                 
-                $(@el).hide()
-
                 @buttonHeight = $(@el).find('.arrow.prev').height()
                 
             #----------
+            # Handle the hiding and showing of the buttons
+            # Only for mouseenter and mouseleave
+            
+            showTargets: ->
+                $(@el).stop false, true
+                @top = @_getArrowTop(@_getTargetHeight(), @buttonHeight)
+                @render()
+                $(@el).find('.arrow').show()
+                
+            hideTargets: ->
+                $(@el).stop false, true
+                $(@el).find('.arrow').fadeOut 'fast'
 
+            #----------
+            
+            setCurrent: (idx) ->
+                @current = Number(idx) + 1
+                @render()
+    
+            #----------
+
+            render: ->
+                @height = @_getTargetHeight()
+                console.log "rendering overlay with height, top", @height, @top
+                $(@el).html _.template @template,
+                    prev:       if @current - 1 > 0 then @current - 1 else null
+                    next:       if @current + 1 <= @total then @current + 1 else null
+                    top:        @top
+                    height:     @height
+
+
+            #----------
+            # Private
+    
+            #----------
+            # Lock/Unlock the button's top position and click target height
+            
+            _getTargetHeight: ->
+                $(@slides.el).find(".slide.active img").height()
+
+            _getArrowTop: (height, buttonHeight) ->
+                ((height - @.$(".text").height()) / 2) - (buttonHeight / 2)
+
+            #----------
+            
             _buttonClick: (evt) ->
                 idx = $(evt.currentTarget).attr "data-idx"
 
@@ -234,61 +294,10 @@ class AssetHost.Slideshow
                     idx = Number(idx) - 1
                     @trigger "switch", idx
 
-
-            #----------
-            # Handle the hiding and showing of the buttons
-            
-            _show: ->
-                if !$(@el).is(":visible")
-                    $(@el).stop false, true
-                    @__lock()
-                    @render()
-                    $(@el).fadeIn 'fast'
-                
-            _hide: ->
-                $(@el).stop false, true
-                $(@el).fadeOut 'fast'
-            
-            #----------
-            # Lock/Unlock the button's top position
-                
-            __lock: ->
-                console.log "image is", $(@slides.el).find(".slide.active img")
-                height = $(@slides.el).find(".slide.active img").height()
-                top = ((height - @.$(".text").height()) / 2) - (@buttonHeight / 2)
-                                
-                @__setTop top
-                @__setTargetHeight height
-
-            __setTop: (top) ->
-                @top = top + "px"
-                # @.$('.arrow').css top: @top
-                # console.log "_setTop with", @top
-
-            __setTargetHeight: (height) ->
-                @height = height + "px"
-                # @.$('.bar').css height: @height
-                # console.log "_setTargetHeight with", @height            
-            
             #----------
 
-            setCurrent: (idx) ->
-                @current = Number(idx) + 1
-                @render()
+    #----------
 
-            #----------
-
-            
-            render: ->
-                console.log "rendering overlay nav, top, height is", @top, @height
-                $(@el).html _.template @template,
-                    prev:       if @current - 1 > 0 then @current - 1 else null
-                    next:       if @current + 1 <= @total then @current + 1 else null
-                    top:        @top
-                    height:     @height
-                                
-                
-                
                 
     @NavigationLinks:
         Backbone.View.extend
