@@ -129,12 +129,10 @@ class AssetHost.Slideshow
                     visibility: "hidden"
                     display: "block"
 
-            show_: ->
-                $(@el).hide()
+            _show: ->
                 $(@el).css
-                    visibility: "visibile"
-                
-                $(@el).fadeIn 'fast'
+                    visibility: "visible"
+                .fadeIn 'fast'
                
             #----------
 
@@ -173,25 +171,25 @@ class AssetHost.Slideshow
 
             switchTo: (idx) ->
                 if idx >= 0 and idx <= _(@slides).size() - 1
-                    @currentSlide  = @slides[@current]
-                    @nextSlide     = @slides[idx]
+                    currentSlide  = @slides[@current]
+                    nextSlide     = @slides[idx]
 
-                    @currentEl  = $ @currentSlide.el
-                    @nextEl     = $ @nextSlide.el
+                    currentEl  = $ currentSlide.el
+                    nextEl     = $ nextSlide.el
                     
                     # Stop the animations
-                    @currentEl.stop false, true
-                    @nextEl.stop false, true
+                    currentEl.stop false, true
+                    nextEl.stop false, true
 
                     # Fade out, stage the next slide, send switch signal, fade in
-                    @currentEl.fadeOut 'fast', =>
-                        @_switchActive @currentEl, @nextEl
-                        @nextSlide.transition()
+                    currentEl.fadeOut 'fast', =>
+                        @_switchActive currentEl, nextEl
+                        nextSlide.transition()
 
                         @current = idx
                         @trigger "switch", idx
-        
-                        @nextSlide.show_()
+
+                        nextSlide._show()
 
             #----------
 
@@ -239,7 +237,7 @@ class AssetHost.Slideshow
                 @total      = @options.total
                 @current    = Number(@options.current) + 1
                 
-                @buttonHeight = $(@el).find('.arrow.prev').height()
+                @buttonHeight = $(@el).find('.arrow.prev').height() || 48
                 
             #----------
             # Handle the hiding and showing of the buttons
@@ -247,9 +245,9 @@ class AssetHost.Slideshow
             
             showTargets: ->
                 $(@el).stop false, true
-                @top = @_getArrowTop(@_getTargetHeight(), @buttonHeight)
+                @height = @_getTargetHeight()
+                @top = @_getArrowTop(@height, @buttonHeight)
                 @render()
-                $(@el).find('.arrow').show()
                 
             hideTargets: ->
                 $(@el).stop false, true
@@ -264,8 +262,6 @@ class AssetHost.Slideshow
             #----------
 
             render: ->
-                @height = @_getTargetHeight()
-                console.log "rendering overlay with height, top", @height, @top
                 $(@el).html _.template @template,
                     prev:       if @current - 1 > 0 then @current - 1 else null
                     next:       if @current + 1 <= @total then @current + 1 else null
