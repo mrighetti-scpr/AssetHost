@@ -105,13 +105,13 @@ class AssetHost.Slideshow
         
     @Slide:
         Backbone.View.extend
-            className: "slide"
+            className: "slide asset-block"
     
             template:
                 '''
                 <img src="<%= url %>"/>
                 <div class="text">
-                    <div class="credit"><%= credit %></div>
+                    <h4><%= credit %></h4>
                     <p><%= caption %></p>
                 </div>
                 '''
@@ -308,7 +308,7 @@ class AssetHost.Slideshow
             template:
                 '''
                 <a <% print(prev ? "data-idx='"+prev+"' class='prev active'" : "class='prev disabled'"); %>></a>
-                <span style="color:#ccc;vertical-align: middle;height:30px;display:inline-block;padding:0 5px;"><%= current %> of <%= total %></span>
+                <span class="page-count"><%= current %> of <%= total %></span>
                 <a <% print(next ? "data-idx='"+next+"' class='next active'" : "class='next disabled'"); %>></a>
                 '''
 
