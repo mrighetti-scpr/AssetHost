@@ -16,21 +16,31 @@ class AssetHost.Slideshow
         $ => 
             # -- get our parent element -- #
             @el = $ @options.el
-            @start = Number(@options.start) - 1
 
             # -- create asset collection -- #
             @assets = new Slideshow.Assets @options.assets
+            @total = @assets.length
+
+            # Set the starting slide.
+            # We only want to work with the slide's index internally to avoid confusion.
+            # If the requested slide is in between 0 and the total slides, use it
+            # Otherwise just go to slide 0
+            @start = 0 # default
             
+            startingSlide = Number(@options.start)
+            if startingSlide > 0 and startingSlide <= @total
+                @start = startingSlide - 1
+
             #----------
             # Create the elements we need for the complete slideshow
                         
             @nav = new Slideshow.NavigationLinks 
                 start:  @start
-                total:  @assets.length
+                total:  @total
             
             @overlayNav = new Slideshow.OverlayNav
                 start:  @start
-                total:  @assets.length
+                total:  @total
 
             @slides = new Slideshow.Slides
                 collection:   @assets
@@ -68,6 +78,7 @@ class AssetHost.Slideshow
                 @nav.setCurrent         idx
                 @overlayNav.setCurrent  idx
                 @slides.setCurrent      idx
+                window.location.hash =  "slide#{idx+1}"
                 @trigger "switch",      idx
 
 
