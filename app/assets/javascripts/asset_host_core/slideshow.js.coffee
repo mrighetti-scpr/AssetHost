@@ -26,10 +26,12 @@ class AssetHost.Slideshow
             # If the requested slide is in between 0 and the total slides, use it
             # Otherwise just go to slide 0
             @start = 0 # default
-            
-            startingSlide = Number(@options.start)
-            if startingSlide > 0 and startingSlide <= @total
-                @start = startingSlide - 1
+            @deeplink = @options.start?
+
+            if @deeplink
+                startingSlide = Number(@options.start)
+                if startingSlide > 0 and startingSlide <= @total
+                    @start = startingSlide - 1
 
             #----------
             # Create the elements we need for the complete slideshow
@@ -78,8 +80,10 @@ class AssetHost.Slideshow
                 @nav.setCurrent         idx
                 @overlayNav.setCurrent  idx
                 @slides.setCurrent      idx
-                window.location.hash =  "slide#{idx+1}"
                 @trigger "switch",      idx
+
+                if @deeplink
+                    window.location.hash =  "slide#{idx+1}"
 
 
             # Keyboard Navigation
