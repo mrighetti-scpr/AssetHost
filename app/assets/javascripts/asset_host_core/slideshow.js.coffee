@@ -84,13 +84,13 @@ class AssetHost.Slideshow
 
             # Keyboard Navigation
             @hasmouse = false
-            $(window).bind "keydown", (e) => 
-                if @hasmouse
-                    # is this a keypress we care about?
-                    if e.which == 37
-                        @slides.switchTo(@slides.current - 1)
-                    else if e.which == 39
-                        @slides.switchTo(@slides.current + 1)
+            $(window).on 
+                keydown: (e) =>
+                    if @hasmouse
+                        # is this a keypress we care about?
+                        switch e.keyCode
+                            when 37 then @slides.switchTo(@slides.current - 1)
+                            when 39 then @slides.switchTo(@slides.current + 1)
 
             @el.on
                 mouseenter: (e) =>
@@ -182,7 +182,7 @@ class AssetHost.Slideshow
                     @currentEl.stop(true, true).fadeOut 'fast', =>
                         @currentEl.removeClass 'active'
                         @trigger "switch", idx
-                        @nextEl.fadeIn 'fast', -> $(@).addClass 'active'
+                        @nextEl.addClass('active').fadeIn('fast')
 
             #----------
 
@@ -206,9 +206,9 @@ class AssetHost.Slideshow
             # This is being styled by SCPR's stylesheet
             template:
                 '''
-                <div style="height:<%=height%>px;background-position-y:<%=top%>px;" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
+                <div style="height:<%=height%>px;" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
                 </div>
-                <div style="height:<%=height%>px;background-position-y:<%=top%>px;" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
+                <div style="height:<%=height%>px;" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
                 </div>
                 '''
                
@@ -216,14 +216,8 @@ class AssetHost.Slideshow
 
             initialize: ->
                 @height     = 0
-                @top        = 0
-
                 @total      = @options.total
                 @current    = @options.start
-
-                # Just split the difference between 48 and 24
-                # since we're using a background image for the arrow now
-                @buttonHeight = 36
 
             #----------
             # Handle the hiding and showing of the buttons
@@ -232,7 +226,6 @@ class AssetHost.Slideshow
             showTargets: ->
                 $(@el).stop false, true
                 @height = @_getTargetHeight()
-                @top = @_getArrowTop(@height, @buttonHeight)
                 @render()
                 $(@el).css opacity: 1
                 
@@ -251,7 +244,6 @@ class AssetHost.Slideshow
                 $(@el).html _.template @template,
                     prev:     if @current > 0 then String(@current - 1) else null
                     next:     if @current < @total - 1 then String(@current + 1) else null
-                    top:      @top
                     height:   @height
 
 
@@ -263,9 +255,6 @@ class AssetHost.Slideshow
             
             _getTargetHeight: ->
                 $(@slides.el).find(".slide.active img").height()
-
-            _getArrowTop: (height, buttonHeight) ->
-                ((height - @.$(".text").height()) / 2) - (buttonHeight / 2)
 
             #----------
             
