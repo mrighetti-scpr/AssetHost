@@ -385,7 +385,7 @@ class AssetHost.Slideshow
 
             _toggleThumbTray: ->
                 if @thumbtrayEl.is(":visible")
-                    @thumbtrayEl.hide()
+                    @thumbtrayEl.fadeOut 75
                     @thumbtray.thumbidx = 0
                     $(@el).removeClass 'active'
                 else
