@@ -92,10 +92,11 @@ class AssetHost.Slideshow
             # to those who need it. Also emits "switch" on Slideshow for
             # Google Analytics
             @slides.bind        "switch", (idx) =>
-                @nav.setCurrent         idx
-                @overlayNav.setCurrent  idx
-                @slides.setCurrent      idx
-                @trigger "switch",      idx
+                @nav.setCurrent        idx
+                @overlayNav.setCurrent idx
+                @slides.setCurrent     idx
+                @thumbtray.setCurrent  idx
+                @trigger "switch",     idx
 
                 if @deeplink
                     window.location.hash =  "slide#{idx+1}"
@@ -344,7 +345,6 @@ class AssetHost.Slideshow
                     next:     if @current < @total - 1  then String(@current + 1) else null
                
             
-            
             #----------
             # Private
 
@@ -355,6 +355,7 @@ class AssetHost.Slideshow
                     idx = Number(idx)
                     @trigger "switch", idx
                 
+
     #----------
 
     @ThumbtrayToggler:
@@ -389,8 +390,9 @@ class AssetHost.Slideshow
                     $(@el).removeClass 'active'
                 else
                     $(@el).addClass 'active'
-                    @thumbtrayEl.show()
                     @thumbtray.render()
+                    @thumbtray.setCurrent @thumbtray.slides.current
+                    @thumbtrayEl.fadeIn()
     
 
     #----------
@@ -424,6 +426,7 @@ class AssetHost.Slideshow
                     per_page:   @options.per_page   
                     thumbtray:  @
 
+                @slides         = @options.slides
                 @thumbs         = @thumbnailView.thumbs
                 @per_page       = @options.per_page
                 @total_pages    = Math.ceil(@thumbs.length / @per_page)
@@ -432,19 +435,25 @@ class AssetHost.Slideshow
                 $(@el).html     @thumbnailView.el
                 $(@el).prepend  @_prevTemplate()
                 $(@el).append   @_nextTemplate()
-
+                
             #----------
     
+            setCurrent: (idx) ->
+                @thumbnailView.setCurrent idx
+
+            #----------
+                
             switchTo: (page) ->
                 if page >= 1 and page <= @total_pages and page isnt @current_age
                     @_moveThumbIdx if page > @current_page then 'forward' else 'backward'
-                    @render()
+                    $(@thumbnailView.el).stop(true, true).animate opacity: 0, 'fast', =>
+                        @render()
 
             #----------
 
             render: ->
                 @thumbnailView.render()
-                @current_page =     @_currentPage()
+                @current_page = @_currentPage()
                 @.$(".nav.prev").replaceWith @_prevTemplate()
                 @.$(".nav.next").replaceWith @_nextTemplate()
                 $ @el
@@ -489,12 +498,6 @@ class AssetHost.Slideshow
     @Thumbnails:
         Backbone.View.extend
             className: "thumbnails"
-            
-            #events:
-            #    'click .thumbnail': '_thumbClick'
-            
-            _thumbClick: ->
-                console.log "okay"
                 
             initialize: ->
                 @thumbs     = []
@@ -514,16 +517,22 @@ class AssetHost.Slideshow
 
             #----------
 
-            render: ->
-                $(@el).stop(true, true).animate opacity: 0, 'fast', =>
-                    @.$(".thumbnail").hide()
-
-                    thumbSlice = @thumbs.slice @thumbidx, @thumbidx + @per_page
-                    
-                    _(thumbSlice).each (thumb) ->
-                        $(thumb.el).css display: "inline-block"
+            setCurrent: (idx) ->
+                @.$('.active').removeClass 'active'
+                active = _(@thumbs).find (thumb) -> thumb.index is idx
+                $(active.el).addClass 'active'
                 
-                    $(@el).animate opacity: 1, 'fast'
+            #----------
+
+            render: ->
+                @.$(".thumbnail").removeClass 'current-set'
+
+                thumbSlice = @thumbs.slice @thumbidx, @thumbidx + @per_page
+                
+                _(thumbSlice).each (thumb) ->
+                    $(thumb.el).addClass 'current-set'
+            
+                $(@el).animate opacity: 1, 'fast'
                 @
 
 
