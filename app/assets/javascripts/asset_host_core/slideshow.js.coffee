@@ -4,8 +4,9 @@
 
 class AssetHost.Slideshow
     DefaultOptions:
-        el: "#photo"
-        
+        el:         "#photo"
+        deeplink:   false
+
     constructor: (options) ->
         @options = _(_({}).extend(@DefaultOptions)).extend options||{}
         
@@ -25,7 +26,10 @@ class AssetHost.Slideshow
             # If the requested slide is in between 0 and the total slides, use it
             # Otherwise just go to slide 0
             @start      = 0 # default starting position
-            @deeplink   = @options.start?
+            @deeplink   = @options.deeplink
+            
+            console.log @start
+            console.log @total
 
             if @deeplink
                 startingSlide = Number(@options.start)
@@ -98,8 +102,9 @@ class AssetHost.Slideshow
                 @thumbtray.setCurrent  idx
                 @trigger "switch",     idx
 
-                if @deeplink
-                    window.location.hash =  "slide#{idx+1}"
+                if @deeplink and window.history.replaceState
+                    slideNum = idx + 1
+                    window.history.replaceState { slide: slideNum }, document.title + ": Slide #{slideNum}", window.location.pathname + "?slide=#{slideNum}"
 
             #----------
             # Keyboard Navigation
