@@ -5,7 +5,6 @@
 class AssetHost.Slideshow
     DefaultOptions:
         el: "#photo"
-        start: 0
         
     constructor: (options) ->
         @options = _(_({}).extend(@DefaultOptions)).extend options||{}
@@ -19,14 +18,14 @@ class AssetHost.Slideshow
 
             # -- create asset collection -- #
             @assets = new Slideshow.Assets @options.assets
-            @total = @assets.length
+            @total  = @assets.length
 
             # Set the starting slide.
             # We only want to work with the slide's index internally to avoid confusion.
             # If the requested slide is in between 0 and the total slides, use it
             # Otherwise just go to slide 0
-            @start = 0 # default
-            @deeplink = @options.start?
+            @start      = 0 # default starting position
+            @deeplink   = @options.start?
 
             if @deeplink
                 startingSlide = Number(@options.start)
@@ -35,7 +34,10 @@ class AssetHost.Slideshow
 
             #----------
             # Create the elements we need for the complete slideshow
-                        
+            
+            @header = $("<div/>", class: "slideshow-header")
+            @title = $("<h6/>").html "Slideshow"
+            
             @nav = new Slideshow.NavigationLinks 
                 start:  @start
                 total:  @total
@@ -50,27 +52,40 @@ class AssetHost.Slideshow
 
             @slides.overlayNav = @overlayNav
             @overlayNav.slides = @slides
+
+            @thumbtray = new Slideshow.Thumbtray
+                collection: @assets
+                slides:     @slides
             
+            @traytoggler = new Slideshow.ThumbtrayToggler
+                thumbtray:  @thumbtray
+            
+            #----------            
             # Fill in the main element with all the pieces
-            @el.html      $("<h6/>").html "Slideshow"
-            @el.append    @nav.el
-            @el.append    @slides.el
-            @el.append    @overlayNav.el
+            @el.html        @header
+            @header.append  @title
+            @header.append  @nav.el
+            @header.append  @traytoggler.el
             
+            @el.append      @thumbtray.el
+            @el.append      @slides.el
             
+            #----------
             # Render the elements
+            @traytoggler.render()
             @nav.render()
             @slides.render()
-            setTimeout () =>
-                @overlayNav.showTargets()
-            , 2000
 
-            # -- bind slides and nav together -- #
-            # Click on a next button, send switchTo() to Slides
+            #----------
+            # bind slides and nav together
+            # Click on a nav button, send switchTo() to Slides
             @nav.bind           "switch", (idx) =>
                 @slides.switchTo idx
                 
             @overlayNav.bind    "switch", (idx) =>
+                @slides.switchTo idx
+
+            @thumbtray.bind     "switch", (idx) =>
                 @slides.switchTo idx
             
             # switchTo() emits "switch" on slides, which sends setCurrent()
@@ -85,7 +100,7 @@ class AssetHost.Slideshow
                 if @deeplink
                     window.location.hash =  "slide#{idx+1}"
 
-
+            #----------
             # Keyboard Navigation
             @hasmouse = false
             $(window).on 
@@ -96,16 +111,16 @@ class AssetHost.Slideshow
                             when 37 then @slides.switchTo(@slides.current - 1)
                             when 39 then @slides.switchTo(@slides.current + 1)
 
+            #----------
+            # Show/Hide targets
             @el.on
                 mouseenter: (e) =>
                     if @hasmouse is false
                         @hasmouse = true
-                        @overlayNav.showTargets()
 
                 mouseleave: (e) =>
                     if @hasmouse is true
                         @hasmouse = false
-                        @overlayNav.hideTargets()
 
     #----------
 
@@ -143,7 +158,6 @@ class AssetHost.Slideshow
             #----------
 
             render: ->
-                # render caption and credit
                 $(@el).html _.template @template,
                     credit:     @model.get("credit")
                     caption:    @model.get("caption")
@@ -159,22 +173,24 @@ class AssetHost.Slideshow
     @Slides:
         Backbone.View.extend
             className: "slides asset-block"
-                
+    
             #----------
 
             initialize: ->
-                @slides = []
-                @current = @options.start
+                @slides     = []
+                @current    = @options.start
+                @overlayNav = @options.overlayNav
                 
                 @collection.each (a,idx) => 
                     s = new Slideshow.Slide 
                         model:  a
                         index:  idx
-                        start: @options.start
+                        start:  @options.start
 
                     @slides[idx] = s
                 
                 @total = @slides.length
+
 
            #----------
 
@@ -190,13 +206,22 @@ class AssetHost.Slideshow
 
             #----------
 
+            setCurrent: (idx) ->
+                @current = idx
+
+            #----------
+
             render: ->
                 # add our slides
                 _(@slides).each (s,idx) =>
                     $(@el).append s.render().el
+                
+                # And the overlay nav
+                $(@el).append @overlayNav.el
 
-            setCurrent: (idx) ->
-                @current = idx
+                setTimeout () =>
+                    @overlayNav.showTargets()
+                , 2000
 
     #----------
     
@@ -205,14 +230,16 @@ class AssetHost.Slideshow
             className: "overlay-nav"
             
             events:
-                'click .active': "_buttonClick"
+                'click .active':    "_buttonClick"
+                "mouseenter":       "showTargets"
+                "mouseleave":       "hideTargets"
+
     
-            # This is being styled by SCPR's stylesheet
             template:
                 '''
-                <div style="height:<%=height%>px;" <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
+                <div <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
                 </div>
-                <div style="height:<%=height%>px;" <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
+                <div <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
                 </div>
                 '''
                
@@ -222,19 +249,24 @@ class AssetHost.Slideshow
                 @height     = 0
                 @total      = @options.total
                 @current    = @options.start
+                @hasmouse   = false
 
             #----------
             # Handle the hiding and showing of the buttons
             # Only for mouseenter and mouseleave
             
             showTargets: ->
-                $(@el).stop false, true
-                @height = @_getTargetHeight()
-                @render()
-                $(@el).css opacity: 1
+                if @hasmouse is false
+                    @hasmouse = true
+                    $(@el).stop false, true
+                    $(@el).css height: @_getTargetHeight()
+                    @render()
+                    $(@el).css opacity: 1
                 
-            hideTargets: ->
-                $(@el).stop(true, true).animate opacity: 0, 'fast'
+            hideTargets: (evt) ->
+                if @hasmouse is true
+                    @hasmouse = false
+                    $(@el).stop(true, true).animate opacity: 0, 'fast'
 
             #----------
             
@@ -246,9 +278,10 @@ class AssetHost.Slideshow
 
             render: ->
                 $(@el).html _.template @template,
-                    prev:     if @current > 0 then String(@current - 1) else null
-                    next:     if @current < @total - 1 then String(@current + 1) else null
-                    height:   @height
+                    prev:     if @current > 0           then String(@current - 1) else null
+                    next:     if @current < @total - 1  then String(@current + 1) else null
+                
+                @
 
 
             #----------
@@ -277,13 +310,10 @@ class AssetHost.Slideshow
     @NavigationLinks:
         Backbone.View.extend
             className: "pager-nav"
-            attributes:
-                style: "padding: 0 5px;"
                     
             events:
                 'click a.active': '_buttonClick'
 
-            # The "next" and "prev" classes are being styled by SCPR's stylesheet
             template:
                 '''
                 <a <% print(prev ? "data-idx='"+prev+"' class='prev active'" : "class='prev disabled'"); %>></a>
@@ -294,18 +324,9 @@ class AssetHost.Slideshow
             #----------
 
             initialize: ->
-                @total = @options.total
-                @current = @options.start
+                @total      = @options.total
+                @current    = @options.start
                 @render()
-
-            #----------
-
-            _buttonClick: (evt) ->
-                idx = $(evt.target).attr "data-idx"
-
-                if idx
-                    idx = Number(idx)
-                    @trigger "switch", idx
 
             #----------
 
@@ -319,27 +340,228 @@ class AssetHost.Slideshow
                 $(@el).html _.template @template,
                     count:    @current + 1,
                     total:    @total,
-                    prev:     if @current > 0 then String(@current - 1) else null
-                    next:     if @current < @total - 1 then String(@current + 1) else null
+                    prev:     if @current > 0           then String(@current - 1) else null
+                    next:     if @current < @total - 1  then String(@current + 1) else null
                
+            
+            
+            #----------
+            # Private
+
+            _buttonClick: (evt) ->
+                idx = $(evt.target).attr "data-idx"
+
+                if idx
+                    idx = Number(idx)
+                    @trigger "switch", idx
+                
     #----------
-    
-    @Thumnails:
+
+    @ThumbtrayToggler:
         Backbone.View.extend
-            className: "thumbnailview"
+            tagName:    'span'
+            className: 'thumbtray-toggler'
             
             events:
-                'click a.thumbnail_toggle': '_toggleThumbTray'
-            
+                'click':    '_toggleThumbTray'
+                
+            #----------
+
             initialize: ->
-                #
-            
+                @thumbtray = @options.thumbtray
+                @thumbtrayEl = $ @thumbtray.el
+                
+            #----------             
+
+            render: ->
+                # We just need the element, 
+                # we'll do the rest with CSS
+                @
+                
+
+            #----------
+            # Private
+
             _toggleThumbTray: ->
-                #
+                if @thumbtrayEl.is(":visible")
+                    @thumbtrayEl.hide()
+                    @thumbtray.thumbidx = 0
+                    $(@el).removeClass 'active'
+                else
+                    $(@el).addClass 'active'
+                    @thumbtrayEl.show()
+                    @thumbtray.render()
+    
+
+    #----------
+
+    @Thumbtray:
+        Backbone.View.extend
+            className: "thumbtray"
+
+            events:
+                "click .nav.active":    "_buttonClick"
+
+            options:
+                per_page: 5
+
+
+            prev_template:
+                '''
+                <a <% print(prev ? "data-page='"+prev+"' class='nav prev active'" : "class='nav prev disabled'"); %>></a>
+                '''
+
+            next_template:
+                '''
+                <a <% print(next ? "data-page='"+next+"' class='nav next active'" : "class='nav next disabled'"); %>></a>
+                '''
+
+            #----------
+
+            initialize: ->    
+                @thumbnailView = new Slideshow.Thumbnails
+                    collection: @collection
+                    per_page:   @options.per_page   
+                    thumbtray:  @
+
+                @thumbs         = @thumbnailView.thumbs
+                @per_page       = @options.per_page
+                @total_pages    = Math.ceil(@thumbs.length / @per_page)
+                @current_page   = @_currentPage()
+
+                $(@el).html     @thumbnailView.el
+                $(@el).prepend  @_prevTemplate()
+                $(@el).append   @_nextTemplate()
+
+            #----------
+    
+            switchTo: (page) ->
+                if page >= 1 and page <= @total_pages and page isnt @current_age
+                    @_moveThumbIdx if page > @current_page then 'forward' else 'backward'
+                    @render()
+
+            #----------
+
+            render: ->
+                @thumbnailView.render()
+                @current_page =     @_currentPage()
+                @.$(".nav.prev").replaceWith @_prevTemplate()
+                @.$(".nav.next").replaceWith @_nextTemplate()
+                $ @el
             
+
+            #----------
+            # Private
+
+            _prevTemplate: ->
+                _.template @prev_template,
+                    prev: if @current_page > 1 then String(@current_page - 1) else null
+
+            _nextTemplate: ->
+                _.template @next_template,
+                    next: if @current_page < @total_pages then String(@current_page + 1) else null
+
+            #----------
+
+            _currentPage: ->
+                @thumbnailView.thumbidx / @per_page + 1
+                
+            #----------
+
+            _moveThumbIdx: (direction) ->
+                if direction is "forward"
+                    @thumbnailView.thumbidx += @per_page
+                else if direction is "backward"
+                    @thumbnailView.thumbidx -= @per_page
+
+            #----------
+
+            _buttonClick: (evt) ->
+                page = $(evt.target).attr "data-page"
+
+                if page
+                    page = Number(page)
+                    @switchTo page
+           
+ 
+    #----------
+
+    @Thumbnails:
+        Backbone.View.extend
+            className: "thumbnails"
             
-    
-    
-    
-    
-        
+            #events:
+            #    'click .thumbnail': '_thumbClick'
+            
+            _thumbClick: ->
+                console.log "okay"
+                
+            initialize: ->
+                @thumbs     = []
+                @thumbidx   = 0
+                @per_page   = @options.per_page
+
+                @collection.each (asset,idx) => 
+                    thumb = new Slideshow.Thumbnail
+                        model:      asset
+                        index:      idx
+                        thumbtray:  @options.thumbtray
+
+                    @thumbs[idx] = thumb
+                
+                _(@thumbs).each (thumb) =>
+                    $(@el).append thumb.render().el
+
+            #----------
+
+            render: ->
+                $(@el).stop(true, true).animate opacity: 0, 'fast', =>
+                    @.$(".thumbnail").hide()
+
+                    thumbSlice = @thumbs.slice @thumbidx, @thumbidx + @per_page
+                    
+                    _(thumbSlice).each (thumb) ->
+                        $(thumb.el).css display: "inline-block"
+                
+                    $(@el).animate opacity: 1, 'fast'
+                @
+
+
+    #----------
+
+    @Thumbnail:
+        Backbone.View.extend
+            className: "thumbnail"
+
+            events:
+                'click': '_thumbClick'
+
+            template:
+                '''
+                <img src="<%= url %>"/>
+                '''
+
+            #----------
+
+            initialize: ->
+                @thumbtray  = @options.thumbtray
+                @index      = @options.index
+                
+            #----------
+
+            render: ->
+                $(@el).html _.template @template,
+                    url:    @model.get("urls")['thumb']
+
+                @
+                
+
+            #----------
+            # Private
+
+            _thumbClick: (evt) ->
+                @thumbtray.trigger "switch", @index
+                
+
+    #----------
+            
