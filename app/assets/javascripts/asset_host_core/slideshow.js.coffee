@@ -13,6 +13,18 @@ class AssetHost.Slideshow
         # add in events
         _.extend(this, Backbone.Events)
 
+        # Set the starting slide.
+        # We only want to work with the slide's index internally to avoid confusion.
+        # If the requested slide is in between 0 and the total slides, use it
+        # Otherwise just go to slide 0
+        @start      = 0 # default starting position
+        @deeplink   = @options.deeplink
+
+        if @deeplink
+            startingSlide = Number(@options.start)
+            if startingSlide > 0 and startingSlide <= @total
+                @start = startingSlide - 1
+
         $ => 
             # -- get our parent element -- #
             @el = $ @options.el
@@ -20,21 +32,6 @@ class AssetHost.Slideshow
             # -- create asset collection -- #
             @assets = new Slideshow.Assets @options.assets
             @total  = @assets.length
-
-            # Set the starting slide.
-            # We only want to work with the slide's index internally to avoid confusion.
-            # If the requested slide is in between 0 and the total slides, use it
-            # Otherwise just go to slide 0
-            @start      = 0 # default starting position
-            @deeplink   = @options.deeplink
-            
-            console.log @start
-            console.log @total
-
-            if @deeplink
-                startingSlide = Number(@options.start)
-                if startingSlide > 0 and startingSlide <= @total
-                    @start = startingSlide - 1
 
             #----------
             # Create the elements we need for the complete slideshow
@@ -224,181 +221,126 @@ class AssetHost.Slideshow
                 
                 # And the overlay nav
                 $(@el).append @overlayNav.el
-
+                
                 setTimeout () =>
                     @overlayNav.showTargets()
                 , 2000
 
     #----------
     
+    @Navigation:
+        initialize: ->
+            @total          = @options.total
+            @current        = @options.start
+            @hasmouse       = false
+
+        #----------
+
+        setCurrent: (idx) ->
+               @current = idx
+               @render()
+
+        #----------
+
+        render: ->
+            $(@el).html _.template @template,
+                count:      @current + 1
+                total:      @total
+                prev_class: @_activeIf @current > 0
+                next_class: @_activeIf @current < @total - 1
+            @
+
+        #----------
+
+        _activeIf: (condition) ->
+            if condition then "active" else "disabled"
+
+        #----------
+
+        _buttonClick: (event) ->
+            target = $(event.target)
+
+            if target.hasClass 'next'
+                idx = @current + 1
+            else if target.hasClass 'prev'
+                idx = @current - 1
+            
+            if idx?
+                @trigger "switch", idx
+
+    #----------
+
     @OverlayNav:
         Backbone.View.extend
             className: "overlay-nav"
-            
+
             events:
                 'click .active':    "_buttonClick"
                 "mouseenter":       "showTargets"
                 "mouseleave":       "hideTargets"
 
-    
             template:
                 '''
-                <div <% print(prev ? "data-idx='"+prev+"' class='bar prev active'" : "class='bar prev disabled'"); %>>
-                </div>
-                <div <% print(next ? "data-idx='"+next+"' class='bar next active'" : "class='bar next disabled'"); %>>
-                </div>
+                <div class="bar prev <%=prev_class%>"></div>
+                <div class="bar next <%=next_class%>"></div>
                 '''
-               
-            #----------
-
-            initialize: ->
-                @height     = 0
-                @total      = @options.total
-                @current    = @options.start
-                @hasmouse   = false
 
             #----------
             # Handle the hiding and showing of the buttons
-            # Only for mouseenter and mouseleave
             
             showTargets: ->
                 if @hasmouse is false
                     @hasmouse = true
-                    $(@el).stop false, true
-                    $(@el).css height: @_getTargetHeight()
+                    $(@el).stop(false, true).css(height: @_getTargetHeight())
                     @render()
                     $(@el).css opacity: 1
                 
-            hideTargets: (evt) ->
+            hideTargets: ->
                 if @hasmouse is true
                     @hasmouse = false
-                    $(@el).stop(true, true).animate opacity: 0, 'fast'
+                    $(@el).stop(true, true).animate(opacity: 0, 'fast')
 
             #----------
-            
-            setCurrent: (idx) ->
-                @current = idx
-                @render()
-    
-            #----------
 
-            render: ->
-                $(@el).html _.template @template,
-                    prev:     if @current > 0           then String(@current - 1) else null
-                    next:     if @current < @total - 1  then String(@current + 1) else null
-                
-                @
-
-
-            #----------
-            # Private
-    
-            #----------
-            # Lock/Unlock the button's top position and click target height
-            
             _getTargetHeight: ->
                 $(@slides.el).find(".slide.active img").height()
 
-            #----------
-            
-            _buttonClick: (evt) ->
-                idx = $(evt.target).attr "data-idx"
+    #----------
+    _.extend @OverlayNav.prototype, @Navigation
 
-                if idx
-                    idx = Number(idx)
-                    @trigger "switch", idx
-
-            #----------
 
     #----------
-
                 
     @NavigationLinks:
         Backbone.View.extend
             className: "pager-nav"
-                    
+
             events:
-                'click a.active': '_buttonClick'
+                'click .active': '_buttonClick'
 
             template:
                 '''
-                <a <% print(prev ? "data-idx='"+prev+"' class='prev active'" : "class='prev disabled'"); %>></a>
-                <span class="page-count"><%= count %> of <%= total %></span>
-                <a <% print(next ? "data-idx='"+next+"' class='next active'" : "class='next disabled'"); %>></a>
+                <a class="prev <%=prev_class%>"></a>
+                <span class="page-count"><%=count%> of <%=total%></span>
+                <a class="next <%=next_class%>"></a>
                 '''
-
-            #----------
-
-            initialize: ->
-                @total      = @options.total
-                @current    = @options.start
-                @render()
-
-            #----------
-
-            setCurrent: (idx) ->
-                @current = idx
-                @render()
-
-            #----------
-
-            render: ->
-                $(@el).html _.template @template,
-                    count:    @current + 1,
-                    total:    @total,
-                    prev:     if @current > 0           then String(@current - 1) else null
-                    next:     if @current < @total - 1  then String(@current + 1) else null
-               
-            
-            #----------
-            # Private
-
-            _buttonClick: (evt) ->
-                idx = $(evt.target).attr "data-idx"
-
-                if idx
-                    idx = Number(idx)
-                    @trigger "switch", idx
                 
+    #----------
+    _.extend @NavigationLinks.prototype, @Navigation
+
 
     #----------
 
     @ThumbtrayToggler:
         Backbone.View.extend
-            tagName:    'span'
             className: 'thumbtray-toggler'
             
             events:
                 'click':    '_toggleThumbTray'
-                
-            #----------
-
-            initialize: ->
-                @thumbtray = @options.thumbtray
-                @thumbtrayEl = $ @thumbtray.el
-                
-            #----------             
-
-            render: ->
-                # We just need the element, 
-                # we'll do the rest with CSS
-                @
-                
-
-            #----------
-            # Private
 
             _toggleThumbTray: ->
-                if @thumbtrayEl.is(":visible")
-                    @thumbtrayEl.fadeOut 75
-                    @thumbtray.thumbidx = 0
-                    $(@el).removeClass 'active'
-                else
-                    $(@el).addClass 'active'
-                    @thumbtray.render()
-                    @thumbtray.setCurrent @thumbtray.slides.current
-                    @thumbtrayEl.fadeIn()
-    
+                @options.thumbtray.toggle()
+                $(@el).toggleClass 'active'
 
     #----------
 
@@ -412,7 +354,6 @@ class AssetHost.Slideshow
             options:
                 per_page: 5
 
-
             prev_template:
                 '''
                 <a <% print(prev ? "data-page='"+prev+"' class='nav prev active'" : "class='nav prev disabled'"); %>></a>
@@ -425,7 +366,7 @@ class AssetHost.Slideshow
 
             #----------
 
-            initialize: ->    
+            initialize: ->
                 @thumbnailView = new Slideshow.Thumbnails
                     collection: @collection
                     per_page:   @options.per_page   
@@ -436,6 +377,7 @@ class AssetHost.Slideshow
                 @per_page       = @options.per_page
                 @total_pages    = Math.ceil(@thumbs.length / @per_page)
                 @current_page   = @_currentPage()
+                @visible        = false
 
                 $(@el).html     @thumbnailView.el
                 $(@el).prepend  @_prevTemplate()
@@ -456,12 +398,27 @@ class AssetHost.Slideshow
 
             #----------
 
+            toggle: ->
+                if @visible then @hide() else @show()
+                
+            show: ->
+                @render()
+                @setCurrent @slides.current
+                $(@el).fadeIn()
+                @visible = true
+
+            hide: ->
+                $(@el).fadeOut 75
+                @visible = false
+
+            #----------
+
             render: ->
                 @thumbnailView.render()
                 @current_page = @_currentPage()
                 @.$(".nav.prev").replaceWith @_prevTemplate()
                 @.$(".nav.next").replaceWith @_nextTemplate()
-                $ @el
+                @
             
 
             #----------
@@ -565,8 +522,7 @@ class AssetHost.Slideshow
 
             render: ->
                 $(@el).html _.template @template,
-                    url:    @model.get("urls")['thumb']
-
+                    url: @model.get("urls")['thumb']
                 @
                 
 
