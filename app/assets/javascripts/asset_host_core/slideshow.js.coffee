@@ -382,8 +382,8 @@ class AssetHost.Slideshow
 
                 @thumbs    = @thumbnailView.thumbs
 
-                @current_page   = @_currentPage @current
-                @total_pages    = @_currentPage @thumbs.length - 1
+                @current_page   = @_pageForIdx @current
+                @total_pages    = @_pageForIdx @thumbs.length - 1
                 
                 $(@el).html     @thumbnailView.el
                 $(@el).prepend  @_prevTemplate()
@@ -395,7 +395,7 @@ class AssetHost.Slideshow
                 @current = idx
                 @thumbnailView.setCurrent idx
 
-                page = @_currentPage(idx)
+                page = @_pageForIdx idx
                 if page isnt @current_page
                     @switchTo page
                 
@@ -411,7 +411,7 @@ class AssetHost.Slideshow
                 if @visible then @hide() else @show()
                 
             show: ->
-                @current_page = @_currentPage @current
+                @current_page = @_pageForIdx @current
                 @render()
                 @thumbnailView.setCurrent @current
                 $(@el).fadeIn()
@@ -446,7 +446,7 @@ class AssetHost.Slideshow
                 
             #----------
 
-            _currentPage: (idx) ->
+            _pageForIdx: (idx) ->
                 Math.ceil (idx + 1) / @per_page
 
             #----------
