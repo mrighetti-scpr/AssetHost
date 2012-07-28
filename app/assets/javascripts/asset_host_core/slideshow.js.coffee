@@ -13,25 +13,25 @@ class AssetHost.Slideshow
         # add in events
         _.extend(this, Backbone.Events)
 
-        # Set the starting slide.
-        # We only want to work with the slide's index internally to avoid confusion.
-        # If the requested slide is in between 0 and the total slides, use it
-        # Otherwise just go to slide 0
-        @start      = 0 # default starting position
-        @deeplink   = @options.deeplink
-
-        if @deeplink
-            startingSlide = Number(@options.start)
-            if startingSlide > 0 and startingSlide <= @total
-                @start = startingSlide - 1
-
         $ => 
             # -- get our parent element -- #
             @el = $ @options.el
-
+    
             # -- create asset collection -- #
             @assets = new Slideshow.Assets @options.assets
             @total  = @assets.length
+
+            # Set the starting slide.
+            # We only want to work with the slide's index internally to avoid confusion.
+            # If the requested slide is in between 0 and the total slides, use it
+            # Otherwise just go to slide 0
+            @start      = 0 # default starting position
+            @deeplink   = @options.deeplink
+
+            if @deeplink
+                startingSlide = Number(@options.start)
+                if startingSlide > 0 and startingSlide <= @total
+                    @start = startingSlide - 1
 
             #----------
             # Create the elements we need for the complete slideshow
@@ -56,7 +56,7 @@ class AssetHost.Slideshow
 
             @thumbtray = new Slideshow.Thumbtray
                 collection: @assets
-                slides:     @slides
+                start:      @start
             
             @traytoggler = new Slideshow.ThumbtrayToggler
                 thumbtray:  @thumbtray
@@ -102,6 +102,9 @@ class AssetHost.Slideshow
                 if @deeplink and window.history.replaceState
                     slideNum = idx + 1
                     window.history.replaceState { slide: slideNum }, document.title + ": Slide #{slideNum}", window.location.pathname + "?slide=#{slideNum}"
+
+            @thumbtray.bind     "switch_page", (page) =>
+                # do something
 
             #----------
             # Keyboard Navigation
@@ -230,9 +233,9 @@ class AssetHost.Slideshow
     
     @Navigation:
         initialize: ->
-            @total          = @options.total
-            @current        = @options.start
-            @hasmouse       = false
+            @total      = @options.total
+            @current    = @options.start
+            @hasmouse   = false
 
         #----------
 
@@ -267,6 +270,7 @@ class AssetHost.Slideshow
             
             if idx?
                 @trigger "switch", idx
+
 
     #----------
 
@@ -354,45 +358,46 @@ class AssetHost.Slideshow
             options:
                 per_page: 5
 
-            prev_template:
-                '''
-                <a <% print(prev ? "data-page='"+prev+"' class='nav prev active'" : "class='nav prev disabled'"); %>></a>
-                '''
-
-            next_template:
-                '''
-                <a <% print(next ? "data-page='"+next+"' class='nav next active'" : "class='nav next disabled'"); %>></a>
-                '''
+            template:
+                prev:
+                    '''
+                    <a class="nav prev <%=prev_class%>"></a>
+                    '''
+                next:       
+                    '''
+                    <a class="nav next <%=next_class%>"></a>
+                    '''
 
             #----------
 
             initialize: ->
-                @thumbnailView = new Slideshow.Thumbnails
+                @per_page   = @options.per_page
+                @current    = @options.start
+                @visible    = false
+
+                @thumbnailView = new Slideshow.ThumbnailsView
                     collection: @collection
                     per_page:   @options.per_page   
                     thumbtray:  @
 
-                @slides         = @options.slides
-                @thumbs         = @thumbnailView.thumbs
-                @per_page       = @options.per_page
-                @total_pages    = Math.ceil(@thumbs.length / @per_page)
-                @current_page   = @_currentPage()
-                @visible        = false
+                @thumbs    = @thumbnailView.thumbs
 
+                @current_page   = @_currentPage @current
+                @total_pages    = @_currentPage @thumbs.length - 1
+                
                 $(@el).html     @thumbnailView.el
                 $(@el).prepend  @_prevTemplate()
                 $(@el).append   @_nextTemplate()
                 
             #----------
-    
+            
             setCurrent: (idx) ->
+                @current = idx
                 @thumbnailView.setCurrent idx
-
-            #----------
                 
             switchTo: (page) ->
-                if page >= 1 and page <= @total_pages and page isnt @current_age
-                    @_moveThumbIdx if page > @current_page then 'forward' else 'backward'
+                if page >= 1 and page <= @total_pages and page isnt @current_page
+                    @current_page = page
                     $(@thumbnailView.el).stop(true, true).animate opacity: 0, 'fast', =>
                         @render()
 
@@ -402,8 +407,9 @@ class AssetHost.Slideshow
                 if @visible then @hide() else @show()
                 
             show: ->
+                @current_page = @_currentPage @current
                 @render()
-                @setCurrent @slides.current
+                @thumbnailView.setCurrent @current
                 $(@el).fadeIn()
                 @visible = true
 
@@ -414,50 +420,48 @@ class AssetHost.Slideshow
             #----------
 
             render: ->
+                @thumbnailView.sliceThumbs @current_page
                 @thumbnailView.render()
-                @current_page = @_currentPage()
+
                 @.$(".nav.prev").replaceWith @_prevTemplate()
                 @.$(".nav.next").replaceWith @_nextTemplate()
                 @
             
-
             #----------
-            # Private
 
             _prevTemplate: ->
-                _.template @prev_template,
-                    prev: if @current_page > 1 then String(@current_page - 1) else null
+                _.template @template.prev,
+                    prev_class: @_activeIf @current_page > 1
 
             _nextTemplate: ->
-                _.template @next_template,
-                    next: if @current_page < @total_pages then String(@current_page + 1) else null
+                _.template @template.next,
+                    next_class: @_activeIf @current_page < @total_pages
 
-            #----------
-
-            _currentPage: ->
-                @thumbnailView.thumbidx / @per_page + 1
+            _activeIf: (condition) ->
+                if condition then "active" else "disabled"
                 
             #----------
 
-            _moveThumbIdx: (direction) ->
-                if direction is "forward"
-                    @thumbnailView.thumbidx += @per_page
-                else if direction is "backward"
-                    @thumbnailView.thumbidx -= @per_page
+            _currentPage: (idx) ->
+                Math.ceil (idx + 1) / @per_page
 
             #----------
 
-            _buttonClick: (evt) ->
-                page = $(evt.target).attr "data-page"
+            _buttonClick: (event) ->
+                target = $(event.target)
 
-                if page
-                    page = Number(page)
+                if target.hasClass 'next'
+                    page = @current_page + 1
+                else if target.hasClass 'prev'
+                    page = @current_page - 1
+
+                if page?
                     @switchTo page
            
  
     #----------
 
-    @Thumbnails:
+    @ThumbnailsView:
         Backbone.View.extend
             className: "thumbnails"
                 
@@ -486,12 +490,17 @@ class AssetHost.Slideshow
                 
             #----------
 
+            sliceThumbs: (page) ->
+                start = (page - 1) * @per_page
+                end   = start + @per_page
+                @thumbSlice = @thumbs.slice start, end
+    
+            #----------
+
             render: ->
                 @.$(".thumbnail").removeClass 'current-set'
-
-                thumbSlice = @thumbs.slice @thumbidx, @thumbidx + @per_page
                 
-                _(thumbSlice).each (thumb) ->
+                _(@thumbSlice).each (thumb) ->
                     $(thumb.el).addClass 'current-set'
             
                 $(@el).animate opacity: 1, 'fast'
@@ -524,14 +533,10 @@ class AssetHost.Slideshow
                 $(@el).html _.template @template,
                     url: @model.get("urls")['thumb']
                 @
-                
 
             #----------
-            # Private
 
             _thumbClick: (evt) ->
                 @thumbtray.trigger "switch", @index
                 
-
     #----------
-            
