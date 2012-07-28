@@ -394,6 +394,10 @@ class AssetHost.Slideshow
             setCurrent: (idx) ->
                 @current = idx
                 @thumbnailView.setCurrent idx
+
+                page = @_currentPage(idx)
+                if page isnt @current_page
+                    @switchTo page
                 
             switchTo: (page) ->
                 if page >= 1 and page <= @total_pages and page isnt @current_page
