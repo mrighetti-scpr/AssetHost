@@ -28,6 +28,10 @@ module AssetHostCore
           asset.owner = params[:owner]
         end
         
+        if params[:title] && params[:title] != ""
+          asset.title = params[:title]
+        end
+        
         asset.save
               
         render :json => { 
