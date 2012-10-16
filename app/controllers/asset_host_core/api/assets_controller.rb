@@ -1,6 +1,6 @@
 module AssetHostCore
   class Api::AssetsController < AssetHostCore::ApplicationController
-  
+    before_filter :set_access_control_headers
     before_filter :_authenticate_api_user!
 
     def index
@@ -30,9 +30,7 @@ module AssetHostCore
 
     def show
       asset = Asset.find(params[:id])
-    
-      response.headers['Access-Control-Allow-Origin'] = "*"
-    
+        
       render :json => asset.json
     rescue
       render :text => "Asset not found", :status => :not_found
@@ -86,5 +84,9 @@ module AssetHostCore
   
     #----------
   
+    protected
+    def set_access_control_headers
+      response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
+    end
   end
 end
