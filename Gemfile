@@ -7,11 +7,3 @@ gemspec
 
 # jquery-rails is used by the dummy application
 gem "jquery-rails"
-
-gem "paperclip", "2.7.0"
-gem "brightcove-api", "~> 1.0.12"
-gem "will_paginate", "~> 3.0.4"
-gem "thinking-sphinx", "~> 2.0.14"
-gem "resque", "~> 1.23.0"
-
-gem "rspec-rails"
