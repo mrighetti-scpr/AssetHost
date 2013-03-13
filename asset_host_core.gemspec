@@ -18,11 +18,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 3.2.1"
   s.add_dependency "paperclip", "2.7.0"
-  s.add_dependency "cocaine", "~> 0.3.0"
+  s.add_dependency "cocaine", "0.3.0"
   s.add_dependency "brightcove-api", "~> 1.0.12"
-  s.add_dependency "thinking-sphinx", "~> 2.0.14"
-  s.add_dependency "resque", "~> 1.23.0"
-  s.add_dependency "less-rails-bootstrap"
+  s.add_dependency "thinking-sphinx", "2.0.14"
+  s.add_dependency "resque", "1.23.0"
+  s.add_dependency "less-rails-bootstrap", "2.1.1"
   s.add_dependency "formtastic-bootstrap"
   s.add_dependency "mini_exiftool"
   
