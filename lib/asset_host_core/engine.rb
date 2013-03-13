@@ -66,7 +66,7 @@ module AssetHostCore
           return @@redis_pubsub
         end
         
-        return @@redis_pubsub ||= Redis.connect(Rails.application.config.assethost.redis_pubsub[:server])
+        return @@redis_pubsub ||= Redis.new(Rails.application.config.assethost.redis_pubsub[:server])
       else
         return false
       end
