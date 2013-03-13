@@ -8,11 +8,10 @@ gemspec
 # jquery-rails is used by the dummy application
 gem "jquery-rails"
 
-gem "paperclip" #, :git => 'git://github.com/SCPR/paperclip.git'
-#gem "delayed_paperclip", :git => 'git://github.com/SCPR/delayed_paperclip.git'
+gem "paperclip", "2.7.0"
 gem "brightcove-api"
-gem "will_paginate"
-gem "thinking-sphinx"
-gem "resque"
+gem "will_paginate", "~> 3.0.4"
+gem "thinking-sphinx", "~> 2.0.14"
+gem "resque", "~> 1.23.0"
 
 gem "rspec-rails"
