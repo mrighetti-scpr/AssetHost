@@ -212,7 +212,7 @@ module AssetHostCore
         if output
           # style-based rules
           result.gsub!(":style",output.code.to_s)
-          result.gsub!(":extension",output.extension)        
+          result.gsub!(":extension",output.extension)
         else
           if pattern =~ /:(?:style|extension)/
             return false
