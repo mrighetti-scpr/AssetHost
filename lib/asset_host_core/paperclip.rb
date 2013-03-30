@@ -259,7 +259,7 @@ module Paperclip
 
       htmlargs = args.collect { |k,v| %Q!#{k}="#{v}"! }.join(" ")
 
-      return %Q(<img src="#{self.url(style)}" width="#{self.width(style)}" height="#{self.height(style)}" alt="#{self.instance.title}" #{htmlargs}/>).html_safe        
+      return %Q(<img src="#{self.url(style)}" width="#{self.width(style)}" height="#{self.height(style)}" alt="#{self.instance.title.to_s.gsub('"', ERB::Util::HTML_ESCAPE['"'])}" #{htmlargs}/>).html_safe
     end
 
     #----------
