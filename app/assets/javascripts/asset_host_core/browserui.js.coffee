@@ -19,7 +19,7 @@ class AssetHost.BrowserUI
             @assets.query @options.query
         
         if @options.total
-            @assets.total_entries = @options.total        
+            @assets.total_entries = @options.total
                         
         @browserEl = $( @options.assetBrowserEl )
         @browser = new AssetHost.Models.AssetBrowserView collection: @assets

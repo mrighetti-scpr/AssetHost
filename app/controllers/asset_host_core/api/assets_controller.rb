@@ -73,18 +73,19 @@ module AssetHostCore
       response.headers['Access-Control-Allow-Origin'] = "*"
         
       render :json => { 
-        :id => asset.id, 
-        :tag => asset.image.tag(params[:style].to_sym), 
-        :updated_at => asset.image_updated_at, 
-        :owner => asset.owner, 
-        :width => width, 
-        :height => height
+        :id           => asset.id,
+        :tag          => asset.image.tag(params[:style].to_sym),
+        :updated_at   => asset.image_updated_at,
+        :owner        => asset.owner,
+        :width        => width,
+        :height       => height
       }
     end
   
     #----------
   
     protected
+    
     def set_access_control_headers
       response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
     end

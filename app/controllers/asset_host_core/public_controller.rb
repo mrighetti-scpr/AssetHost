@@ -41,7 +41,6 @@ module AssetHostCore
       if ao.first
         if ao.first.fingerprint
           # Yes, return the image
-                          
           # the file may still not have been written yet. loop a try to return it
         
           (0..5).each do 
@@ -49,7 +48,6 @@ module AssetHostCore
               # got it.  cache and return
               
               path = @asset.image.path(style.code)
-              Rails.logger.debug("PublicController cache_img_path for #{@asset.id}/#{style.code_sym} got #{path}")
               Rails.cache.write("img:#{@asset.id}:#{@asset.image_fingerprint}:#{style.code}",path)
               
               send_file path, :type => "image/jpeg", :disposition => 'inline' and return
@@ -80,12 +78,7 @@ module AssetHostCore
         # now, sleep for 500ms to try and let the render complete, then try again
         sleep 0.5
         redirect_to @asset.image.url(style.code) and return
-      end    
+      end
     end
-  
-    #----------  
   end
-  
-  #----------
-
 end

@@ -22,7 +22,6 @@ module AssetHostCore
         define_method "enqueue_delayed_processing_for_#{name}" do 
           # we render on two things: image fingerprint changed, or image gravity changed
           if self.previous_changes.include?("image_fingerprint") || self.previous_changes.include?("image_gravity")
-            ::Paperclip.log("[ewr] Reprocessing because of fingerprint or gravity change")
             self.attachment_for(name).enqueue
           end
         end
@@ -44,12 +43,10 @@ module AssetHostCore
             sprint = 'original'
           else
             ao = attachment.instance.output_by_style(style_name)
-            ::Paperclip.log("[EWR] in sprint interpolation for #{style_name}: #{ao} -- #{ao.fingerprint}")
 
             if ao
               sprint = ao.fingerprint
             else
-              ::Paperclip.log("[EWR] Doh! Style path before style fingerprint")
               return nil
             end
           end
@@ -66,7 +63,7 @@ module AssetHostCore
             a.post_processing = false if self.class.attachment_definitions[name][:delayed]
           end
         end
-      end      
+      end
     end
   end
 
@@ -85,8 +82,9 @@ module AssetHostCore
       instance.send(attachment_name).reprocess!(*style_args)
     end
   end
-
 end
+
+
 
 module Paperclip
   class Attachment
@@ -187,7 +185,7 @@ module Paperclip
           return ao.height
         else
           # TODO: Need to add code to guess dimensions if we don't yet have an output  
-          g = Paperclip::Geometry.parse(s.processor_options[:size])       
+          g = Paperclip::Geometry.parse(s.processor_options[:size])
           if g.modifier == '#'
             # match w/h from style
             return g.height.to_i
@@ -210,7 +208,7 @@ module Paperclip
       w = self.instance_read("width")
       h = self.instance_read("height")
 
-      (h > w) ? true : false
+      h > w
     end
 
     #----------
@@ -247,14 +245,12 @@ module Paperclip
 
     #----------
 
-    def tag(style = default_style,args={})
+    def tag(style = default_style, args={})
       s = self.styles[style.to_sym]
 
       if !s
         return nil
       end
-
-      Rails.logger.debug "style is #{s.instance_variable_get :@other_args}"
 
       if (s.instance_variable_get :@other_args)[:rich] && self.instance.native
         #return self.instance.native.tag(self.width(style),self.height(style))
@@ -269,14 +265,11 @@ module Paperclip
     #----------
 
     def _grab_dimensions
-      Paperclip.log("[ewr] grabbing dimensions for #{@queued_for_write[:original]}")
-
       return unless @queued_for_write[:original]
 
       begin
         p = ::MiniExiftool.new(@queued_for_write[:original].path)
       rescue
-        Paperclip.log("[ewr] Failed to call MiniExifTool on #{@queued_for_write[:original].path}")
         return false
       end
 
@@ -321,21 +314,17 @@ module Paperclip
     attr_accessor :asset
 
     def initialize file, options = {}, attachment = nil
-      @prerender = options[:prerender]
-      @size = options[:size]
-      @output = options[:output]
-      @asset = attachment ? attachment.instance : nil
-      @attachment = attachment
-
-      Paperclip.log("asset is #{@asset} -- output is #{@output}")
+      @prerender    = options[:prerender]
+      @size         = options[:size]
+      @output       = options[:output]
+      @asset        = attachment ? attachment.instance : nil
+      @attachment   = attachment
 
       super
 
       @convert_options = [ 
         "-gravity #{ @asset.image_gravity? ? @asset.image_gravity : "Center" }", "-strip", "-quality 80", @convert_options 
       ].flatten.compact
-
-      Paperclip.log("[ewr] Convert options are #{@convert_options}")
     end
 
     # Perform processing, if prerender == true or we've had to render 
@@ -344,14 +333,12 @@ module Paperclip
       # do we have an AssetOutput already?
       ao = @asset.outputs.where(:output_id => @output).first
 
-      Paperclip.log("[ewr] make for #{@output} -- ao is #{ ao }")
       dst = nil
 
       if @prerender || ao
         if !ao 
           # register empty AssetObject to denote processing
           ao = @asset.outputs.create(:output_id => @output, :image_fingerprint => @asset.image_fingerprint)
-          Paperclip.log("[ewr] Created tmpao to note processing for #{@output}")
         end
 
         if @size =~ /(\d+)?x?(\d+)?([\#>])?$/ && $~[3] == "#"
@@ -363,11 +350,8 @@ module Paperclip
         else
           # don't crop
           scale = "-scale '#{$~[1]}x#{$~[2]}#{$~[3]}'"
-          Paperclip.log("[ewr] calling scale of #{scale}")
           @convert_options = [scale,@convert_options].flatten
         end
-
-        Paperclip.log("[ewr] Final convert_options are #{@convert_options}")
 
         # call thumbnail generator
         dst = super
@@ -375,21 +359,16 @@ module Paperclip
         # need to get dimensions
         width = height = nil
         begin
-          Paperclip.log("[ewr] Calling geo.from_file for #{dst.path}")
           geo = Geometry.from_file dst.path
           width = geo.width.to_i
           height = geo.height.to_i
-          Paperclip.log("[ewr] geo run was successful -- #{width}x#{height}")
         rescue NotIdentifiedByImageMagickError => e
           # hmmm... do nothing?
         end
 
         # get fingerprint
-        Paperclip.log("[ewr] dst path is #{dst.path}")
         print = Digest::MD5.hexdigest(dst.read)
         dst.rewind if dst.respond_to?(:rewind)
-
-        Paperclip.log("[ewr] dst print is #{print}")
 
         ao.attributes = { :fingerprint => print, :width => width, :height => height, :image_fingerprint => @asset.image_fingerprint }
         ao.save

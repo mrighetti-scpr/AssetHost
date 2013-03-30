@@ -35,12 +35,12 @@ module AssetHostCore
         asset.save
               
         render :json => { 
-          :id => asset.id, 
-          :title => asset.title,
-          :caption => asset.caption, 
-          :owner => asset.owner,
-          :tags => asset.image.tags,
-          :size => [asset.image_width,asset.image_height].join('x')
+          :id         => asset.id,
+          :title      => asset.title,
+          :caption    => asset.caption,
+          :owner      => asset.owner,
+          :tags       => asset.image.tags,
+          :size       => [asset.image_width,asset.image_height].join('x')
         }
       else
         render :json => { :error => "Unable to find or load an asset at the URL #{params[:url]}" }, :status => :not_found

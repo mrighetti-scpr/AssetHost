@@ -35,7 +35,7 @@ module AssetHostCore
 
     #----------
 
-    def upload  
+    def upload
       file = params[:file]
 
       # FIXME: Put in place to keep Firefox 7 happy
@@ -55,7 +55,7 @@ module AssetHostCore
           ['title','image_title'],
           ['caption','image_description'],
           ['owner','image_copyright']
-        ].each {|f| asset[f[0]] = asset[f[1]] }        
+        ].each {|f| asset[f[0]] = asset[f[1]] }
       end
 
 

@@ -42,12 +42,10 @@ class AssetHost.ChooserUI
         # connect to our AssetBrowser instance, if one is given        
         if @browser
             @browser.assets.bind "selected", (asset) => 
-                console.log "got selected from ", asset
                 @myassets.add(asset)
                 new ChooserUI.EditModal model:asset
                 
             @browser.assets.bind "admin", (asset) => 
-                console.log "got admin event from ", asset
                 window.open("#{AssetHost.PATH_PREFIX}/a/assets/#{asset.get('id')}")
                     
         # set up collection to manage uploads and convert to assets
@@ -131,7 +129,7 @@ class AssetHost.ChooserUI
         evt.preventDefault()
         false
     
-    _dropDragOver: (evt) ->        
+    _dropDragOver: (evt) ->
         evt = evt.originalEvent
         evt.stopPropagation()
         evt.preventDefault()
@@ -150,21 +148,18 @@ class AssetHost.ChooserUI
         # first thing we need to test is whether we have a limit on uploads
         if @options.limit && @uploads.length >= @options.limit
             # we're at our limit...  shake our UI element and then do nothing
-            console.log "upload attempted above limit..."
             $(@drop).effect "shake", {times: 3}, 100
             return false
             
         # if we get here, we're allowed to take an upload
         if evt.dataTransfer.files.length > 0
             # drop is file(s)... stage for uploader
-            console.log "We got files!"            
             for f in evt.dataTransfer.files
                 @uploads.add name: f.name, size: f.size, file: f
 
         else
             # drop is a URL. Pass it to AssetHost API and see what happens
             uri = evt.dataTransfer.getData 'text/uri-list'
-            console.log "uri-list is ", uri
             
             jQuery.ajax "#{AssetHost.PATH_PREFIX}/api/as_asset",
                 data: { url: uri},

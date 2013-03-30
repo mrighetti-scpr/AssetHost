@@ -62,7 +62,7 @@ module AssetHostCore
         @_sizes = {}
       end
       
-      @_sizes[ code ] ||= AssetSize.new(self,Output.where(:code => code).first)      
+      @_sizes[ code ] ||= AssetSize.new(self,Output.where(:code => code).first)
     end
 
     #----------
@@ -101,7 +101,7 @@ module AssetHostCore
         return asset
       else
         return nil
-      end    
+      end
     end
 
     #----------
@@ -169,7 +169,7 @@ module AssetHostCore
       result = pattern.clone
       
       if style.respond_to?(:to_sym) && style.to_sym == :original
-        # special case...        
+        # special case...
       elsif style.is_a? AssetOutput
         ao = style
         output = ao.output
@@ -212,7 +212,7 @@ module AssetHostCore
         if output
           # style-based rules
           result.gsub!(":style",output.code.to_s)
-          result.gsub!(":extension",output.extension)        
+          result.gsub!(":extension",output.extension)
         else
           if pattern =~ /:(?:style|extension)/
             return false
@@ -225,7 +225,7 @@ module AssetHostCore
           result.gsub!(":sprint",ao.fingerprint)
         else
           result.gsub!(":sprint","NOT_YET_RENDERED")
-        end        
+        end
       end
       
       return result

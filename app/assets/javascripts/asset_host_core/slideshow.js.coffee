@@ -138,7 +138,7 @@ class AssetHost.Slideshow
     @Assets:
         Backbone.Collection.extend
             url: "/"
-            model: @Asset                
+            model: @Asset
         
     #----------
         
@@ -363,7 +363,7 @@ class AssetHost.Slideshow
                     '''
                     <a class="nav prev <%=prev_class%>"></a>
                     '''
-                next:       
+                next:
                     '''
                     <a class="nav next <%=next_class%>"></a>
                     '''
@@ -377,7 +377,7 @@ class AssetHost.Slideshow
 
                 @thumbnailView = new Slideshow.ThumbnailsView
                     collection: @collection
-                    per_page:   @options.per_page   
+                    per_page:   @options.per_page
                     thumbtray:  @
 
                 @thumbs    = @thumbnailView.thumbs
@@ -535,7 +535,7 @@ class AssetHost.Slideshow
 
             render: ->
                 $(@el).html _.template @template,
-                    url: @model.get("urls")['thumb']
+                    url: @model.get("urls")['lsquare']
                 @
 
             #----------

@@ -18,7 +18,7 @@ class AssetHost.Client.BrightcoveVideo
           <param name="isUI" value="true" />
           <param name="dynamicStreaming" value="true" />
           <param name="@videoPlayer" value="<%= videoid %>" />
-		  <param name="wmode" value="transparent" />
+          <param name="wmode" value="transparent" />
         </object>
         """
     

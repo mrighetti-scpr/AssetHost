@@ -34,8 +34,6 @@ class AssetHost.CMSPlugin
                     ORDER: idx
                 }
                 
-                console.log "original caption is ", asset.caption
-                
                 # stash row info
                 @rows.push {
                     idx: idx,
@@ -50,8 +48,6 @@ class AssetHost.CMSPlugin
                 # nothing with this index, so go ahead and break
                 break
                 
-        console.log "Parsed asset data is ", assetdata
-        
         # -- load assets -- #
         
         @assets = new AssetHost.Models.Assets(assetdata)
@@ -70,8 +66,6 @@ class AssetHost.CMSPlugin
         
         window.addEventListener "message", (evt) => 
             if evt.data != "LOADED"
-                console.log "got reply of ", evt
-                
                 found = {}
                 
                 # reconsile our asset list to the returned list
@@ -92,10 +86,8 @@ class AssetHost.CMSPlugin
                 @assets.each (a,i) => 
                     if found[a.get('id')]
                         # we're cool
-                        console.log "found asset: ", a.get('id')
                     else
                         # not in our return list... delete
-                        console.log "removing asset: ", a.get('id')
                         remove.push(a)
                         
                 for a in remove
@@ -137,10 +129,10 @@ class AssetHost.CMSPlugin
 
         render: ->
             
-            if @model.get('tags')            
+            if @model.get('tags')
                 idx = @model.get('ORDER')
                 #idx = @model.collection.indexOf(@model)
-                                    
+                
                 if @options.rows[idx]
                     extras = @options.rows[idx].extras
                 else
@@ -149,7 +141,7 @@ class AssetHost.CMSPlugin
                         name: _.template(@options.args.assetName,{idx:idx,field:k}),
                         value: v
                     }
-                                                                            
+                
                 $( @el ).html( _.template @template, {
                    asset: @model.toJSON(),
                    idx: idx,
@@ -168,7 +160,7 @@ class AssetHost.CMSPlugin
                    extras: extras
                 } )
                 
-            return this            
+            return this
     
     #----------
     
@@ -182,25 +174,20 @@ class AssetHost.CMSPlugin
                 _(@_views).each (a) => $(a.el).detach(); @_views = {}
                 
             @collection.bind 'add', (f) => 
-                console.log "add event from ", f
                 @_views[f.cid] = new AssetHost.CMSPlugin.CMSAsset({model:f,args:@options.args,rows:@options.rows})
                 @render()
 
             @collection.bind 'remove', (f) => 
-                console.log "remove event from ", f
-                console.log "view is ", @_views[f.cid]
-                
                 if @_views[f.cid]
                     @_views[f.cid].remove()
                     delete @_views[f.cid]
                     
                 @render()
-                                    
+                
             # now that all our events are up, render    
             @render()
         
         _popup: (evt) ->
-            console.log("evt is ",evt)
             evt.originalEvent.stopPropagation()
             evt.originalEvent.preventDefault()
             newwindow = window.open("http://#{AssetHost.SERVER}/a/chooser", 'chooser', 'height=620,width=1000,scrollbars=1')
@@ -211,7 +198,7 @@ class AssetHost.CMSPlugin
                     # dispatch our event with the asset data
                     newwindow.postMessage @collection.toJSON(), "http://#{AssetHost.SERVER}"
             , false
-                                
+            
             return false
         
         render: ->

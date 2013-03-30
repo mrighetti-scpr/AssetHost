@@ -66,7 +66,6 @@ class AssetHost.Models
         parse: (resp,xhr) ->
             @next_page = xhr.getResponseHeader('X-Next-Page')
             @total_entries = xhr.getResponseHeader('X-Total-Entries')
-            console.log "Next page for assets is #{@next_page}"
             
             resp
             
@@ -78,9 +77,8 @@ class AssetHost.Models
             @_query
             
         page: (p=null) ->
-            console.log('page is ',@_page,p)
             @_page = Number(p) if p? && p != ''
-            @_page                
+            @_page
         
     #----------
     
@@ -112,11 +110,8 @@ class AssetHost.Models
         #----------
         
         _remove: (evt) ->
-            console.log ""
-            
             if @del_confirm
                 # delete
-                console.log "confirm is set. should delete", @model
                 clearTimeout @del_timeout
                 
                 # remove our model...
@@ -131,7 +126,6 @@ class AssetHost.Models
                     target.text "x"
                     @del_confirm = false
                     @del_timeout = null
-                    console.log "reset confirm on delete button", target
                 , 2000
             
             false
@@ -159,15 +153,12 @@ class AssetHost.Models
             @_views = {}
 
             @collection.bind 'add', (f) => 
-                console.log "add event from ", f
                 @collection.sort()
 
             @collection.bind 'remove', (f) => 
-                console.log "remove event from ", f
                 @collection.sort()
 
             @collection.bind 'reset', (f) => 
-                console.log "reset event from ", f                    
                 _(@_views).each (av) => $(av.el).detach()
                 @_views = {}
                 @render()
@@ -188,7 +179,6 @@ class AssetHost.Models
                     _(@el.children).each (li,idx) => 
                         id = $(li).attr('data-asset-id')
                         @collection.get(id).attributes.ORDER = idx
-                        console.log("set idx for #{id} to #{idx}")
                     @collection.sort()
 
             @
@@ -217,7 +207,6 @@ class AssetHost.Models
             
         search: ->
             query = $( @el ).find("input")[0].value
-            console.log "in search for ", query
             @trigger "search", query
             
         render: ->
@@ -323,8 +312,6 @@ class AssetHost.Models
 
         open: (options) ->
             @options = options || {}
-            console.log "modal options is ", @options
-                        
             $(@render().el).modal()
 
             $(@render().el).on "hide", => @options.close?()
@@ -334,7 +321,7 @@ class AssetHost.Models
         
         _select: ->
             @close()
-            @model.trigger('selected',@model)    
+            @model.trigger('selected',@model)
         
         _admin: ->
             @close()
@@ -352,7 +339,7 @@ class AssetHost.Models
     @SaveAndCloseView: Backbone.View.extend
         events: { 'click button': 'saveAndClose' }
         initialize: ->
-            @collection.bind "all", => @render()                
+            @collection.bind "all", => @render()
             @render()
         
         template:
@@ -364,8 +351,6 @@ class AssetHost.Models
             '''
         
         saveAndClose: ->
-            console.log "saveAndClose Clicked with ",@collection
-            
             # make sure collection is sorted before we return it
             @collection.sort()
             @trigger 'saveAndClose', @collection.toJSON()
@@ -422,15 +407,12 @@ class AssetHost.Models
             page = $(evt.currentTarget).attr("data-page")
             
             if page
-                console.log "in clickPage for ",page
                 @trigger "page", page
         
         render: -> 
             # what pages are we displaying?
             pages = Math.floor( @collection.total_entries / @collection.per_page + 1)
             current = @collection._page
-            
-            console.log "current / total pages: ", current, pages
             
             rendered = {}
             links = []
@@ -504,9 +486,7 @@ class AssetHost.Models
                 @set {"STATUS": "pending"} 
 
             @xhr.onreadystatechange = (req) => 
-                console.log "in onreadystatechange",req
                 if @xhr.readyState == 4 && @xhr.status == 200
-                    console.log "got complete status"
                     @set {"STATUS": "complete"}
 
                     if req.responseText != "ERROR"
@@ -519,7 +499,7 @@ class AssetHost.Models
             @xhr.setRequestHeader('HTTP_X_FILE_UPLOAD','true')
 
             # and away we go...
-            @xhr.send @get('file')                
+            @xhr.send @get('file')
             @set {"STATUS": "uploading"}
 
         readableSize: ->
@@ -576,7 +556,6 @@ class AssetHost.Models
                 reader = new FileReader()
                 
                 reader.onload = (e) => 
-                    console.log "got reader.onload for ", e
                     @img = $ "<img/>", {
                         class: "thumb",
                         src: e.target.result,
@@ -585,7 +564,7 @@ class AssetHost.Models
                     
                     m = /^([^,]+),(.*)$/.exec(e.target.result)
                     @exif = EXIF.readFromBinaryFile(window.atob(m[2]))
-                                                
+
                     @render()
                     
                 reader.readAsDataURL(file)
@@ -593,8 +572,7 @@ class AssetHost.Models
             @render()
 
         _remove: (evt) ->
-            console.log "calling remove for ",this
-            @model.collection.remove(@model)    
+            @model.collection.remove(@model)
 
         _upload: (evt) ->
             @model.upload()
@@ -626,21 +604,16 @@ class AssetHost.Models
             @_views = {}
 
             @collection.bind 'add', (f) => 
-                console.log "add event from ", f
                 @_views[f.cid] = new Models.QueuedFileView({model:f})
                 @render()
 
             @collection.bind 'remove', (f) => 
-                console.log "remove event from ", f
                 $(@_views[f.cid].el).detach()
                 delete @_views[f.cid]
                 @render()
 
             @collection.bind 'reset', (f) => 
-                console.log "reset event from ", f
                 @_views = {}
-
-            console.log "collection is ", @collection
 
         _reset: (f) ->
             console.log "reset event from ",f
@@ -653,6 +626,5 @@ class AssetHost.Models
 
             # make sure all of our view elements are added
             $(@el).append( _(@_views).map (v) -> v.el )
-            console.log "rendered files el is ",@el
 
             return this

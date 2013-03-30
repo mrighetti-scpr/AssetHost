@@ -23,9 +23,7 @@ module AssetHostCore
             
       if finger && imgfinger
         # -- delete our old cache -- #
-        Rails.logger.debug("deleting cache at #{"img:"+[self.asset.id,imgfinger,self.output.code].join(":")}")
         resp = Rails.cache.delete("img:"+[self.asset.id,imgfinger,self.output.code].join(":"))
-        Rails.logger.debug("cache.delete got #{resp}")
         
         # -- delete our AssetOutput -- #
         path = self.asset.image.path(self)
@@ -34,7 +32,6 @@ module AssetHostCore
           # got old fingerprints
           path = path.gsub(self.asset.image_fingerprint,imgfinger).gsub(self.fingerprint,finger)
 
-          Rails.logger.debug("Deleting AssetOutput image at #{path}")
           self.asset.image.delete_path(path)
         end
       end
@@ -59,8 +56,6 @@ module AssetHostCore
     def cache_img_path
       # -- in with the new -- #
       path = self.asset.image.path(self)
-      
-      Rails.logger.debug("AssetOutput cache_img_path for #{self.asset.id}/#{self.output.code_sym} got #{path}")
       
       if path && File.exists?(path)
         Rails.cache.write("img:"+[self.asset.id,self.image_fingerprint,self.output.code].join(":"),path)
