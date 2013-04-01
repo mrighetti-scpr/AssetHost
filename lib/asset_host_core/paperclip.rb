@@ -236,7 +236,6 @@ module Paperclip
       tags = {}
 
       self.styles.each do |style,v|
-        Rails.logger.debug "args is #{args}"
         tags[style] = self.tag(style,args)
       end
 
