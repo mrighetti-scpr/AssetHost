@@ -322,7 +322,7 @@ module Paperclip
       super
 
       @convert_options = [ 
-        "-gravity #{ @asset.image_gravity? ? @asset.image_gravity : "Center" }", "-strip", "-quality 100", @convert_options 
+        "-gravity #{ @asset.image_gravity? ? @asset.image_gravity : "Center" }", "-strip", "-quality 95", @convert_options 
       ].flatten.compact
     end
 
