@@ -3,15 +3,16 @@ module AssetHostCore
     belongs_to :asset
     belongs_to :output
     
-    before_save :delete_cache_and_img, :if => Proc.new { |ao| ao.fingerprint_changed? || ao.image_fingerprint_changed? }
+    before_save :delete_cache_and_img, if: -> { self.fingerprint_changed? || self.image_fingerprint_changed? }
     before_destroy :delete_cache_and_img_and_fingerprint
     
-    after_commit :cache_img_path, :if => Proc.new { |ao| ao.image_fingerprint? && ao.fingerprint? }
+    after_commit :cache_img_path, if: -> { self.image_fingerprint? && self.fingerprint? }
 
-    scope :rendered, where("fingerprint != ''")
+    scope :rendered, -> { where("fingerprint != ''") }
+    
     
     #----------
-        
+    
     protected
     
     # on save, check whether we should be creating or deleting caches
@@ -27,6 +28,7 @@ module AssetHostCore
         
         # -- delete our AssetOutput -- #
         path = self.asset.image.path(self)
+        
         if path
           # this path could have our current values in it. make sure we've 
           # got old fingerprints

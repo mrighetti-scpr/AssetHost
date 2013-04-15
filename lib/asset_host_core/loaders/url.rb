@@ -4,11 +4,10 @@ require 'cgi'
 
 module AssetHostCore
   module Loaders
-    class ZZurl < Base
+    class Url < Base
       attr_reader :source, :id
       
       def self.valid?(url)
-        #if url =~ /^http.*\.(?:jpg|jpeg|png|gif)$/
         if url =~ /^http/
           # FIXME: opened this up to allow for images with no extension...  
           # need some way to test that this really is an image

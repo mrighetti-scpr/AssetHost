@@ -2,10 +2,10 @@ module AssetHostCore
   class Asset < ActiveRecord::Base
     @queue = :paperclip
 
-    VIA_UNKNOWN = 0
-    VIA_FLICKR = 1
-    VIA_LOCAL = 2
-    VIA_UPLOAD = 3
+    VIA_UNKNOWN   = 0
+    VIA_FLICKR    = 1
+    VIA_LOCAL     = 2
+    VIA_UPLOAD    = 3
 
   	define_index do
       indexes title
@@ -31,7 +31,7 @@ module AssetHostCore
 
     default_scope includes(:outputs)
 
-    scope :visible, where(:is_hidden => false)
+    scope :visible, -> { where(is_hidden: false) }
 
     has_many :outputs, :class_name => "AssetOutput", :order => "created_at desc", :dependent => :destroy
     belongs_to :native, :polymorphic => true
@@ -53,7 +53,7 @@ module AssetHostCore
       define_method o.code do
         self.size(o.code)
       end
-    end      
+    end
     
     #----------
     
@@ -95,16 +95,6 @@ module AssetHostCore
     end
 
     #----------
-
-    def Asset.find_or_import(url)
-      if asset = AssetImporter.import(url)
-        return asset
-      else
-        return nil
-      end
-    end
-
-    #----------
     
     def tag(style)
       self.image.tag(style)
@@ -113,7 +103,7 @@ module AssetHostCore
     #----------
 
     def isPortrait?
-      ( self.image_width >= self.image_height ) ? false : true
+      self.image_width < self.image_height
     end
 
     #----------
@@ -234,7 +224,8 @@ module AssetHostCore
     
     #----------
     
-    private 
+    private
+
     def publish_asset_update
       AssetHostCore::Engine.redis_publish :action => "UPDATE", :id => self.id
       return true
@@ -249,18 +240,13 @@ module AssetHostCore
   #----------
   
   class AssetSize
-    attr_accessor  :width
-    attr_accessor  :height
-    attr_accessor  :tag
-    attr_accessor :url
-    attr_accessor  :asset
-    attr_accessor  :output
-    
+    attr_accessor  :width, :height, :tag, :url, :asset, :output
+
     def initialize(asset,output)
       @asset  = asset
       @output = output
       
-      [:width,:height,:tag,:url].each do |a|
+      [:width, :height, :tag, :url].each do |a|
         self.send("#{a}=",@asset.image.send(a,output.code_sym))
       end
     end

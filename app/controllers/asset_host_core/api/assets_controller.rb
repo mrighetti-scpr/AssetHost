@@ -4,18 +4,21 @@ module AssetHostCore
     before_filter :_authenticate_api_user!
 
     def index
-      if params[:q] && params[:q] != ''
+      if params[:q].present?
         @assets = Asset.visible.search(params[:q],
-          :page => params[:page] =~ /^\d+$/ ? params[:page] : 1,
-          :per_page => 24,
-          :field_weights => { :title => 10, :caption => 3 },
-          :order => "created_at DESC, @relevance DESC"
+          :page          => params[:page] =~ /^\d+$/ ? params[:page] : 1,
+          :per_page      => 24,
+          :order         => "created_at DESC, @relevance DESC",
+          :field_weights => { 
+            :title   => 10, 
+            :caption => 3 
+          }
         )
       else
         @assets = Asset.visible.paginate(
-          :order => "updated_at desc",
-          :page => params[:page] =~ /^\d+$/ ? params[:page] : 1,
-          :per_page => 24
+          :order      => "updated_at desc",
+          :page       => params[:page] =~ /^\d+$/ ? params[:page] : 1,
+          :per_page   => 24
         )
       end
     
@@ -30,18 +33,13 @@ module AssetHostCore
 
     def show
       asset = Asset.find(params[:id])
-        
       render :json => asset.json
-    rescue
-      render :text => "Asset not found", :status => :not_found
     end
   
     #----------
   
     def update
       asset = Asset.find(params[:id])
-
-      response.headers['Access-Control-Allow-Origin'] = "*"
 
       if asset.update_attributes(params[:asset])
         render :json => asset.json

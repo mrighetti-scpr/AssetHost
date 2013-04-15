@@ -1,28 +1,16 @@
 module AssetHostCore
   class Admin::OutputsController < AssetHostCore::ApplicationController
   
-    before_filter :load_output, :except => [:index,:new,:create]
+    before_filter :load_output, except: [:index, :new, :create]
   
     def index
       @outputs = Output.all
     end
-  
-    #----------
-  
-    def show
-    
-    end
-  
-    #----------
-  
-    def edit
-    
-    end
-  
+
     #----------
   
     def update
-      if @output.update_attributes params[:output]
+      if @output.update_attributes(params[:output])
         flash[:notice] = "Output updated!"
         redirect_to a_output_path @output
       else
@@ -40,9 +28,9 @@ module AssetHostCore
     #----------
   
     def create
-      @output = Output.new
+      @output = Output.new(params[:output])
       
-      if @output.update_attributes params[:output]
+      if @output.save
         flash[:notice] = "Output created!"
         redirect_to a_output_path @output
       else
@@ -50,24 +38,13 @@ module AssetHostCore
         render :action => :new
       end
     end
-    
-    #----------
-    
-    def destroy
-      
-    end
 
     #----------
   
     private
+
     def load_output
-      @output = Output.where(:id => params[:id]).first
-    
-      if !@output
-        raise
-      end
-    rescue
-      redirect_to a_package_path(@package)
+      @output = Output.find(params[:id])
     end
   end
 end

@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.description = "One-stop-shop for media asset management, designed for a newsroom environment."
 
   s.files = Dir["{app,config,db,lib,vendor}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
-  s.test_files = Dir["test/**/*"]
+  s.test_files = Dir["spec/**/*"]
 
   s.add_dependency "rails", "~> 3.2.1"
   s.add_dependency "paperclip", "2.7.0"

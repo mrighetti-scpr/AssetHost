@@ -1,33 +1,29 @@
 module AssetHostCore
   module Loaders
-    mattr_accessor :discovered
-    @@discovered = []
-      
-    def self.load(url)
-      asset = nil
-      @@discovered.each { |iclass| 
-        if loader = iclass.valid?(url)
-          asset = loader.load()
-          break
+    MODULES = [
+      "Asset",
+      "Brightcove",
+      "Flickr",
+      "URL"
+    ]
+
+    class << self  
+      def load(url)
+        asset = nil
+
+        MODULES.each do |klass| 
+          if loader = klass.constantize.valid?(url)
+            asset = loader.load
+            break
+          end
         end
-      }
-      
-      return asset
-    end
-    
-    def self.classes
-      puts "Classes: " + @@discovered.to_s
-    end
-    
-    class Base
-      attr_accessor :title, :owner, :description, :url, :created, :file
-      
-      def self.inherited(subclass)
-        # add to the loader list
-        AssetHostCore::Loaders.discovered << subclass
         
-        # make sure we stay sorted while loading
-        AssetHostCore::Loaders.discovered.sort_by { |c| c.name.split("::")[-1] }
+        return asset
+      end
+      
+
+      def classes
+        puts "Classes: " + @@discovered.to_s
       end
     end
   end

@@ -103,21 +103,20 @@ module AssetHostCore
     class MiniFlickr
       attr :api_key
 
-      def initialize()
+      def initialize
       end
 
-      def user()
+      def user
         USERID
       end
 
       def call(method, params = {})
         parameters = params.dup
-        parameters[:api_key] = FLICKR_API_KEY
-        parameters[:method] = method
-        parameters[:format] = "json"
-        parameters[:nojsoncallback] = 1
 
-        #puts "params: " + path_for_params(parameters)
+        parameters[:api_key]          = FLICKR_API_KEY
+        parameters[:method]           = method
+        parameters[:format]           = "json"
+        parameters[:nojsoncallback]   = 1
 
         response = http.get(path_for_params(parameters))
 

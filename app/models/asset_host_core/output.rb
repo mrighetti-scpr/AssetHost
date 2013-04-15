@@ -2,7 +2,7 @@ module AssetHostCore
   class Output < ActiveRecord::Base
     has_many :asset_outputs
     
-    after_save :delete_asset_outputs, :if => Proc.new { |o| o.size_changed? || o.extension_changed? }
+    after_save :delete_asset_outputs, if: -> { self.size_changed? || self.extension_changed? }
     
     #----------
     
@@ -24,7 +24,16 @@ module AssetHostCore
     #----------
 
     def paperclip_options
-      { self.code.to_sym => { :geometry => '', :size => self.size, :format => self.extension.to_sym, :prerender => self.prerender, :output => self.id, :rich => self.is_rich } }
+      { 
+        self.code.to_sym => { 
+          :geometry     => '',
+          :size         => self.size,
+          :format       => self.extension.to_sym,
+          :prerender    => self.prerender,
+          :output       => self.id,
+          :rich         => self.is_rich
+        } 
+      }
     end
     
     #----------
@@ -33,7 +42,7 @@ module AssetHostCore
     
     def delete_asset_outputs
       # destroy each AssetOutput, triggering file and cache deletion
-      self.asset_outputs.each { |ao| ao.destroy() }
+      self.asset_outputs.each { |ao| ao.destroy }
     end
   end
 end

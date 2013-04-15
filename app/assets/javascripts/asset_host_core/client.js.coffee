@@ -10,9 +10,8 @@ class AssetHost.Client
     DefaultOptions:
         attr: "data-assethost"
     
-    constructor: (options) ->
-        @options = _(_({}).extend(@DefaultOptions)).extend options||{}
-        
+    constructor: (options={}) ->
+        @options = _.defaults options, @DefaultOptions
         @clients = []
         
         clients = @clients
