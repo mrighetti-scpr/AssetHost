@@ -1,8 +1,8 @@
-<%= will_paginate(@assets, :previous_label => "« Newer Assets", :next_label => "Older Assets »") %>
+<%= paginate @assets%>
 
 <ul>
-	<%= render :partial => "asset", :collection => @assets %>
+  <%= render @assets %>
 </ul>
 
 <br class="clear"/>
-<%= will_paginate(@assets, :previous_label => "« Newer Assets", :next_label => "Older Assets »") %>
+<%= paginate @assets %>

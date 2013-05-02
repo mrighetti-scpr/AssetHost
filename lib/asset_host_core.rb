@@ -1,22 +1,15 @@
 require "asset_host_core/engine"
 
 require "paperclip"
-require "paperclip/attachment"
+require "asset_host_core/paperclip/attachment"
 
 require "asset_host_core/config"
 
 require "asset_host_core/resque_job"
 require "asset_host_core/asset_thumbnail"
-require "asset_host_core/paperclip"
+require "asset_host_core/model_methods"
 
 require "asset_host_core/loaders"
-require "asset_host_core/loaders/base"
-require "asset_host_core/loaders/asset"
-require "asset_host_core/loaders/youtube"
-require "asset_host_core/loaders/vimeo"
-require "asset_host_core/loaders/brightcove"
-require "asset_host_core/loaders/flickr"
-require "asset_host_core/loaders/url"
 
 module AssetHostCore
   class << self
@@ -33,6 +26,4 @@ module AssetHostCore
   end
 end
 
-if Object.const_defined?("ActiveRecord")
-  ActiveRecord::Base.send(:include, AssetHostCore::Paperclip)
-end
+ActiveRecord::Base.send(:include, AssetHostCore::ModelMethods)

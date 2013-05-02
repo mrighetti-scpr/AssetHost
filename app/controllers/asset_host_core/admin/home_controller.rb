@@ -1,15 +1,15 @@
 module AssetHostCore
-  class Admin::HomeController < AssetHostCore::ApplicationController  
-    before_filter :_authenticate_user!
+  module Admin
+    class HomeController < ApplicationController
+      before_filter :_authenticate_user!
 
-    def chooser
-      @assets = AssetHostCore::Asset.paginate(
-        :per_page   => 24,
-        :page       => 1,
-        :order      => "updated_at desc"
-      )
-      
-      render layout: 'asset_host_core/minimal'
+      def chooser
+        @assets = AssetHostCore::Asset.order("updated_at desc")
+          .page(params[:page])
+          .per(24)
+        
+        render layout: 'asset_host_core/minimal'
+      end
     end
   end
 end

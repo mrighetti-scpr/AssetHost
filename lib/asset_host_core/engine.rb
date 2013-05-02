@@ -1,5 +1,19 @@
+require 'rails'
 require "thinking_sphinx"
 require "resque"
+require 'paperclip'
+require 'mini_exiftool'
+
+require 'coffee-rails'
+require 'sass-rails'
+require 'eco'
+require 'bootstrap-sass'
+
+require 'simple_form'
+require 'kaminari'
+
+require 'brightcove-api'
+
 
 module AssetHostCore
   class Engine < ::Rails::Engine

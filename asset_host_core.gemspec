@@ -16,17 +16,26 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib,vendor}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency "rails", "~> 3.2.1"
-  s.add_dependency "paperclip", "2.7.0"
-  s.add_dependency "cocaine", "0.3.0"
-  s.add_dependency "brightcove-api", "~> 1.0.12"
-  s.add_dependency "thinking-sphinx", "2.0.14"
-  s.add_dependency "resque", "1.23.0"
-  s.add_dependency "less-rails-bootstrap", "2.1.1"
-  s.add_dependency "formtastic-bootstrap"
-  s.add_dependency "mini_exiftool"
-  
 
+  s.add_dependency "rails", "~> 3.2.1"
+  s.add_dependency "paperclip", "~> 3.4.1"
+  s.add_dependency "thinking-sphinx", "2.0.14"
+  s.add_dependency "resque", "~> 1.23.0"
+  s.add_dependency "mini_exiftool", "~> 1.6.0"
+
+  s.add_dependency "brightcove-api", "~> 1.0.12"
+
+  s.add_dependency "bootstrap-sass", "~> 2.3.1"
+  s.add_dependency 'sass-rails',   '~> 3.2.3'
+  s.add_dependency 'coffee-rails', '~> 3.2.1'
+  s.add_dependency "eco", '~> 1.0.0'
+  s.add_dependency "jquery-rails", "~> 2.2.1"
+  s.add_dependency "simple_form", "~> 2.1.0"
+  s.add_dependency "kaminari", "~> 0.14.1"
+
+  
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rspec-rails"
+  s.add_development_dependency "combustion"
+  s.add_development_dependency "factory_girl"
 end

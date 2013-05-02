@@ -1,9 +1,9 @@
-@import "twitter/bootstrap";
+@import "bootstrap";
 
-BODY {
-	background: #ccc;
-	margin: 0;
-	padding: 0;
+body {
+  background: #ccc;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar {
@@ -12,7 +12,7 @@ BODY {
 
 #content {
     background: #fff;
-    padding: @gridGutterWidth;
+    padding: $gridGutterWidth;
 }
 
 br.clear {
@@ -21,20 +21,20 @@ br.clear {
 }
 
 hr.tight {
-	margin: 0 0 12px 0;
+  margin: 0 0 12px 0;
 }
 
 
 .blocks.blockcaps, .blocks .blockcaps {
-	text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .b_right {
-	text-align: right;
+  text-align: right;
 }
 
 .greyed {
-	color: #666;
+  color: #666;
 }
 
 /* admin */
@@ -65,56 +65,56 @@ ul.asset_sizes {
 
 .assetbox {
     margin-right: -12px;
-	ul {
-		list-style-type: none;
-		margin-right: -12px;
-		padding: 0;
-		
-		li {
-			display: inline;
-			float: left;
-			width: 88px;
-			height: 88px;
-			margin-right: 9px;
-			margin-bottom: 9px;
-			background: #eee;
-			
-			button {
-			    padding: 0;
-    			border: 1px solid #ddd;
-			    
-    			img {
-    			    
-    			}
-			}
-			
-			button:hover {
-    			cursor: pointer;
-    		}
-			
-			
-			a {
-				color: inherit;
-				
-				:hover {
-					text-decoration: none;
-				}
-			}
-			
-			span {
-			    display: none;
-			}
-		}
-	}
+  ul {
+    list-style-type: none;
+    margin-right: -12px;
+    padding: 0;
+    
+    li {
+      display: inline;
+      float: left;
+      width: 88px;
+      height: 88px;
+      margin-right: 9px;
+      margin-bottom: 9px;
+      background: #eee;
+      
+      button {
+          padding: 0;
+          border: 1px solid #ddd;
+          
+          img {
+              
+          }
+      }
+      
+      button:hover {
+          cursor: pointer;
+        }
+      
+      
+      a {
+        color: inherit;
+        
+        :hover {
+          text-decoration: none;
+        }
+      }
+      
+      span {
+          display: none;
+      }
+    }
+  }
 }
 
 .tooltip {
-	h3 {
-	    margin-top: 0;
-	    margin-bottom: 2px;
-	    font: normal 12px Arial, Helvetica, sans-serif;
-	    color: #fff;
-	}
+  h3 {
+      margin-top: 0;
+      margin-bottom: 2px;
+      font: normal 12px Arial, Helvetica, sans-serif;
+      color: #fff;
+  }
 }
 
 #replacedrop, #filedrop {
@@ -122,20 +122,20 @@ ul.asset_sizes {
     border: 1px solid darken(#ffc,40%);
     min-height: 32px;
     
-	ul {
-		list-style-type: none;
-		padding: 0;
-		margin: 0;
-		background: #ffc;
-		
-		li {
-			display: block;
-			padding: 2px;
-			margin-bottom: 2px;
-			border: 1px solid #aaa;
-			overflow: auto;
-						
-			button {
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background: #ffc;
+    
+    li {
+      display: block;
+      padding: 2px;
+      margin-bottom: 2px;
+      border: 1px solid #aaa;
+      overflow: auto;
+            
+      button {
                display: inline;
                float: right;
             }
@@ -146,45 +146,45 @@ ul.asset_sizes {
                 margin: -2px 4px 0 -2px;
             }
             
-		}
-		
-		
-		li.help {
-		    font-size: 16px;
-		    color: #aaa;
-		    text-align: center;
-		    padding: 12px;
-		}
-		
-		.ready {
-			background: #efc;
-		}
-	
-		.uploading {
-			background: #cfc;
-		}
-		
-		.complete {
-			background: #afa;
-		}	
-		
-	}
-	
-	ul.uploads li {
+    }
+    
+    
+    li.help {
+        font-size: 16px;
+        color: #aaa;
+        text-align: center;
+        padding: 12px;
+    }
+    
+    .ready {
+      background: #efc;
+    }
+  
+    .uploading {
+      background: #cfc;
+    }
+    
+    .complete {
+      background: #afa;
+    } 
+    
+  }
+  
+  ul.uploads li {
            min-height: 32px;
     }
-	
-	
-	p.ahUp_upbutton {
-	   display: block;
-	   margin: 0;
-	   padding: 4px;
-	   border: 1px solid #aaa;
-	   background: #fff;
-	   text-align: center;
-	   font-weight: bold;
-	}
-	
+  
+  
+  p.ahUp_upbutton {
+     display: block;
+     margin: 0;
+     padding: 4px;
+     border: 1px solid #aaa;
+     background: #fff;
+     text-align: center;
+     font-weight: bold;
+  }
+  
 }
 
 .search_box {
@@ -205,44 +205,44 @@ form.formtastic, div.formtastic {
     .help-inline {
         color: #999;
     }
-	
-	.input {
+  
+  .input {
         margin-bottom: 4px;
-	    
-    	.inline-hints {
-    		color: #777 !important;
-    		font-size: 12px;
-    		margin-top: 2px;
-    		margin-bottom: 2px;
-    	}
+      
+      .inline-hints {
+        color: #777 !important;
+        font-size: 12px;
+        margin-top: 2px;
+        margin-bottom: 2px;
+      }
     }
 
-	textarea, input {
-	    width: 96%;
-	}
-	
-	.checkbox input {
-	    width: inherit;
-	}
-		
-	label {
-		font-size: 14px;
-	}
-	
-	ol ol {
-	    background: inherit;
-	    padding: inherit;
-	}
-	
-	li fieldset legend {
-	    font: inherit;
-	    color: inherit;
-	}
-	
-	.required label {
-		font-weight: bold;
-	}
-	
+  textarea, input {
+      width: 96%;
+  }
+  
+  .checkbox input {
+      width: inherit;
+  }
+    
+  label {
+    font-size: 14px;
+  }
+  
+  ol ol {
+      background: inherit;
+      padding: inherit;
+  }
+  
+  li fieldset legend {
+      font: inherit;
+      color: inherit;
+  }
+  
+  .required label {
+    font-weight: bold;
+  }
+  
 }
 
 

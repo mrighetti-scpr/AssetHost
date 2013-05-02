@@ -3,18 +3,17 @@
 <div class='assetbox' id='asset_browser'></div>
 
 <script type="text/javascript">
-	var browser = new AssetHost.BrowserUI({
-		root_path: "<%= AssetHostCore::Engine.mounted_path %>/a/assets",
-		assets:<%= (@assets.map { |a| a.json }).to_json.html_safe %>,
-		page: <%= @assets.current_page %>,
-		total: <%= @assets.total_entries %>,
-		query: <%= @query ? ('"'+@query+'"').html_safe : "null" %>,
-		modalSelect: true,
-		modalAdmin: false
-	})
-	browser.assets.bind('selected',function (a) { 
-		console.log("got selected for ",a)
-		window.location = "<%= AssetHostCore::Engine.mounted_path %>/a/assets/"+a.get("id")
-	})
-	
+    var browser = new AssetHost.BrowserUI({
+        root_path: "<%= assethost.a_assets_path %>",
+        assets:<%= @assets.map(&:json).to_json.html_safe %>,
+        page: <%= @assets.current_page %>,
+        total: <%= @assets.total_count %>,
+        query: <%= @query.to_json %>,
+        modalSelect: true,
+        modalAdmin: false
+    })
+
+    browser.assets.bind('selected',function (a) { 
+        window.location = "<%= assethost.a_assets_path %>/"+a.get("id")
+    })
 </script>

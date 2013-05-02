@@ -7,16 +7,6 @@ module AssetHostCore
     VIA_LOCAL     = 2
     VIA_UPLOAD    = 3
 
-  	define_index do
-      indexes title
-      indexes caption
-      indexes notes
-      indexes owner
-      has created_at
-      has updated_at
-      where "is_hidden = 0"
-    end
-
     GRAVITY_OPTIONS = [
       [ "Center (default)", "Center"    ],
       [ "Top",              "North"     ],
@@ -29,6 +19,18 @@ module AssetHostCore
       [ "Bottom Right",     "SouthEast" ]
     ]
 
+
+    define_index do
+      indexes title
+      indexes caption
+      indexes notes
+      indexes owner
+      has created_at
+      has updated_at
+      where "is_hidden = 0"
+    end
+
+
     default_scope includes(:outputs)
 
     scope :visible, -> { where(is_hidden: false) }
@@ -37,7 +39,7 @@ module AssetHostCore
     belongs_to :native, :polymorphic => true
 
   	has_attached_file :image, Rails.application.config.assethost.paperclip_options.merge({
-  	  :styles       => Proc.new { Output.paperclip_sizes },
+  	  :styles       => -> { Output.paperclip_sizes },
   	  :processors   => [:asset_thumbnail],
   	  :interpolator => self 
   	})
@@ -58,41 +60,33 @@ module AssetHostCore
     #----------
     
     def size(code)
-      if !@_sizes
-        @_sizes = {}
-      end
-      
+      @_sizes ||= {}
       @_sizes[ code ] ||= AssetSize.new(self,Output.where(:code => code).first)
     end
 
     #----------
 
-    def json(sizes=[])
-      sizes = nil
-      urls = nil
-      tags = nil
-
+    def as_json
       { 
-        :id         => self.id, 
-        :title      => self.title, 
-        :caption    => self.caption,
-        :owner      => self.owner, 
-        :size       => [self.image_width,self.image_height].join('x'), 
-        :sizes      => Output.paperclip_sizes.inject({}) { | h, (s,v) | h[s] = { :width => self.image.width(s), :height => self.image.height(s) }; h },
-        :tags       => self.image.tags,
-        :urls       => Output.paperclip_sizes.inject({}) { |h, (s,v)| h[s] = self.image.url(s); h },
+        :id                 => self.id,
+        :title              => self.title,
+        :caption            => self.caption,
+        :owner              => self.owner,
+        :size               => [self.image_width, self.image_height].join('x'),
+        :tags               => self.image.tags,
+        :notes              => self.notes,
+        :created_at         => self.created_at,
+        :taken_at           => self.image_taken || self.created_at,
+        :native             => self.native.try(:as_json),
+        :image_file_size    => self.image_file_size,
+
         :url        => "http://#{Rails.application.config.assethost.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
-        :notes      => self.notes,
-        :created_at => self.created_at,
-        :taken_at   => self.image_taken || self.created_at,
-        :native     => self.native ? self.native.as_json : nil,
-        :image_file_size => self.image_file_size
+        :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { :width => self.image.width(s), :height => self.image.height(s) }; h },
+        :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image.url(s); h }
       }
     end
-    
-    def as_json(options={})
-      self.json()
-    end
+
+    alias :json :as_json
 
     #----------
     
@@ -109,13 +103,10 @@ module AssetHostCore
     #----------
 
     def url_domain 
-      if !self.url
-        return nil
-      end
-
+      return nil if !self.url
+      
       domain = URI.parse(self.url).host
-
-      return (domain == 'www.flickr.com') ? 'Flickr' : domain
+      domain == 'www.flickr.com' ? 'Flickr' : domain
     end
 
     #----------
@@ -128,7 +119,7 @@ module AssetHostCore
     def rendered_outputs
       @rendered ||= Output.paperclip_sizes.collect do |s|
         ["#{s[0]} (#{self.image.width(s[0])}x#{self.image.height(s[0])})",s[0]]
-      end    
+      end
     end
     
     #----------
@@ -148,7 +139,7 @@ module AssetHostCore
       #
       # output-based:
       #   :sprint -- AssetOutput fingerprint
-            
+      #
       # first see what we've been passed as a style. could be string, symbol, 
       # Output or AssetOutput
       
@@ -219,9 +210,9 @@ module AssetHostCore
       end
       
       return result
-        
     end
     
+
     #----------
     
     private

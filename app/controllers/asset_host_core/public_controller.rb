@@ -1,5 +1,5 @@
 module AssetHostCore
-  class PublicController < AssetHostCore::ApplicationController
+  class PublicController < ApplicationController
     
     def home
       render :text => "", :status => :ok, :layout => false

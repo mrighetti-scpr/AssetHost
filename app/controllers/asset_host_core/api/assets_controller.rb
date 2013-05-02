@@ -1,91 +1,82 @@
 module AssetHostCore
-  class Api::AssetsController < AssetHostCore::ApplicationController
-    before_filter :set_access_control_headers
-    before_filter :_authenticate_api_user!
+  module Api
+    class AssetsController < ApplicationController
+      before_filter :set_access_control_headers
+      before_filter :_authenticate_api_user!
+      before_filter :find_asset, only: [:show, :update, :tag]
 
-    def index
-      if params[:q].present?
-        @assets = Asset.visible.search(params[:q],
-          :page          => params[:page] =~ /^\d+$/ ? params[:page] : 1,
-          :per_page      => 24,
-          :order         => "created_at DESC, @relevance DESC",
-          :field_weights => { 
-            :title   => 10, 
-            :caption => 3 
-          }
-        )
-      else
-        @assets = Asset.visible.paginate(
-          :order      => "updated_at desc",
-          :page       => params[:page] =~ /^\d+$/ ? params[:page] : 1,
-          :per_page   => 24
-        )
+      respond_to :json
+
+
+      def index
+        if params[:q].present?
+          @assets = Asset.visible.search(params[:q],
+            :page          => params[:page] ? params[:page].to_i : 1,
+            :per_page      => 24,
+            :order         => "created_at DESC, @relevance DESC",
+            :field_weights => { 
+              :title   => 10, 
+              :caption => 3 
+            }
+          )
+        else
+          @assets = Asset.visible.order("updated_at desc")
+            .page(params[:page])
+            .per(24)
+        end
+      
+        response.headers['X-Next-Page']       = (@assets.last_page? ? nil : @assets.current_page + 1).to_s
+        response.headers['X-Total-Entries']   = @assets.total_count.to_s
+
+        respond_with @assets
       end
     
-      response.headers['X-Next-Page'] = @assets.next_page.to_s
-      response.headers['X-Total-Entries'] = @assets.total_entries.to_s
-      response.headers['Access-Control-Allow-Origin'] = "*"
-    
-      render :json => @assets.collect { |a| a.json }
-    end
-  
-    #----------
+      #----------
 
-    def show
-      asset = Asset.find(params[:id])
-      render :json => asset.json
-    end
-  
-    #----------
-  
-    def update
-      asset = Asset.find(params[:id])
-
-      if asset.update_attributes(params[:asset])
-        render :json => asset.json
-      else
-        render :text => asset.errors.full_messages.join(" | "), :status => :error
-      end
-    end
-  
-    #----------
-
-    def tag
-      begin
-        # look up Asset
-        asset = Asset.find(params[:id])
-      rescue
-        render :text => "Asset not found", :status => :not_found and return
+      def show
+        respond_with @asset
       end
     
-      # look up output style
-      output = Output.where(:code => params[:style]).first
+      #----------
     
-      # do we have a rendered AssetOutput?
-      width = height = nil
-      if ao = asset.outputs.where(:output_id => output).first
-        width = ao.width
-        height = ao.height
+      def update
+        if @asset.update_attributes(params[:asset])
+          respond_with @asset
+        else
+          respond_with @asset.errors.full_messages, :status => :error
+        end
       end
     
-      response.headers['Access-Control-Allow-Origin'] = "*"
+      #----------
+
+      def tag
+        output  = Output.find_by_code!(params[:style])
+        ao      = @asset.outputs.where(output_id: output.id).first
         
-      render :json => { 
-        :id           => asset.id,
-        :tag          => asset.image.tag(params[:style].to_sym),
-        :updated_at   => asset.image_updated_at,
-        :owner        => asset.owner,
-        :width        => width,
-        :height       => height
-      }
-    end
-  
-    #----------
-  
-    protected
+        tag = { 
+          :id           => @asset.id,
+          :tag          => @asset.image.tag(params[:style].to_sym),
+          :updated_at   => @asset.image_updated_at,
+          :owner        => @asset.owner,
+          :width        => ao.try(:width),
+          :height       => ao.try(:height)
+        }
+
+        respond_with tag
+      end
     
-    def set_access_control_headers
-      response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
+      #----------
+    
+
+      private
+
+      def set_access_control_headers
+        response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
+      end
+
+      def find_asset
+        @asset = Asset.find(params[:id])
+      end
     end
   end
 end

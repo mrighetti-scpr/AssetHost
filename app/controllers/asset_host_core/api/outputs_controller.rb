@@ -1,20 +1,20 @@
 module AssetHostCore
-  class Api::OutputsController < ApplicationController
-    before_filter :_authenticate_api_user!
-  
-    def index
-      render :json => Output.all
-    end
-  
-    #----------
-  
-    def show
-      output = Output.find_by_code(params[:id])
+  module Api
+    class OutputsController < ApplicationController
+      before_filter :_authenticate_api_user!
+      
+      respond_to :json
+
+      def index
+        @outputs = Output.all
+        respond_with @outputs
+      end
     
-      if output
-        render :json => output
-      else
-        render :text => "Invalid output code", :status => :not_found
+      #----------
+    
+      def show
+        @output = Output.find_by_code!(params[:id])
+        respond_with @output
       end
     end
   end

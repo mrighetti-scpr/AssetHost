@@ -1,6 +1,6 @@
 #= require ./assethost
-#= require twitter/bootstrap/tooltip
-#= require twitter/bootstrap/modal
+#= require bootstrap-tooltip
+#= require bootstrap-modal
 
 class AssetHost.BrowserUI
     DefaultOptions:
@@ -53,17 +53,15 @@ class AssetHost.BrowserUI
             @navToAssets()
             
         @browser.bind "click", (asset) =>
-            console.log "clicked asset ", asset 
             @clearDisplay()
             @_previewAsset(asset)
             
         Backbone.history.start pushState:true, root:@options.root_path
         
         $(@browserEl).delegate "button", "dragstart", (evt) ->
-            console.log "got dragstart for ", evt
             if url = $(evt.currentTarget).attr 'data-asset-url'
                 evt.originalEvent.dataTransfer.setData 'text/uri-list', url
-                                        
+        
         @assets.trigger 'reset'
     
     #----------

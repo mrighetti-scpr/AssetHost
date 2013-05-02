@@ -11,7 +11,7 @@
 <div class="navbar">
   <div class="navbar-inner">
     <div class="container-fluid">
-      <%= link_to "AssetHost", "#", :class => "brand" %>
+      <%= link_to "AssetHost", assethost.a_assets_path, :class => "brand" %>
 
       <ul class="nav pull-right">
         <li><%= link_to "Log Out", _sign_out_path, :method => :delete %></li>
@@ -20,19 +20,26 @@
   </div>
 </div>
 
+
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span12">
-    <% if flash[:notice] %><div class="notice"><%= flash[:notice] %><% end %>
-    <% if flash[:alert] %><div class="notice"><%= flash[:alert] %><% end %>
-    </div>  
-  </div>
+    <% if flash[:notice] %>
+      <div class="alert alert-success"><%= flash[:notice] %></div>
+    <% end %>
+    
+    <% if flash[:error] %>
+      <div class="alert alert-error"><%= flash[:error] %></div>
+    <% end %>
+    </div> <!-- /span -->
+  </div> <!-- /row -->
   
+
   <div id="content">
   <%= yield %>
   </div>
-  
-</div>
+</div> <!-- /container -->
+
 </body>
 <%= render "asset_host_core/shared/footerjs" %>
 </html>

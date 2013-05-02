@@ -4,10 +4,11 @@ module AssetHostCore
       "Asset",
       "Brightcove",
       "Flickr",
+      "YouTube",
       "URL"
     ]
 
-    class << self  
+    class << self
       def load(url)
         asset = nil
 
@@ -28,3 +29,11 @@ module AssetHostCore
     end
   end
 end
+
+require "asset_host_core/loaders/base"
+require "asset_host_core/loaders/asset"
+require "asset_host_core/loaders/youtube"
+require "asset_host_core/loaders/vimeo"
+require "asset_host_core/loaders/brightcove"
+require "asset_host_core/loaders/flickr"
+require "asset_host_core/loaders/url"

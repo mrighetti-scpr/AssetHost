@@ -5,20 +5,22 @@ module AssetHostCore
     after_save :delete_asset_outputs, if: -> { self.size_changed? || self.extension_changed? }
     
     #----------
-    
-    def code_sym
-      self.code.to_sym
-    end
-
-    #----------
 
     def self.paperclip_sizes
       sizes = {}
-      self.all.each do |o|
-        sizes.merge! o.paperclip_options
+
+      Output.all.each do |output|
+        sizes.merge! output.paperclip_options
       end
 
       return sizes
+    end
+
+
+    #----------
+    
+    def code_sym
+      self.code.to_sym
     end
 
     #----------

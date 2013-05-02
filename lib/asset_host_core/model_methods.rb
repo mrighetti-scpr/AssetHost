@@ -1,12 +1,12 @@
 require 'mini_exiftool'
 
 module AssetHostCore
-  module Paperclip
+  module ModelMethods
     extend ActiveSupport::Concern
 
     module ClassMethods
       def treat_as_image_asset(name)
-        include InstanceMethods
+        include InstanceMethodsOnActivation
         
         attachment_definitions[name][:delayed] = true
 
@@ -35,33 +35,27 @@ module AssetHostCore
 
         # -- Style fingerprint interpolation -- #
         
-        ::Paperclip.interpolates"sprint" do |attachment,style_name|
-          sprint = nil
+        ::Paperclip.interpolates "sprint" do |attachment, style_name|
           if style_name == :original
-            sprint = 'original'
+            'original' 
+          elsif ao = attachment.instance.output_by_style(style_name)
+            ao.fingerprint
           else
-            ao = attachment.instance.output_by_style(style_name)
-
-            if ao
-              sprint = ao.fingerprint
-            else
-              return nil
-            end
+            nil
           end
-
-          return sprint
         end
       end
 
 
-
-      # borrowed from delayed_paperclip... combines with [:delayed] above to turn off the inline processing
-      def attachment_for name
-        @_paperclip_attachments ||= {}
-        @_paperclip_attachments[name] ||= ::Paperclip::Attachment.new(name, self, self.class.attachment_definitions[name]).tap do |a|
-          a.post_processing = false if self.class.attachment_definitions[name][:delayed]
+      module InstanceMethodsOnActivation
+        # borrowed from delayed_paperclip... combines with [:delayed] above to turn off the inline processing
+        def attachment_for name
+          @_paperclip_attachments ||= {}
+          @_paperclip_attachments[name] ||= ::Paperclip::Attachment.new(name, self, self.class.attachment_definitions[name]).tap do |a|
+            a.post_processing = false if self.class.attachment_definitions[name][:delayed]
+          end
         end
       end
-    end
-  end
-end
+    end # ClassMethods
+  end # Paperclip
+end # AssetHostCore

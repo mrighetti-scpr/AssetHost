@@ -17,8 +17,8 @@ class window.AssetHostUpload
         
     #----------
     
-    constructor: (options) ->
-        @options = _(_({}).extend(this.DefaultOptions)).extend( options || {} )
+    constructor: (options={}) ->
+        @options = _.defaults options, @DefaultOptions
         
         @drop = $(@options.dropEl)
 
@@ -37,27 +37,23 @@ class window.AssetHostUpload
         $(@uploadButton).hide()
         $(@uploadButton).click (evt) => this._uploadFiles(evt)
 
-        console.log "drop is ", @drop
-
         $(@drop).bind "dragenter", (evt) => @_dragenter(evt)
         $(@drop).bind "dragover", (evt) => @_dragover(evt)
         $(@drop).bind "drop", (evt) => @_drop(evt)
         
     #----------
-                    
+    
     _dragenter: (evt) ->
-        evt.stopPropagation();
-        evt.preventDefault();
-        
-        #new Effect.Highlight(this.drop)
+        evt.stopPropagation()
+        evt.preventDefault()
         
         false
     
     #----------
     
     _dragover: (evt) ->
-        evt.stopPropagation();
-        evt.preventDefault();
+        evt.stopPropagation()
+        evt.preventDefault()
         false
     
     #----------
@@ -65,11 +61,9 @@ class window.AssetHostUpload
     _drop: (evt) ->
         evt = evt.originalEvent
         
-        evt.stopPropagation();
-        evt.preventDefault();
+        evt.stopPropagation()
+        evt.preventDefault()
         
-        console.log evt.dataTransfer.files
-
         # do something with this info
         for f in evt.dataTransfer.files
             @_addFileToList(f)
@@ -79,13 +73,12 @@ class window.AssetHostUpload
     #----------
     
     _addFileToList: (f) ->
-        if ( !this.options.allowMultiple && this.files.length )
+        if !this.options.allowMultiple && this.files.length
             return false
         
-        if ( this._uploading.length )
+        if this._uploading.length
             return false
         
-        console.log(f)
         
         li = $ "<li/>", { text: "#{f.name} (#{@readableFileSize f.size})" }
         
@@ -95,7 +88,7 @@ class window.AssetHostUpload
             .bind "click", `_.bind(this._removeFile, this, obj, li)`
         li.append x
         
-        obj.x = x       
+        obj.x = x
         
         $(@fileUL).append li
         
@@ -110,8 +103,6 @@ class window.AssetHostUpload
     #----------
     
     _removeFile: (obj,li,evt) ->
-        console.log "in removeFile for ",evt,obj,li
-        
         if @_uploading.length
             return false
             
@@ -187,11 +178,8 @@ class window.AssetHostUpload
                 @_setFileState obj, @options.completeClass
                 $(obj.li).addClass @options.completeClass
                 
-                console.log "response is", req.responseText
-                
                 if req.responseText != "ERROR"
                     json = $.parseJSON req.responseText
-                    console.log "pushing JSON: ", json
                     @_ids.push json
                     
                 @_uploading = _(@_uploading).without obj

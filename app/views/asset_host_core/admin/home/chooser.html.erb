@@ -26,25 +26,23 @@
 <script type="text/javascript">
   chooser = new AssetHost.ChooserUI({
     browser:new AssetHost.BrowserUI({
-      assets:<%= (@assets.map { |a| a.json }).to_json.html_safe %>,
+      assets:<%= @assets.map(&:json).to_json.html_safe %>,
       page: <%= @assets.current_page %>,
-      total: <%= @assets.total_entries %>,
+      total: <%= @assets.total_count %>,
       modalSelect: true,
       modalAdmin: true
-    })
-  })
+    });
+  });
   
-  window.opener.postMessage("LOADED","*")
+  window.opener.postMessage("LOADED","*");
   
   $(window).bind("message", function (evt) {
       evt = evt.originalEvent
-      
       chooser.selectAssets(evt.data)
-        console.log("got message of ", evt)
         
-        chooser.bind('saveAndClose',function(json) {
-           evt.source.postMessage(json,evt.origin)
-           window.close()
-        })
-  })
+      chooser.bind('saveAndClose',function(json) {
+         evt.source.postMessage(json,evt.origin);
+         window.close();
+      });
+  });
 </script>

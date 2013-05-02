@@ -1,3 +1,5 @@
+require 'paperclip'
+
 module Paperclip
   class Attachment
 
