@@ -31,18 +31,16 @@ module AssetHostCore
     end
 
 
-    default_scope includes(:outputs)
-
     scope :visible, -> { where(is_hidden: false) }
 
     has_many :outputs, :class_name => "AssetOutput", :order => "created_at desc", :dependent => :destroy
     belongs_to :native, :polymorphic => true
 
-  	has_attached_file :image, Rails.application.config.assethost.paperclip_options.merge({
-  	  :styles       => -> { Output.paperclip_sizes },
-  	  :processors   => [:asset_thumbnail],
-  	  :interpolator => self 
-  	})
+    has_attached_file :image, Rails.application.config.assethost.paperclip_options.merge({
+      :styles       => proc { Output.paperclip_sizes },
+      :processors   => [:asset_thumbnail],
+      :interpolator => self 
+    })
 
     treat_as_image_asset :image
     
@@ -58,7 +56,7 @@ module AssetHostCore
 
     #----------
 
-    def as_json
+    def as_json(options={})
       { 
         :id                 => self.id,
         :title              => self.title,

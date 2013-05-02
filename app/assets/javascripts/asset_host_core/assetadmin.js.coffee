@@ -1,6 +1,3 @@
-#= require ./assethost
-#= require backbone.modelbinding
-
 class AssetHost.AssetAdmin
     DefaultOptions:
         el:             ""
@@ -30,47 +27,30 @@ class AssetHost.AssetAdmin
                 
     #----------
         
-    @FormView:
-        Backbone.View.extend
-            el: "#editform"
-            initialize: ->
-                #Backbone.ModelBinding.call(this)    
-        
+    class @FormView extends Backbone.View
+        el: "#editform"
+
     #----------
     
-    @PreviewView:
-        Backbone.View.extend
-            template: 
-                """
-                <h1><%= title || id %></h1>
-                <%= tags[ tag ] %>
-                
-                <ul class="asset_sizes">
-                <% _(sizes).each(function(v,k) { %> 
-                    <li data-size="<%= k %>" <% if (tag == k) {%>class="selected"<% }; %>><h1><%= k %></h1> (<%= v.width %>x<%= v.height %>)</li>
-                <% }); %>
-                </ul>
-                <br class="clear"/>
-                """
-                
-            events:
-                'click li': '_sizeClick'
+    class @PreviewView extends Backbone.View
+        template: JST['asset_host_core/templates/asset_preview']
+        events:
+            'click li': '_sizeClick'
 
-            initialize: -> 
-                @size = AssetHost.SIZES.detail
+        initialize: -> 
+            @size = AssetHost.SIZES.detail
+            @render()
+
+        _sizeClick: (evt) ->
+            size = $(evt.currentTarget).attr("data-size")
+            
+            if size != @size
+                @size = size
                 @render()
 
-            _sizeClick: (evt) ->
-                console.log "got click with evt ", evt
-                size = $(evt.currentTarget).attr("data-size")
-                
-                if size != @size
-                    @size = size
-                    @render()
+        render: -> 
+            @$el.html @template
+                asset: @model.toJSON()
+                tag: @size 
 
-            render: -> 
-                data = _(_({}).extend(@model.toJSON())).extend({tag:@size})
-                console.log("data is ",data)
-                $( @el ).html _.template(@template, data)
-                return this
-        
+            @

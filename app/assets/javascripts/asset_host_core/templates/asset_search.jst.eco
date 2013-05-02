@@ -1,0 +1,2 @@
+<input type="text" style="width: 200px" value="<%= @query %>"/>
+<button class="btn">Search</button>

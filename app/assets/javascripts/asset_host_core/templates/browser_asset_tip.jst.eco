@@ -1,0 +1,3 @@
+<b><%= @title || "No Title"%></b>
+<br/><%= @owner || "No Credit" %>
+<br/><%= @size %>

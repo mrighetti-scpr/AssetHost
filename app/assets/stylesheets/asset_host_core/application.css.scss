@@ -40,26 +40,16 @@ hr.tight {
 /* admin */
 
 ul.asset_sizes {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    
+  list-style-type: none;
+
     li {
-        display: inline;
-        float: left;
-        padding: 8px;
-        margin-right: 8px;
-        border: 1px solid #f00;
-        color: #444;
-        
-        h1 {
-           margin-top: 0;
-           margin-bottom: 4px;
-        }        
+      margin: 5px;
+      display: inline-block;
+      @extend .btn;
     }
-    
+
     li.selected {
-        background-color: #ddd;
+        @extend .btn-primary;
     }
 }
 

@@ -35,7 +35,7 @@ AssetHostCore::Engine.routes.draw do
     resources :outputs
     resources :brightcove
 
-    get '/assets/search'        => "assets#search", as: "asset_search"
+    post '/assets/search'        => "assets#search", as: "asset_search"
     get '/assets/p/:page/:q'    => "assets#search"
     get '/assets/p/(:page)'     => "assets#index"
     

@@ -1,17 +1,15 @@
-#= require ./assethost
-#= require bootstrap-tooltip
-#= require bootstrap-modal
-
 class AssetHost.BrowserUI
     DefaultOptions:
         assetBrowserEl: "#asset_browser"
         modalSelect:    true
         modalAdmin:     true
-        
-    constructor: (options = {}) ->
+        assets: []
+
+    constructor: (options={}) ->
         @options = _.defaults options, @DefaultOptions
                 
-        @assets = new AssetHost.Models.PaginatedAssets @options.assets||[]
+        @assets = new AssetHost.Models.PaginatedAssets @options.assets
+
         if @options.page
             @assets.page @options.page
             
@@ -33,7 +31,7 @@ class AssetHost.BrowserUI
                 
         # -- Handle Routing -- #
         
-        @router = new @Router
+        @router = new BrowserUI.Router
         @router.bind "route:asset", (id) => @previewAsset id
         @router.bind "route:index", => @clearDisplay()
         @router.bind "route:search", (page,query) => 
@@ -44,7 +42,7 @@ class AssetHost.BrowserUI
 
         @browser.pages().bind "page", (page) => 
             @clearDisplay()
-            @loadAssets page:page
+            @loadAssets page: page
             @navToAssets()
         
         @search.bind "search", (query) => 
@@ -70,8 +68,6 @@ class AssetHost.BrowserUI
         page = @assets.page()
         query = @assets.query()
         
-        console.log "navToAssets page/query are ",page,query
-        
         if page && query
             @router.navigate("/p/#{page}/#{query}")
         else if page && page != 1
@@ -86,7 +82,7 @@ class AssetHost.BrowserUI
     loadAssets: (options = {}) -> 
         qDirty = (options['query'] || @assets.query()) && options['query'] != @assets.query()
         pDirty = options['page'] && Number(options['page']) != Number(@assets.page())
-                        
+        
         if qDirty || pDirty || options['force']
             # display loading status. browserView will clear on its own
             @browser.loading()
@@ -94,29 +90,28 @@ class AssetHost.BrowserUI
             # fire off AJAX API request
             @assets.query(options['query'])
             @assets.page(options['page'])
-            @assets.fetch()
-        
-            return false
+            @assets.fetch(reset: true)
+
+            false
                 
     #----------
     
     clearDisplay: ->
-        console.log "in clearDisplay"
         # clear any asset modal
         $(".ui-dialog-titlebar-close").trigger('click')
     
     #----------
     
     previewAsset: (id) ->
-        console.log "in previewAsset for ",id
-        
         # check if we have the asset
         asset = @assets.get(id) 
 
         if !asset
-            a = new AssetHost.Models.Asset({id:id})
-            a.fetch({success:(a)=>@_previewAsset(a)})
-        else 
+            a = new AssetHost.Models.Asset(id: id)
+            a.fetch
+                success:(a)=> @_previewAsset(a)
+        
+        else
             @_previewAsset(asset)
         
     _previewAsset: (asset) ->
@@ -126,28 +121,19 @@ class AssetHost.BrowserUI
             select: @options.modalSelect,
             admin:  @options.modalAdmin
     
-    #----------    
+    #----------
     
-    Router:
-        Backbone.Router.extend({
-            routes:
-                {
-                    '/a/:id': "asset",
-                    '/p/:p/:query': "search",
-                    '/p/:p': "search",
-                    '/': "index",
-                    '': "index"
-                    
-                }
-                
-            asset: ->
-                console.log "in asset function"
-                
-            search: -> 
-                console.log "in search function"
-                
-            index: ->
-                console.log "in index function"
-                
-                
-        })
+    class @Router extends Backbone.Router
+        routes:
+            '/a/:id': "asset"
+            '/p/:p/:query': "search"
+            '/p/:p': "search"
+            '/': "index"
+            '': "index"
+            
+        asset: ->
+            
+        search: -> 
+            
+        index: ->
+            

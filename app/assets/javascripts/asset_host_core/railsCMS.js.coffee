@@ -8,8 +8,8 @@ class AssetHost.railsCMS
 
     #----------
 
-    constructor: (assetdata,options) ->
-        @options = _.defaults options||{}, @DefaultOptions
+    constructor: (assetdata, options={}) ->
+        @options = _.defaults options, @DefaultOptions
         
         # add in events
         _.extend @, Backbone.Events
@@ -24,9 +24,7 @@ class AssetHost.railsCMS
         $(@options.el).html @assetsView.el
         
         window.addEventListener "message", (evt) => 
-            if evt.data != "LOADED"
-                console.log "got reply of ", evt
-                
+            if evt.data != "LOADED"                
                 found = {}
                 
                 # reconcile our asset list to the returned list
@@ -45,12 +43,8 @@ class AssetHost.railsCMS
                 # now check for removed assets
                 remove = []
                 @assets.each (a,i) => 
-                    if found[a.get('id')]
-                        # we're cool
-                        console.log "found asset: ", a.get('id')
-                    else
+                    if !found[a.get('id')]
                         # not in our return list... delete
-                        console.log "removing asset: ", a.get('id')
                         remove.push(a)
                         
                 for a in remove
@@ -85,10 +79,10 @@ class AssetHost.railsCMS
             #----------
 
             render: ->
-                if @model.get('tags')                                                                                
+                if @model.get('tags')
                     $( @el ).html _.template @template,asset:@model.toJSON()
                     
-                return this            
+                return this
     
     #----------
     
@@ -130,7 +124,7 @@ class AssetHost.railsCMS
                         # dispatch our event with the asset data
                         newwindow.postMessage @collection.toJSON(), "http://#{AssetHost.SERVER}"
                 , false
-                                    
+                
                 return false
                 
             #----------
@@ -143,5 +137,5 @@ class AssetHost.railsCMS
                 $(@el).html( _(views).map (v) -> v.el )
                 
                 $(@el).append( $("<li/>").html( $('<button/>',{text:"Pop Up Asset Chooser"})))
-                                                
-                return this
+
+                @

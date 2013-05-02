@@ -1,7 +1,3 @@
-#= require ./assethost
-
-#= require ./templates/edit_modal
-
 class AssetHost.ChooserUI
     DefaultOptions:
         dropEl: "#my_assets"
@@ -176,141 +172,124 @@ class AssetHost.ChooserUI
     
     #----------
     
-    @EditModal:
-        Backbone.View.extend
-            className: "ah_asset_edit modal"
+    class @EditModal extends Backbone.View
+        template: JST["asset_host_core/templates/edit_modal"]
+        className: "ah_asset_edit modal"
+        events:
+            'click button.save': '_save'
+            'click button.admin': '_admin'
+        
+        #----------
+        
+        initialize: (options) ->
+            # stash model attributes for later comparison
+            @original = 
+                title: @model.get("title")
+                owner: @model.get("owner")
+                notes: @model.get("notes")
                 
-            events:
-                'click button.save': '_save'
-                'click button.admin': '_admin'
+            $(@render().el).modal()
+                            
+            # bind model to form
+            Backbone.ModelBinding.bind(this)
             
-            #----------
+            # attach listener for metadata changes
+            @model.bind "change", =>
+                if _(@original).any((v,k) => v != @model.get(k))
+                    @meta_dirty = true
+                    @$(".meta_dirty").show()
+                else 
+                    @meta_dirty = false
+                    @$(".meta_dirty").hide()
             
-            initialize: (options) ->
-                # stash model attributes for later comparison
-                @original = 
-                    title: @model.get("title")
-                    owner: @model.get("owner")
-                    notes: @model.get("notes")
+        #----------
+            
+        close: ->
+            Backbone.ModelBinding.unbind(this)
+            @$el.modal('hide')
+        
+        #----------
+        
+        _save: -> 
+            # see whether we should save anything back to the server
+            if @meta_dirty || @$("#save_caption_check")[0].checked
+                @model.clone().fetch success:(m)=>
+                    # set title,owner,notes
+                    attr = title:@model.get("title"),owner:@model.get("owner"),notes:@model.get("notes")                        
+                
+                    if @$("#save_caption_check")[0].checked
+                        attr.caption = @model.get("caption")
                     
-                $(@render().el).modal()
-                                
-                # bind model to form
-                Backbone.ModelBinding.bind(this)
-                
-                # attach listener for metadata changes
-                @model.bind "change", =>                    
-                    if _(@original).any((v,k) => v != @model.get(k))
-                        @meta_dirty = true
-                        @$(".meta_dirty").show()
-                    else 
-                        @meta_dirty = false
-                        @$(".meta_dirty").hide()
-                
-            #----------
-                
-            close: ->
-                Backbone.ModelBinding.unbind(this)
-                $(@el).modal('hide')
-            
-            #----------
-            
-            _save: -> 
-                # see whether we should save anything back to the server
-                if @meta_dirty || @$("#save_caption_check")[0].checked
-                    @model.clone().fetch success:(m)=>
-                        # set title,owner,notes
-                        attr = title:@model.get("title"),owner:@model.get("owner"),notes:@model.get("notes")                        
-                    
-                        if @$("#save_caption_check")[0].checked
-                            attr.caption = @model.get("caption")
-                        
-                        m.save(attr)
-                        @close()
-                        
-                else
+                    m.save(attr)
                     @close()
-            
-            #----------
-            
-            _admin: -> 
-                window.open("#{AssetHost.PATH_PREFIX}/a/assets/#{@model.get('id')}") 
-            
-            #----------    
-            
-            render: ->
-                $(@el).html JST["asset_host_core/templates/edit_modal"] @model.toJSON()
-                
-                # set metadata state
-                @$(".meta_dirty").hide()
-                
-                # set default state for caption save checkbox
-                if @model.get("caption") && @model.get("caption") != ''
-                    # leave it unchecked
-                else
-                    @$("#save_caption_check")[0].checked = true
-                
-                @
-    
-    #----------
-    
-    @AfterUploadButton:
-        Backbone.View.extend
-            template:
-                """
-                <button id="afterUpload" class="btn btn-large btn-success">
-                    <%= text %>
-                </button>
-                """
-                
-            events:
-                'click button': '_clicked'
-                
-            initialize: (options) ->
-                @text = options.text
-                @url = options.url
-                
-                @ids = []
-
-                @collection.bind "uploaded", (f) => 
-                    @ids.push f.get('ASSET').id
-                    @render()                
-                                
-            _clicked: ->
-                window.location = _.template @url.replace(/{{([^}]+)}}/,"<%= $1 %>"), ids:@ids.join(",") 
-                
-            render: ->
-                if @ids
-                    $(@el).html _.template @template, {text: @text}
-    
-    #----------
-    
-    @UploadAllButton:
-        Backbone.View.extend({
-            template:
-                """
-                <button id="uploadAll" class="btn btn-large btn-warning">
-                    Upload All
-                    <% if (count) { %>(<%= count %> Images)<% } %>
-                </button>
-                """
-                
-            events: { 'click button': 'uploadAll' }
-                
-            initialize: ->
-                @collection.bind "all", => @render()
-
-            uploadAll: -> 
-                @collection.each (f) -> 
-                    if !f.xhr
-                        f.upload()
-                                
-            render: ->
-                staged = @collection.reduce( 
-                    (i,f) -> if f.xhr then i else i+1
-                , 0)
-                
-                $( @el ).html if staged > 1 then _.template(@template,{count:staged}) else ''
                     
-                return @
-        })
+            else
+                @close()
+        
+        #----------
+        
+        _admin: -> 
+            window.open("#{AssetHost.PATH_PREFIX}/a/assets/#{@model.get('id')}") 
+        
+        #----------    
+        
+        render: ->
+            @$el.html @template(@model.toJSON())
+            
+            # set metadata state
+            @$(".meta_dirty").hide()
+            
+            # set default state for caption save checkbox
+            if _.isEmpty(@model.get("caption"))
+                @$("#save_caption_check")[0].checked = true
+            
+            @
+    
+    #----------
+    
+    class @AfterUploadButton extends Backbone.View
+        template: JST['asset_host_core/templates/after_upload_button']
+        events:
+            'click button': '_clicked'
+            
+        initialize: (options) ->
+            @text   = options.text
+            @url    = options.url
+            @ids    = []
+
+            @collection.bind "uploaded", (f) => 
+                @ids.push f.get('ASSET').id
+                @render()
+        
+        _clicked: ->
+            window.location = _.template @url.replace(/{{([^}]+)}}/,"<%= $1 %>"), ids:@ids.join(",") 
+            
+        render: ->
+            if @ids
+                @$el.html @template(text: @text)
+
+
+    #----------
+    
+
+    class @UploadAllButton extends Backbone.View
+        template: JST['asset_host_core/templates/upload_all_button']
+        events: 
+            'click button': 'uploadAll'
+            
+        initialize: ->
+            @collection.bind "all", => @render()
+
+        uploadAll: -> 
+            @collection.each (f) -> 
+                f.upload() if !f.xhr
+                    
+
+        render: ->
+            staged = @collection.reduce( 
+                (i,f) -> if f.xhr then i else i+1
+            , 0)
+            
+            @$el.html if staged > 1 then @template(count: staged) else ''
+                
+            @

@@ -5,10 +5,10 @@
 <script type="text/javascript">
     var browser = new AssetHost.BrowserUI({
         root_path: "<%= assethost.a_assets_path %>",
-        assets:<%= @assets.map(&:json).to_json.html_safe %>,
+        assets:<%= @assets.to_json.html_safe %>,
         page: <%= @assets.current_page %>,
         total: <%= @assets.total_count %>,
-        query: <%= @query.to_json %>,
+        query: <%= @query.to_json.html_safe %>,
         modalSelect: true,
         modalAdmin: false
     })

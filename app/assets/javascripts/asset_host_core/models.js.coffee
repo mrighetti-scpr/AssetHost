@@ -1,20 +1,16 @@
-#= require ./assethost
-
-
-
 class AssetHost.Models
     constructor: ->
         
-    @Asset: Backbone.Model.extend
+    class @Asset extends Backbone.Model
         urlRoot: "http://#{AssetHost.SERVER}#{AssetHost.PATH_PREFIX}/api/assets/"
         
         modal: ->
-            @_modal ?= new AssetHost.Models.AssetModalView({model: this})
+            @_modal ?= new AssetHost.Models.AssetModalView(model: @)
             
         #----------
         
         url: ->
-            url = if this.isNew() then @urlRoot else @urlRoot + encodeURIComponent(@id)
+            url = if @isNew() then @urlRoot else @urlRoot + encodeURIComponent(@id)
             
             if AssetHost.TOKEN
                 url = url + "?" + $.param({auth_token:AssetHost.TOKEN})
@@ -24,7 +20,7 @@ class AssetHost.Models
         #----------
         
         chopCaption: (count=100) ->
-            chopped = this.get('caption')
+            chopped = @get('caption')
 
             if chopped and chopped.length > count
                 regstr = "^(.{#{count}}\\w*)\\W"
@@ -33,15 +29,15 @@ class AssetHost.Models
                 if chopped
                     chopped = "#{chopped[1]}..."
                 else
-                    chopped = this.get('caption')
+                    chopped = @get('caption')
 
             chopped
                 
     #----------
     
-    @Assets: Backbone.Collection.extend
+    class @Assets extends Backbone.Collection
         baseUrl: "#{AssetHost.PATH_PREFIX}/api/assets",
-        model: @Asset
+        model: Models.Asset
         
         # If we have an ORDER attribute, sort by that.  Otherwise, sort by just 
         # the asset ID.  
@@ -51,26 +47,27 @@ class AssetHost.Models
         #----------
 
         
-    @PaginatedAssets: @Assets.extend
+    class @PaginatedAssets extends @Assets
         initialize: ->
             _.bindAll(this, 'parse','url')
             
-            typeof(options) != 'undefined' || (options = {});
-            @_page = 1;
-            @_query = ''
-            @per_page = 24
-            @total_entries = 0
+            @_page          = 1
+            @_query         = ''
+            @per_page       = 24
+            @total_entries  = 0
             
-            this
+            @
         
-        parse: (resp,xhr) ->
-            @next_page = xhr.getResponseHeader('X-Next-Page')
-            @total_entries = xhr.getResponseHeader('X-Total-Entries')
+        parse: (resp, options={}) ->
+            xhr = options.xhr
+
+            @next_page      = xhr.getResponseHeader('X-Next-Page')
+            @total_entries  = xhr.getResponseHeader('X-Total-Entries')
             
             resp
             
         url: ->
-            @baseUrl + "?" + $.param({page:@_page,q:@_query})
+            @baseUrl + "?" + $.param(page: @_page, q: @_query)
             
         query: (q=@_query) ->
             @_query = q if q?
@@ -82,17 +79,9 @@ class AssetHost.Models
         
     #----------
     
-    @AssetDropAssetView: Backbone.View.extend
+    class @AssetDropAssetView extends Backbone.View
         tagName: 'li'
-        
-        template:
-            """
-            <button class="btn btn-danger delete">x</button>
-            <%= tags ? tags[ AssetHost.SIZES.thumb ] : "INVALID" %>
-            <b><%= title %></b>
-            <p><%= chop %></p>
-            """
-        
+        template: JST['asset_host_core/templates/asset_drop_asset']
         events:
             'click button.delete': "_remove"
             'click': '_click'
@@ -139,13 +128,16 @@ class AssetHost.Models
         #----------
             
         render: ->
-            $( @el ).html( _.template(@template,_(@model.toJSON()).extend chop:@model.chopCaption() ))
-            $(@el).attr "data-asset-id", @model.get("id")
+            @$el.html @template
+                asset: @model.toJSON()
+                chop: @model.chopCaption()
+
+            @$el.attr "data-asset-id", @model.get("id")
             @
     
     #----------
     
-    @AssetDropView: Backbone.View.extend
+    class @AssetDropView extends Backbone.View
         tagName: "ul"
         className: "assets"
             
@@ -169,12 +161,12 @@ class AssetHost.Models
             # set up views for each collection member
             @collection.each (f) => 
                 # create a view unless one exists
-                @_views[f.cid] ?= new Models.AssetDropAssetView({model:f,drop:@})
+                @_views[f.cid] ?= new Models.AssetDropAssetView(model: f, drop: @)
 
             # make sure all of our view elements are added
-            $(@el).append( _(@_views).map (v) -> v.el )
+            @$el.append( _(@_views).map (v) -> v.el )
 
-            $( @el ).sortable
+            @$el.sortable
                 update: (evt,ui) => 
                     _(@el.children).each (li,idx) => 
                         id = $(li).attr('data-asset-id')
@@ -185,15 +177,9 @@ class AssetHost.Models
         
     #----------
             
-    @AssetSearchView: Backbone.View.extend
+    class @AssetSearchView extends Backbone.View
         className: "search_box"
-
-        template:
-            '''
-            <input type="text" style="width: 200px" value="<%= query %>"/>
-            <button class="btn">Search</button>
-            '''
-            
+        template: JST['asset_host_core/templates/asset_search']
         events: 
             'click button': 'search',
             'keypress input:text': '_keypress'
@@ -202,122 +188,102 @@ class AssetHost.Models
             @collection.bind('all', => @render() )
                     
         _keypress: (e) ->
-            if e.which == 13
-                @search()
+            @search() if e.which == 13
             
         search: ->
-            query = $( @el ).find("input")[0].value
+            query = @$el.find("input")[0].value
             @trigger "search", query
             
         render: ->
-            $(@el).html _.template @template, query:@collection.query()
-            return this
+            @$el.html @template(query: @collection.query())
+            @
         
     #----------
     
-    @AssetBrowserAssetView: Backbone.View.extend
+    class @AssetBrowserAssetView extends Backbone.View
         tagName: "li"
-        template:
-            '''
-            <button data-asset-url="<%= url %>" draggable="true"><%= tags[ AssetHost.SIZES.thumb ] %></button>
-            '''
-            
-        tipTemplate:
-            '''
-            <b><%= title || "No Title"%></b>
-    		<br/><%= owner || "No Credit" %>
-    		<br/><%= size %>                
-            '''
-            
+        template: JST['asset_host_core/templates/browser_asset']
+        tipTemplate: JST['asset_host_core/templates/browser_asset_tip']
+        
         initialize: ->
             @id = "ab_#{@model.get('id')}"
-            $(@el).attr("data-asset-url",@model.get('url'))
+            @$el.attr("data-asset-url",@model.get('url'))
 
             @render()
             
-            $(@el).find('button')[0].addEventListener "click",
-                (evt) => @trigger "click", @model
+            @$el.find('button')[0].addEventListener "click", (evt) => 
+                @trigger "click", @model
                 true
-                                
+            
             # add tooltip
-            $(@el).tooltip
-                title: _.template @tipTemplate, @model.toJSON()
-                            
+            @$el.tooltip
+                title: @tipTemplate(@model.toJSON())
+                html: true
+
             @model.bind "change", => @render()
-                            
+        
         render: ->
-            $( @el ).html _.template @template, @model.toJSON() 
-            $(@el).attr "draggable", true
-            return this
+            @$el.html @template(@model.toJSON())
+            @$el.attr "draggable", true
+            @
         
     #----------
     
-    @AssetBrowserView: Backbone.View.extend
+    class @AssetBrowserView extends Backbone.View
         tagName: "ul"
         
         initialize: ->
             @_views = {}
+
             @collection.bind "reset", => 
                 _(@_views).each (a) => $(a.el).detach()
                 @_views = {}
                 @render()
-                        
+            
         pages: ->
             @_pages ?= (new AssetHost.Models.PaginationLinks(@collection)).render()
             
         loading: ->
-            $(@el).fadeOut()
-        
+            @$el.css(opacity: ".2")
+            @$el.spin()
+
+        doneLoading: ->
+            @$el.css(opacity: "1")
+            @$el.spin(false)
+
         render: ->
             # set up views for each collection member
             @collection.each (a) => 
                 # create a view unless one exists
-                @_views[a.cid] ?= new AssetHost.Models.AssetBrowserAssetView({model:a})
+                @_views[a.cid] ?= new AssetHost.Models.AssetBrowserAssetView(model: a)
                 @_views[a.cid].bind "click", (a) => @trigger "click", a
                 
             # make sure all of our view elements are added
-            $(@el).append( _(@_views).map (v) -> v.el )
+            @$el.append( _(@_views).map (v) -> v.el )
             
             # clear loading status
-            $(@el).fadeIn()
-        
-            return this
+            @doneLoading()
+            @
         
     #----------
     
-    @AssetModalView: Backbone.View.extend
+    class @AssetModalView extends Backbone.View
         className: "modal"
         events: 
             'click a.select': '_select'
             'click a.admin': '_admin'
             'click a.close': 'close'
             
-        template:
-            '''
-            <div class="ah_asset_browse modal-body">
-                <%= tags[ AssetHost.SIZES.modal ] %>
-                <h1><%= title %></h1>
-                <h2><%= owner %></h2>
-                <h2><%= size %></h2>
-                <p><%= caption %></p> 
-                                
-                <br style="clear:both;"/>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn close">Close</a>
-                <% if (admin) { %><a class="admin btn">View in Admin</a><% }; %>
-                <% if (select) { %><a class="select btn btn-primary">Select Asset</a><% }; %>
-            </div>
-            '''
+        template: JST['asset_host_core/templates/asset_modal']
 
         open: (options) ->
             @options = options || {}
             $(@render().el).modal()
 
             $(@render().el).on "hide", => @options.close?()
-                        
+        
         close: ->
-            $(@el).modal('hide')
+            @$el.modal('hide')
         
         _select: ->
             @close()
@@ -328,27 +294,22 @@ class AssetHost.Models
             @model.trigger('admin',@model)
         
         render: ->
-            $( @el ).html _.template @template,_(@model.toJSON()).extend
+            @$el.html @template 
+                asset: @model.toJSON()
                 select: if @options.select? then @options.select else true
                 admin: if @options.admin? then @options.admin else false
-        
-            return this
+            
+            @
         
     #----------
     
-    @SaveAndCloseView: Backbone.View.extend
-        events: { 'click button': 'saveAndClose' }
+    class @SaveAndCloseView extends Backbone.View
+        events: 'click button': 'saveAndClose'
+        template: JST['asset_host_core/templates/save_and_close_view']
+
         initialize: ->
             @collection.bind "all", => @render()
             @render()
-        
-        template:
-            '''
-            <button id="saveAndClose" class="btn btn-large btn-primary">
-                Save and Close
-                <% if (count) { %>(<%= count %> Assets)<% } %>
-            </button>
-            '''
         
         saveAndClose: ->
             # make sure collection is sorted before we return it
@@ -356,14 +317,16 @@ class AssetHost.Models
             @trigger 'saveAndClose', @collection.toJSON()
         
         render: ->
-            $( @el ).html _.template(@template,{count:@collection.size()})
-            return @
+            @$el.html @template(count: @collection.size())
+            @
         
     #----------
         
-    @PaginationLinks: Backbone.View.extend
+    class @PaginationLinks extends Backbone.View
         className: "pagination pagination-centered"
-    
+        template: JST['asset_host_core/templates/pagination_links']
+        linkTemplate: JST['asset_host_core/templates/pagination_link']
+
         DefaultOptions:
             inner_window: 3,
             outer_window: 1,
@@ -372,106 +335,112 @@ class AssetHost.Models
             separator: " ",
             spacer: "<li class='disabled'><a href='#'>...</a></li>"
         
-        events: { 'click li': 'clickPage' }
+        events: 'click li': 'clickPage'
         
-        initialize: (collection,options = {}) ->
+        initialize: (@collection, options={}) ->
             @options = _.defaults options, @DefaultOptions
 
-            @collection = collection
-            @collection.bind("reset", => @render() )
-            @collection.bind("add", => @render() )
-            @collection.bind("change", => @render() )
+            @collection.bind "reset",       => @render()
+            @collection.bind "add",         => @render()
+            @collection.bind "change",      => @render()
 
         #----------
         
-        template:
-            '''
-            <br style="clear: both;"/>
-            <ul>
-            <% if (current > 1) { %>
-                <li data-page="<%= current - 1 %>" class="prev"><a href="#"><%= options.prev_label %></a></li>
-            <% } %>
-            <%= links %>
-            <% if ( current + 1 <= pages ) { %>
-                <li data-page="<%= current + 1 %>" class="next"><a href="#"><%= options.next_label %></a></li>
-            <% } %>
-            </ul>
-            '''
-            
-        linkTemplate:
-            '''
-            <li data-page="<%= page %>" <% if (current) { %>class="active"<% } %> ><a href="#"><%= page %></a></li>
-            '''
-            
         clickPage: (evt) ->
             page = $(evt.currentTarget).attr("data-page")
             
             if page
                 @trigger "page", page
         
-        render: -> 
+        render: ->
             # what pages are we displaying?
-            pages = Math.floor( @collection.total_entries / @collection.per_page + 1)
-            current = @collection._page
+            pages       = Math.floor( @collection.total_entries / @collection.per_page + 1)
+            current     = @collection._page
             
-            rendered = {}
-            links = []
+            rendered    = {}
+            links       = []
             
             # start with outer_window from 1
-            _(_.range(1,1+@options.outer_window)).each( (i) => 
-                links.push _.template( @linkTemplate, {page:i,current:(current==i)} )
+            _(_.range(1,1+@options.outer_window)).each (i) => 
+                links.push @linkTemplate
+                    page: i
+                    current: current==i
+                
+                
                 rendered[ i ] = true
-            )
+            
             
             # now try -inner_window from current
-            _(_.range(current-@options.inner_window,current)).each( (i) =>
+            _(_.range(current-@options.inner_window,current)).each (i) =>
                 if i > 0 && !rendered[ i ]
                     if i-1 > 0 && !rendered[i-1]
                         links.push @options.spacer
                     
-                    links.push _.template( @linkTemplate, {page:i,current:false} )
+                    links.push @linkTemplate
+                        page: i
+                        current: false
+                    
+                    
                     rendered[ i ] = true
-            )
+            
             
             # now try current
             if !rendered[ current ]
                 if current-1 > 0 && !rendered[current-1]
                     links.push @options.spacer
                     
-                links.push _.template( @linkTemplate, {page:current,current:true} )
+                links.push @linkTemplate
+                    page: current
+                    current: true
+                
+                
                 rendered[ current ] = true
             
             # now try +inner_window from current
-            _(_.range(current+1,current+@options.inner_window+1)).each( (i) =>
+            _(_.range(current+1,current+@options.inner_window+1)).each (i) =>
                 if i < pages && !rendered[ i ]
                     if i-1 > 0 && !rendered[i-1]
                         links.push @options.spacer
                         
-                    links.push _.template( @linkTemplate, {page:i,current:false} )
+                    links.push @linkTemplate
+                        page: i
+                        current: false
+                    
+                    
                     rendered[ i ] = true
-            )
-                            
+            
+            
             # and finally, -outer_window from last page
-            _(_.range(pages+1-@options.outer_window,pages+1)).each( (i) => 
+            _(_.range(pages+1-@options.outer_window,pages+1)).each (i) => 
                 if i > 0 && !rendered[ i ]
                     if i-1 > 0 && !rendered[i-1]
                         links.push @options.spacer
                     
-                    links.push _.template( @linkTemplate, {page:i,collection:@collection,current:(current==i)} )
+                    links.push @linkTemplate
+                        page: i
+                        collection: @collection
+                        current: current==i 
+                    
+
                     rendered[ i ] = true
-            )
-                            
-            $( @el ).html( _.template(@template,{ current: current, pages: pages, links: links.join(@options.separator), options: @options }))
             
-            this
+
+            @$el.html @template
+                current: current
+                pages: pages
+                links: links.join(@options.separator)
+                options: @options
+            
+        
+            @
         
     #----------
         
     @queuedSync: (method,model,success,error) ->
-        console.log "in sync"
+        #
 
-    @QueuedFile: Backbone.Model.extend
-        sync: @queuedSync
+    class @QueuedFile extends Backbone.Model
+        sync: Models.queuedSync
 
         upload: ->
             return false if @xhr
@@ -517,8 +486,8 @@ class AssetHost.Models
 
     #----------
 
-    @QueuedFiles: Backbone.Collection.extend
-        model: @QueuedFile
+    class @QueuedFiles extends Backbone.Collection
+        model: Models.QueuedFile
         urlRoot: "#{AssetHost.PATH_PREFIX}/a/assets/upload"
         
         initialize: (models,options) ->
@@ -526,24 +495,13 @@ class AssetHost.Models
 
     #----------
 
-    @QueuedFileView: Backbone.View.extend
+    class @QueuedFileView extends Backbone.View
         events:
             'click button.remove': '_remove',
             'click button.upload': '_upload'
 
         tagName: "li"
-        template:
-            '''
-            <% if (!xhr) { %>
-                <button class="btn btn-danger remove">x</button>
-                <button class="btn btn-primary upload">Upload</button>
-            <% }; %>
-            <% if (STATUS == 'uploading') { %>
-                <b>(<%= PERCENT %>%)</b>
-                <br/>
-            <% }; %>
-            <%= name %>: <%= size %> 
-            '''
+        template: JST['asset_host_core/templates/queued_file']
 
         initialize: ->
             @model.bind "change", => @render()
@@ -578,25 +536,23 @@ class AssetHost.Models
             @model.upload()
 
         render: ->
-            $( @el ).attr('class',@model.get("STATUS"))
+            @$el.attr('class',@model.get("STATUS"))
 
-            $( @el ).html( _.template(@template,{
-                exif: @exif,
-                name: @model.get('name'),
-                size: @model.readableSize(),
-                STATUS: @model.get('STATUS'),
-                PERCENT: @model.get('PERCENT'),
+            @$el.html @template
+                exif: @exif
+                name: @model.get('name')
+                size: @model.readableSize()
+                STATUS: @model.get('STATUS')
+                PERCENT: @model.get('PERCENT')
                 xhr: if @model.xhr then true else false
-            }))
             
-            if @img
-                $( @el ).prepend( @img )
-
+            
+            @$el.prepend(@img) if @img
             @
 
     #----------
 
-    @QueuedFilesView: Backbone.View.extend
+    class @QueuedFilesView extends Backbone.View
         tagName: "ul"
         className: "uploads"
 
@@ -604,7 +560,7 @@ class AssetHost.Models
             @_views = {}
 
             @collection.bind 'add', (f) => 
-                @_views[f.cid] = new Models.QueuedFileView({model:f})
+                @_views[f.cid] = new Models.QueuedFileView(model: f)
                 @render()
 
             @collection.bind 'remove', (f) => 
@@ -616,15 +572,15 @@ class AssetHost.Models
                 @_views = {}
 
         _reset: (f) ->
-            console.log "reset event from ",f
+            # do we need this?
 
         render: ->
             # set up views for each collection member
             @collection.each (f) => 
                 # create a view unless one exists
-                @_views[f.cid] ?= new Models.QueuedFileView({model:f})
+                @_views[f.cid] ?= new Models.QueuedFileView(model: f)
 
             # make sure all of our view elements are added
             $(@el).append( _(@_views).map (v) -> v.el )
 
-            return this
+            @

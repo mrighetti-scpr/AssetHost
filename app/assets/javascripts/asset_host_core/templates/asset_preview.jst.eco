@@ -1,0 +1,9 @@
+<h1><%= @asset.title || @asset.id %></h1>
+<%- @asset.tags[@tag] %>
+
+<ul class="asset_sizes">
+<% for code, size of @asset.sizes: %>
+    <li data-size="<%= code %>" <% if (@tag == code): %>class="selected"<% end %>><%= code %> (<%= size.width %>x<%= size.height %>)</li>
+<% end %>
+</ul>
+<br class="clear"/>

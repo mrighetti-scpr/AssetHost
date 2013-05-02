@@ -8,14 +8,23 @@
 </div>
 
 <%= simple_form_for @output, :as => :output, :url => a_output_path(@output), :html => {:class => "form-horizontal"} do |f| %>
-  <%= f.inputs name:"Output" do %>
+  <fieldset>
+    <legend>Output</legend>
     <%= f.input :code %>
     <%= f.input :size %>
     <%= f.input :extension %>
     <%= f.input :prerender %>
     <%= f.input :is_rich %>
-    <%= f.actions %>
-  <% end %>
-<% end %>
+    
+    <div class="form-actions">
+      <%= f.submit "Update Output", class: "btn btn-primary" %>
+      <%= link_to "Cancel", a_output_path(@output), class: "btn" %>
 
-[<%= link_to "Cancel", a_output_path(@output) %>]
+      <%= link_to("Delete", a_output_path(@output), 
+            class: "btn btn-danger pull-right", 
+            method: :delete, 
+            data: { confirm: "Click OK to delete this Output.\nClick CANCEL to return to editing." }
+            ) %>
+    </div>
+  </fieldset>
+<% end %>

@@ -1,0 +1,13 @@
+<br style="clear: both;"/>
+
+<ul>
+<% if @current > 1: %>
+    <li data-page="<%= @current - 1 %>" class="prev"><a href="#"><%- @options.prev_label %></a></li>
+<% end %>
+
+<%- @links %>
+
+<% if @current + 1 <= @pages: %>
+    <li data-page="<%= @current + 1 %>" class="next"><a href="#"><%- @options.next_label %></a></li>
+<% end %>
+</ul>

@@ -1,6 +1,6 @@
 #= require ./assethost
 #= require jquery.livequery
-#= require underscore
+#= require underscore.min
 #= require ./slideshow
 
 #= require_self
@@ -25,5 +25,3 @@ class AssetHost.Client
                 
                 if Client[rich]
                     clients.push new Client[rich](this)
-                    
-    #----------

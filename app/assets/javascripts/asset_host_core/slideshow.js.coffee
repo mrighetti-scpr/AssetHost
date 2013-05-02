@@ -1,5 +1,5 @@
 #= require ./assethost
-#= require backbone
+#= require backbone.min
 #= require ./models
 
 class AssetHost.Slideshow

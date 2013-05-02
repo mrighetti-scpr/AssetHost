@@ -32,10 +32,4 @@ Gem::Specification.new do |s|
   s.add_dependency "jquery-rails", "~> 2.2.1"
   s.add_dependency "simple_form", "~> 2.1.0"
   s.add_dependency "kaminari", "~> 0.14.1"
-
-  
-  s.add_development_dependency "sqlite3"
-  s.add_development_dependency "rspec-rails"
-  s.add_development_dependency "combustion"
-  s.add_development_dependency "factory_girl"
 end

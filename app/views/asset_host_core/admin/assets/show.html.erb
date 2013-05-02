@@ -25,10 +25,11 @@
     <%= simple_form_for(@asset, :as => :asset, :url => a_asset_path(@asset), :html => {:class => "form-horizontal"}) do |f| %>
     <div class="row">
         <div class="span6">
-        <%= f.inputs :name => "Basics" do %>
-            <%= f.input :title, :hint => @asset.image_title? ? "From Image: #{@asset.image_title}" : nil %>
-            <%= f.input :caption, :as => :text, :input_html => {:rows => 5}, :hint => @asset.image_description? ? "From Image: #{@asset.image_description}" : nil %>
-        <% end %>
+            <fieldset>
+                <legend>Basics</legend>
+                <%= f.input :title, :hint => @asset.image_title? ? "From Image: #{@asset.image_title}" : nil %>
+                <%= f.input :caption, :as => :text, :input_html => {:rows => 5}, :hint => @asset.image_description? ? "From Image: #{@asset.image_description}" : nil %>
+            </fieldset>
         </div>
         <div class="span2">
             <h3>Replace:</h3>
@@ -39,27 +40,34 @@
     </div>
     <div class="row">
         <div class="span8">
-            <%= f.inputs :name => "Rights" do %>
-                <%= f.input :owner, :hint => @asset.image_copyright? ? "From Image: #{@asset.image_copyright}" : nil %>
-                <%= f.input :url %>
-            <% end %>
-            
-            <%= f.inputs :name => "Metadata" do %>
+            <fieldset>
+                <legend>Rights</legend>
+                <%= f.input :owner, :hint => @asset.image_copyright? ? "From Image: #{@asset.image_copyright}" : nil, input_html: { class: "span5" } %>
+                <%= f.input :url, input_html: { class: "span5" } %>
+            </fieldset>
+    
+            <fieldset>
+                <legend>Metadata</legend>
                 <div class="form-horizontal">
-                <%= f.input :image_taken, :as => :date %>
+                    <%= f.input :image_taken, :as => :date %>
                 </div>
                 <%= f.input :image_gravity, :as => :select, :collection => AssetHostCore::Asset::GRAVITY_OPTIONS %>
-            <% end %>
-    
-            <%= f.inputs :name => "Internal" do %>
-                <%= f.input :notes %>
-            <% end %>
-    
-            <%= f.actions %>
+            </fieldset>
 
-            <br/>
+            <fieldset>
+                <legend>Internal</legend>
+                <%= f.input :notes, input_html: { rows: 5 } %>
+            </fieldset>
+    
 
-            <%= link_to "Destroy Asset", a_asset_path(@asset), :method => :delete, :class => "btn btn-danger", :confirm => "Are you sure you want to delete this asset? You are responsible for making sure no content is using it before deletion."%>
+            <div class="form-actions">
+                <%= f.submit "Update Asset", class: "btn btn-primary" %>
+                <%= link_to "Destroy Asset", 
+                    @asset, :method => :delete, 
+                    :class => "btn btn-danger pull-right", 
+                    :data => { :confirm => "Are you sure you want to delete this asset? You are responsible for making sure no content is using it before deletion." } %>
+
+            </div>
         </div>
     </div>
     <% end %>

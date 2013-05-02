@@ -1,0 +1,1 @@
+<button data-asset-url="<%= @url %>" draggable="true"><%- @tags[ AssetHost.SIZES.thumb ] %></button>

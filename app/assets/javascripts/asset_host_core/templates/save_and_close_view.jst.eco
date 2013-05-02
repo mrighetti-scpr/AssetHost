@@ -1,0 +1,4 @@
+<button id="saveAndClose" class="btn btn-large btn-primary">
+    Save and Close
+    <% if @count: %>(<%= @count %> Assets)<% end %>
+</button>
