@@ -1,5 +1,7 @@
 # AssetHost
 
+**This is an unstable development branch! Please use the "stable" branch in production.**
+
 AssetHost is an attempt to create a one-stop-shop for hosting and linking 
 to media assets that are intended for inclusion in news stories.  The goal is 
 to create a hub that multiple frontend CMS systems can hook into, querying 
@@ -17,6 +19,7 @@ AssetHost is intended to run as two pieces: a backend asset server and
 lightweight frontend plugins that attach to the CMS system.  The pieces 
 should speak to each other using a secure API.
 
+
 ### Backend Engine
 
 This repository provides the AssetHostCore engine, which can be run either 
@@ -29,6 +32,7 @@ by the local application (this is how much of the admin works) or by other
 applications or plugins.
 
 A sample host application can be found at <http://github.com/SCPR/AssetHostApp>
+
 
 ### Plugins for Other Applications
 
@@ -44,6 +48,7 @@ To integrate with a locally-installed AssetHostCore engine, simply make your
 mapping data model belong to AssetHostCore::Asset.
 
 _TODO: More documentation on creating content/asset models._
+
 
 ### Workflow
 
@@ -72,6 +77,7 @@ exists, or render it on-the-fly if it does not yet exist.
 Rich media assets are delivered as specially-tagged img tags, and are 
 replaced on the client-side via an AssetHost.Client plugin.
 
+
 ### Brightcove Video
 
 Brightcove videos can be imported as assets and used to place videos into 
@@ -83,6 +89,17 @@ image will be replaced by a Brightcove player object.
 
 Brightcove assets can be imported using the interface at /a/brightcove/
 
+
+# Setup
+
+TODO: Setup generators for migrations
+
+See `spec/internal/db/schema.rb` for the tables you'll need to setup:
+
+* asset_host_core_outputs
+* 
+
+
 # Image Storage
 
 AssetHost intends to support any image storage supported by 
@@ -91,6 +108,7 @@ responsible for adding image file functionality to our Asset model.
 
 Currently, Paperclip supports local filesystem storage and storage on 
 Amazon's S3.
+
 
 # External Requirements
 
@@ -109,6 +127,7 @@ needed, make sure to specify Paperclip.options[:command_path] in your config.
 Searches are done via Sphinx, using the Thinking Sphinx gem.  Set up your 
 configuration in config/sphinx.yml, and make sure you have an external trigger
 for indexing (cron, etc).
+
 
 # Credits
 

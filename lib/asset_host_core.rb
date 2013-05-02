@@ -1,7 +1,7 @@
 require "asset_host_core/engine"
 
 require "paperclip"
-require "asset_host_core/paperclip/attachment"
+require "asset_host_core/paperclip"
 
 require "asset_host_core/config"
 

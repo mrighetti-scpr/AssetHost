@@ -14,7 +14,7 @@ PATH
       resque (~> 1.23.0)
       sass-rails (~> 3.2.3)
       simple_form (~> 2.1.0)
-      thinking-sphinx (= 2.0.14)
+      thinking-sphinx (~> 2.0.14)
 
 GEM
   remote: http://rubygems.org/

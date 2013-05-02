@@ -51,14 +51,6 @@ module AssetHostCore
 
     #----------
     
-    AssetHostCore::Output.all.each do |o|
-      define_method o.code do
-        self.size(o.code)
-      end
-    end
-    
-    #----------
-    
     def size(code)
       @_sizes ||= {}
       @_sizes[ code ] ||= AssetSize.new(self,Output.where(:code => code).first)
@@ -212,6 +204,16 @@ module AssetHostCore
       return result
     end
     
+    #----------
+
+    def method_missing(method, *args)
+      if output = Asset.outputs.find { |output| output['code'] == method.to_s }
+        self.size(output.code)
+      else
+        super
+      end
+    end
+
 
     #----------
     

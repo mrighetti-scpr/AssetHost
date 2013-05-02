@@ -1,8 +1,9 @@
 require 'rails'
-require "thinking_sphinx"
-require "resque"
+require 'rake' # I don't know why, please don't ask
+require 'resque'
+require 'thinking_sphinx'
 require 'paperclip'
-require 'mini_exiftool'
+require 'asset_host_core'
 
 require 'coffee-rails'
 require 'sass-rails'
@@ -11,8 +12,6 @@ require 'bootstrap-sass'
 
 require 'simple_form'
 require 'kaminari'
-
-require 'brightcove-api'
 
 
 module AssetHostCore

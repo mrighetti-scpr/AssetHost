@@ -13,13 +13,13 @@ Gem::Specification.new do |s|
   s.summary     = "One-stop-shop for media asset management, designed for a newsroom environment."
   s.description = "One-stop-shop for media asset management, designed for a newsroom environment."
 
-  s.files = Dir["{app,config,db,lib,vendor}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
+  s.files = Dir["{app,config,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
   s.test_files = Dir["spec/**/*"]
 
 
   s.add_dependency "rails", "~> 3.2.1"
   s.add_dependency "paperclip", "~> 3.4.1"
-  s.add_dependency "thinking-sphinx", "2.0.14"
+  s.add_dependency "thinking-sphinx", "~> 2.0.14"
   s.add_dependency "resque", "~> 1.23.0"
   s.add_dependency "mini_exiftool", "~> 1.6.0"
 
