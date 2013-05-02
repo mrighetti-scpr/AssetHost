@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = "One-stop-shop for media asset management, designed for a newsroom environment."
   s.description = "One-stop-shop for media asset management, designed for a newsroom environment."
 
-  s.files = Dir["{app,config,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
+  s.files = Dir["{app,config,lib,vendor}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
   s.test_files = Dir["spec/**/*"]
 
 
