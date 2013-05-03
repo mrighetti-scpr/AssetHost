@@ -7,13 +7,15 @@ module AssetHostCore
     #----------
 
     def self.paperclip_sizes
-      sizes = {}
+      @paperclip_sizes ||= begin
+        sizes = {}
 
-      Output.all.each do |output|
-        sizes.merge! output.paperclip_options
+        Output.all.each do |output|
+          sizes.merge! output.paperclip_options
+        end
+
+        sizes
       end
-
-      return sizes
     end
 
 
