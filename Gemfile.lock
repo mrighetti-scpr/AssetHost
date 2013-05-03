@@ -201,7 +201,6 @@ DEPENDENCIES
   asset_host_core!
   combustion
   factory_girl
-  jquery-rails
   rails (~> 3.2.13)
   rspec-rails
   sqlite3
