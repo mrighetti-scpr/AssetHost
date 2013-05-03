@@ -15,9 +15,9 @@
       <%= link_to "AssetHost", assethost.a_assets_path, :class => "brand" %>
       
     <% if current_user %>
-      <%= form_tag assethost.a_asset_search_path, :class => "navbar-search pull-left" %>
-        <input type="text" class="search-query" placeholder="Search" name="q"/>
-      </form>
+      <%= form_tag assethost.search_a_assets_path, :class => "navbar-search pull-left", method: :get do %>
+        <%= text_field_tag "q", params[:q], placeholder: "Search", class: "search-query" %>
+      <% end %>
 
       <ul class="nav">
         <li><%= link_to "Assets", assethost.a_assets_path %></li>
@@ -49,7 +49,7 @@
     </div>
   <% end %>
 
-    <div class='span8'>
+    <div class='span8' id="content_right">
       <% if flash[:notice] %>
         <div class="alert alert-success"><%= flash[:notice] %></div>
       <% end %>

@@ -235,6 +235,8 @@ class AssetHost.Models
         initialize: ->
             @_views = {}
 
+            @container = $("#content_right")
+
             @collection.bind "reset", => 
                 _(@_views).each (a) => $(a.el).detach()
                 @_views = {}
@@ -244,12 +246,12 @@ class AssetHost.Models
             @_pages ?= (new AssetHost.Models.PaginationLinks(@collection)).render()
             
         loading: ->
-            @$el.css(opacity: ".2")
-            @$el.spin()
+            @$el.css(opacity: ".1")
+            @container.spin()
 
         doneLoading: ->
             @$el.css(opacity: "1")
-            @$el.spin(false)
+            @container.spin(false)
 
         render: ->
             # set up views for each collection member

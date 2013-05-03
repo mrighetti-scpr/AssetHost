@@ -20,7 +20,10 @@ AssetHostCore::Engine.routes.draw do
   namespace :a, :module => "admin" do 
     resources :assets, :id => /\d+/ do
       collection do 
-        get :search
+        get '/search(/:q)', action: 'search', as: "search"
+        get '/p/(:page)', action: 'index'
+        get '/p/:page/:q', action: 'search'
+
         post :upload
         get :metadata
         put :metadata, :action => "update_metadata"
@@ -34,10 +37,7 @@ AssetHostCore::Engine.routes.draw do
 
     resources :outputs
     resources :brightcove
-
-    post '/assets/search'        => "assets#search", as: "asset_search"
-    get '/assets/p/:page/:q'    => "assets#search"
-    get '/assets/p/(:page)'     => "assets#index"
+    
     
     match 'chooser', :to => "home#chooser", :as => 'chooser'
     
