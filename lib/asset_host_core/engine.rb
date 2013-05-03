@@ -3,8 +3,8 @@ require 'rake' # I don't know why, please don't ask
 require 'resque'
 require 'thinking_sphinx'
 require 'paperclip'
-require 'asset_host_core'
 
+require 'jquery-rails'
 require 'coffee-rails'
 require 'sass-rails'
 require 'eco'
