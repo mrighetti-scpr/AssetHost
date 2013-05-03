@@ -43,9 +43,8 @@ ul.asset_sizes {
   list-style-type: none;
 
     li {
-      margin: 5px;
-      display: inline-block;
       @extend .btn;
+      display: block;
     }
 
     li.selected {

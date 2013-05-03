@@ -1,9 +1,20 @@
 <h1><%= @asset.title || @asset.id %></h1>
-<%- @asset.tags[@tag] %>
 
-<ul class="asset_sizes">
-<% for code, size of @asset.sizes: %>
-    <li data-size="<%= code %>" <% if (@tag == code): %>class="selected"<% end %>><%= code %> (<%= size.width %>x<%= size.height %>)</li>
-<% end %>
-</ul>
-<br class="clear"/>
+<div class="row">
+    <div class="span6">
+        <%- @asset.tags[@tag] %>
+        <ul class="unstyled">
+            <li><strong>URL</strong><br /><a href="<%= @asset.urls[@tag] %>" target="_blank"><%= @asset.urls[@tag] %></a></li>
+            <li><strong>Size</strong><br /> <%= @asset.sizes[@tag].width %> x <%= @asset.sizes[@tag].height %></li>
+        </ul>
+    </div>
+
+    <div class="span2">
+        <h4>Sizes</h4>
+        <ul class="asset_sizes">
+        <% for code, size of @asset.sizes: %>
+            <li data-size="<%= code %>" <% if (@tag == code): %>class="selected"<% end %>><%= code %></li>
+        <% end %>
+        </ul>
+    </div>
+</div>
