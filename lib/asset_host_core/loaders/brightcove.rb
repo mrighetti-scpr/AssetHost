@@ -4,7 +4,6 @@ require 'brightcove-api'
 module AssetHostCore
   module Loaders
     class Brightcove < Base
-      attr_reader :source, :id
       
       def self.valid?(url)
         nil

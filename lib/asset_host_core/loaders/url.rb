@@ -5,7 +5,6 @@ require 'cgi'
 module AssetHostCore
   module Loaders
     class Url < Base
-      attr_reader :source, :id
       
       def self.valid?(url)
         if url =~ /^http/

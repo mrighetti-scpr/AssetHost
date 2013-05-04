@@ -1,7 +1,6 @@
 module AssetHostCore
   module Loaders
     class Asset < Base
-      attr_reader :source, :id
       
       def self.valid?(url)
         if url =~ /#{Rails.application.config.assethost.server}#{AssetHostCore::Engine.mounted_path}\/api\/assets\/(\d+)\/?/

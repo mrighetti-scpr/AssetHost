@@ -5,7 +5,6 @@ require 'mime/types'
 module AssetHostCore
   module Loaders
     class Flickr < Base
-      attr_reader :source, :id
       
       def self.valid?(url)
         if url =~ /flickr\.com\/photos\/[\w@]+\/(\d+)/
