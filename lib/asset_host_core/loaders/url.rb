@@ -4,7 +4,7 @@ require 'cgi'
 
 module AssetHostCore
   module Loaders
-    class Url < Base
+    class URL < Base
       
       def self.valid?(url)
         if url =~ /^http/

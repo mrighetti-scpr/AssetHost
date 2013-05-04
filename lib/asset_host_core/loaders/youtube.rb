@@ -1,6 +1,6 @@
 module AssetHostCore
   module Loaders
-    class Youtube < Base
+    class YouTube < Base
       SOURCE = "YouTube"
 
       #----------------
