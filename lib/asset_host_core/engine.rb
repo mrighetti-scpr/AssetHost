@@ -4,7 +4,6 @@ require 'resque'
 require 'thinking_sphinx'
 require 'paperclip'
 
-require 'jquery-rails'
 require 'coffee-rails'
 require 'sass-rails'
 require 'eco'
