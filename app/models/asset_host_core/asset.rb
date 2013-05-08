@@ -205,7 +205,7 @@ module AssetHostCore
     #----------
 
     def method_missing(method, *args)
-      if output = Asset.outputs.find { |output| output['code'] == method.to_s }
+      if output = Output.where(code: method.to_s).first
         self.size(output.code)
       else
         super
