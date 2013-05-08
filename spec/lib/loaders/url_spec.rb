@@ -1,4 +1,4 @@
 require 'spec_helper'
 
-describe AssetHostCore::Loaders::Url do
+describe AssetHostCore::Loaders::URL do
 end

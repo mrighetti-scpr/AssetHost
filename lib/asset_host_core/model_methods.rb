@@ -49,7 +49,7 @@ module AssetHostCore
 
       module InstanceMethodsOnActivation
         # borrowed from delayed_paperclip... combines with [:delayed] above to turn off the inline processing
-        def attachment_for name
+        def attachment_for(name)
           @_paperclip_attachments ||= {}
           @_paperclip_attachments[name] ||= ::Paperclip::Attachment.new(name, self, self.class.attachment_definitions[name]).tap do |a|
             a.post_processing = false if self.class.attachment_definitions[name][:delayed]

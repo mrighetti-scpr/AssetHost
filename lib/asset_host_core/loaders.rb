@@ -1,5 +1,5 @@
 require "asset_host_core/loaders/base"
-require "asset_host_core/loaders/asset"
+require "asset_host_core/loaders/asset_host"
 require "asset_host_core/loaders/youtube"
 require "asset_host_core/loaders/vimeo"
 require "asset_host_core/loaders/brightcove"
@@ -10,7 +10,7 @@ module AssetHostCore
   module Loaders
 
     MODULES = [
-      Asset,
+      AssetHost,
       YouTube,
       Flickr,
       Brightcove,
@@ -19,16 +19,9 @@ module AssetHostCore
 
     class << self
       def load(url)
-        match = nil
-
-        MODULES.find { |klass| match = klass.parse_url(url) }
-        
-        if match
-          loader = klass.new(id: match[:id], url: url)
-          asset  = loader.load
-        end
-        
-        asset
+        loader = nil
+        MODULES.find { |klass| loader = klass.try_url(url) }
+        loader.try(:load)
       end
       
 

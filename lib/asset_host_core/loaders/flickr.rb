@@ -5,105 +5,76 @@ require 'mime/types'
 module AssetHostCore
   module Loaders
     class Flickr < Base
-      
-      def self.valid?(url)
-        if url =~ /flickr\.com\/photos\/[\w@]+\/(\d+)/
-          # photo page url.  $~[1] is photoid
-          return self.new($~[1])
-        elsif url =~ /static\.flickr\.com\/\d+\/(\d+)_[\w\d]+/
-          # photo url. $~[1] is photoid
-          return self.new($~[1])
+      SOURCE = "Flickr"
+
+      def self.try_url(url)
+        matches = [
+          %r{/flickr\.com/photos/[\w@]+/(?<id>\d+)},
+          %r{static\.flickr\.com/\d+/(?<id>\d+)_[\w\d]+}
+        ]
+
+        match = nil
+        
+        if matches.find { |m| match = url.match(m) }
+          self.new(url: url, id: match[:id])
         else
-          return nil
+          nil
         end
-      end
-
-      #----------
-
-      def initialize(photoid)
-        @source = "Flickr"
-        @id = photoid
       end
       
       #----------
       
       def load
-        flickr = MiniFlickr.new()
+        flickr = MiniFlickr.new
+        
         # we're going to try and go get it from flickr
-        p = flickr.call('flickr.photos.getInfo',:photo_id => self.id)["photo"]
+        photo = flickr.call('flickr.photos.getInfo', photo_id: @id)["photo"]
+        return nil if !photo
         
-        if !p
-          return nil
-        end
-              
-        sizes = flickr.call('flickr.photos.getSizes',:photo_id => self.id)["sizes"]["size"]
+        sizes     = flickr.call('flickr.photos.getSizes', photo_id: @id)["sizes"]["size"]
+        licenses  = flickr.call('flickr.photos.licenses.getInfo')
         
-        self.file         = sizes[-1]["source"]
+        self.file = sizes[-1]["source"]
         
-        # look up licenses
-        licenses = flickr.call('flickr.photos.licenses.getInfo')
-        
-        # find our license
-        license = nil
-        licenses["licenses"]["license"].each do |l|
-          if l['id'] == p['license']
-            license = [ l['name'], l['url'] ].join(" : ")
-            break
-          end
-        end
-
         # create asset
-        a = AssetHostCore::Asset.new(
-          :title          => p["title"]["_content"],
-          :caption        => p["description"]["_content"],
-          :owner          => p['owner']['realname'] || p['owner']["username"],
-          :image_taken    => p["dates"]["taken"],
-          :url            => p['urls']['url'][0]['_content'],
-          :notes          => license
+        asset = AssetHostCore::Asset.new(
+          :title          => photo["title"]["_content"],
+          :caption        => photo["description"]["_content"],
+          :owner          => photo['owner']['realname'] || photo['owner']["username"],
+          :image_taken    => photo["dates"]["taken"],
+          :url            => photo['urls']['url'][0]['_content']
         )
         
+        # look up licenses
+        if license = licenses["licenses"]["license"].find { |l| l['id'] == photo['license'] }
+          asset.notes = [ license['name'], license['url'] ].join(" : ")
+        end
+
         # add image
-        a.image = self.image_file
+        asset.image = image_file
         
         # save Asset
-        a.save
-        
-        return a
+        asset.save
+        asset
       end
       
+
       #----------
       
+      private
+
       def image_file
-        @image_file ||= self._image_file()
-      end
-      
-      def _image_file
-        if !self.file
-          self.load
+        @image_file ||= begin
+          response = Net::HTTP.get_response(URI.parse(@url))
+          file = Tempfile.new("IAFlickr",:encoding => 'ascii-8bit')
+          file << response.body
         end
-        
-        raw = nil
-        
-        uri = URI.parse(self.file)
-        Net::HTTP.start(uri.host) {|http|
-          raw = http.get(uri.path).body
-        }
-        
-        f = Tempfile.new("IAFlickr",:encoding => 'ascii-8bit')
-        f << raw
-        return f
       end
-      
-      #----------
-      
     end
 
 
     class MiniFlickr
       attr :api_key
-
-      def initialize
-      end
 
       def user
         USERID

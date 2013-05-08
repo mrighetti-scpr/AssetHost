@@ -5,80 +5,63 @@ require 'cgi'
 module AssetHostCore
   module Loaders
     class URL < Base
-      
-      def self.valid?(url)
-        if url =~ /^http/
-          # FIXME: opened this up to allow for images with no extension...  
-          # need some way to test that this really is an image
-          # it's an image...
-          return self.new(url)
+      SOURCE = "URL"
+
+      #-----------
+
+      def self.try_url(url)
+        uri       = URI.parse(url)
+        response  = Net::HTTP.get_response(uri)
+
+        # Check that it's actually an image we're grabbing
+        if response.content_type.match(/image/)
+          self.new(url: url, id: url)
         else
-          return nil
+          nil
         end
       end
 
       #----------
-
-      def initialize(url)
-        @source = "URL"
-        @id = url
-      end
-      
-      #----------
       
       def load
-        @id =~ /\/(.+)$/
-        file = $~[1]
+        file = @url.match(/\/(.+)$/)[0]
 
-        # create asset
-        a = AssetHostCore::Asset.new(
+        # build asset
+        asset = AssetHostCore::Asset.new(
           :title          => file,
           :caption        => '',
           :owner          => '',
           :image_taken    => '',
-          :url            => @id,
-          :notes          => "Fetched from URL: #{@id}"
+          :url            => @url,
+          :notes          => "Fetched from URL: #{@url}"
         )
         
         # add image
-        a.image = self.image_file
+        asset.image = image_file
         
         # force _grab_dimensions to run early so that we can load in EXIF
-        a.image._grab_dimensions()
+        asset.image._grab_dimensions
 
-        [
-          ['title','image_title'],
-          ['caption','image_description'],
-          ['owner','image_copyright']
-        ].each {|f| a[f[0]] = a[f[1]] }
-        
+        asset.title     = asset.image_title
+        asset.caption   = asset.image_description
+        asset.owner     = asset.image_copyright
+
         # save Asset
-        a.save
-        
-        return a
+        asset.save
+        asset
       end
-      
+
       #----------
+
+      private
       
       def image_file
-        @image_file ||= self._image_file()
-      end
-      
-      def _image_file
-        if !self.id
-          return nil
+        @image_file ||= begin
+          response = Net::HTTP.get_response(URI.parse(@url))
+
+          file = Tempfile.new("IAfromurl", encoding: 'ascii-8bit')
+          file << response.body
         end
-        
-        raw = nil
-        
-        uri = URI.parse(self.id)
-        Net::HTTP.start(uri.host) {|http|
-          raw = http.get(uri.path).body
-        }
-        
-        f = Tempfile.new("IAfromurl",:encoding => 'ascii-8bit')
-        f << raw
-        return f
       end
     end
   end

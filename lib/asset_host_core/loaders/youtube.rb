@@ -5,16 +5,10 @@ module AssetHostCore
 
       #----------------
 
-      def self.parse_url(url)
-        url.match(/youtube\.com\/watch\?.*v=(?<id>\w+)/i)
-      end
-
-      #----------------
-
-      def initialize(options={})
-        @id       = options[:id]
-        @url      = options[:url]
-        @source   = SOURCE
+      def self.try_url(url)
+        url.match(/youtube\.com\/watch\?.*v=(?<id>\w+)/i) do |m|
+          self.new(url: url, id: m[:id])
+        end
       end
 
       #----------------

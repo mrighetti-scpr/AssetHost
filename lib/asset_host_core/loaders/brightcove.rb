@@ -5,17 +5,10 @@ module AssetHostCore
   module Loaders
     class Brightcove < Base
       
-      def self.valid?(url)
+      def self.try_url(url)
         nil
       end
 
-      #----------
-
-      def initialize(videoid)
-        @source = "Brightcove"
-        @id = videoid
-      end
-      
       #----------
       
       def load
@@ -41,7 +34,7 @@ module AssetHostCore
         end
         
         # create asset
-        a = AssetHostCore::Asset.new(
+        asset = AssetHostCore::Asset.new(
           :title          => resp["name"],
           :caption        => resp["shortDescription"],
           :owner          => "",
@@ -53,7 +46,7 @@ module AssetHostCore
         self.file = resp['videoStillURL']
         
         # add image
-        a.image = self.image_file
+        asset.image = image_file
         
         # now create our BrightcoveVideo native object
         native = AssetHostCore::BrightcoveVideo.new(
@@ -61,37 +54,27 @@ module AssetHostCore
           :length   => resp['length']
         )
         
-        native.save()
+        native.save
         
-        a.native = native
+        asset.native = native
         
         # save Asset
-        a.save()
-        
-        return a
+        asset.save
+        asset
       end
       
+
       #----------
+
+      private
       
       def image_file
-        @image_file ||= self._image_file()
-      end
-      
-      def _image_file
-        if !self.file
-          self.load
+        @image_file ||= begin
+          response = Net::HTTP.get_response(URI.parse(@file))
+
+          file = Tempfile.new("IABrightcove", encoding: 'ascii-8bit')
+          file << response.body
         end
-        
-        raw = nil
-        
-        uri = URI.parse(self.file)
-        Net::HTTP.start(uri.host) {|http|
-          raw = http.get(uri.path).body
-        }
-        
-        f = Tempfile.new("IABrightcove",:encoding => 'ascii-8bit')
-        f << raw
-        return f
       end
     end
   end
