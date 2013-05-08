@@ -4,7 +4,7 @@
 <% end %>
 
 <% if @STATUS == 'uploading': %>
-    <b>(<%= PERCENT %>%)</b>
+    <b>(<%= @PERCENT %>%)</b>
     <br/>
 <% end %>
 
