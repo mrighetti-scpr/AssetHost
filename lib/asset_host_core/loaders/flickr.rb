@@ -8,8 +8,10 @@ module AssetHostCore
       SOURCE = "Flickr"
 
       def self.try_url(url)
+        return nil if AssetHostCore.config.flickr_api_key.blank?
+
         matches = [
-          %r{/flickr\.com/photos/[\w@]+/(?<id>\d+)},
+          %r{flickr\.com/photos/[\w@]+/(?<id>\d+)},
           %r{static\.flickr\.com/\d+/(?<id>\d+)_[\w\d]+}
         ]
 
@@ -25,6 +27,8 @@ module AssetHostCore
       #----------
       
       def load
+        return nil if AssetHostCore.config.flickr_api_key.blank?
+
         flickr = MiniFlickr.new
         
         # we're going to try and go get it from flickr
@@ -34,24 +38,21 @@ module AssetHostCore
         sizes     = flickr.call('flickr.photos.getSizes', photo_id: @id)["sizes"]["size"]
         licenses  = flickr.call('flickr.photos.licenses.getInfo')
         
-        self.file = sizes[-1]["source"]
-        
-        # create asset
-        asset = AssetHostCore::Asset.new(
-          :title          => photo["title"]["_content"],
-          :caption        => photo["description"]["_content"],
-          :owner          => photo['owner']['realname'] || photo['owner']["username"],
-          :image_taken    => photo["dates"]["taken"],
-          :url            => photo['urls']['url'][0]['_content']
-        )
+        asset = AssetHostCore::Asset.new
+
+        # Load the image first so that the image EXIF data doesn't
+        # override the data from the Flickr API.
+        asset.image         = image_file(sizes[-1]["source"])
+        asset.title         = photo["title"]["_content"]
+        asset.caption       = photo["description"]["_content"]
+        asset.owner         = photo['owner']['realname'] || photo['owner']["username"]
+        asset.image_taken   = photo["dates"]["taken"]
+        asset.url           = photo['urls']['url'][0]['_content']
         
         # look up licenses
         if license = licenses["licenses"]["license"].find { |l| l['id'] == photo['license'] }
           asset.notes = [ license['name'], license['url'] ].join(" : ")
         end
-
-        # add image
-        asset.image = image_file
         
         # save Asset
         asset.save
@@ -63,10 +64,10 @@ module AssetHostCore
       
       private
 
-      def image_file
+      def image_file(url)
         @image_file ||= begin
-          response = Net::HTTP.get_response(URI.parse(@url))
-          file = Tempfile.new("IAFlickr",:encoding => 'ascii-8bit')
+          response = Net::HTTP.get_response(URI.parse(url))
+          file = Tempfile.new("IAFlickr", encoding: 'ascii-8bit')
           file << response.body
         end
       end
@@ -83,7 +84,7 @@ module AssetHostCore
       def call(method, params = {})
         parameters = params.dup
 
-        parameters[:api_key]          = FLICKR_API_KEY
+        parameters[:api_key]          = AssetHostCore.config.flickr_api_key
         parameters[:method]           = method
         parameters[:format]           = "json"
         parameters[:nojsoncallback]   = 1
