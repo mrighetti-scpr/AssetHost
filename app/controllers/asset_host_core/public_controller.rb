@@ -17,18 +17,10 @@ module AssetHostCore
         send_file img, :type => "image/jpeg", :disposition => 'inline' and return
       end
     
-      @asset = Asset.where(:id => params[:id]).first
-    
-      # valid id?
-      if !@asset
-        render :text => "Asset not found.", :status => :not_found and return
-      end
+      @asset = Asset.find(id: params[:id])
     
       # valid style?
-      style = Output.where(:code => params[:style]).first
-      if !style
-        render :text => "Invalid style (#{params[:style]}).", :status => :not_found and return
-      end
+      style = Output.find_by_code!(params[:style])
     
       # do the fingerprints match? If not, redirect them to the correct URL
       if @asset.image_fingerprint && params[:aprint] != @asset.image_fingerprint
