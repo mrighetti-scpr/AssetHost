@@ -41,36 +41,32 @@ module AssetHostCore
           file.original_filename = "upload.jpg"
         end
 
-        Asset.transaction do
-          asset = Asset.create(:title => file.original_filename.sub(/\.\w{3}$/,''))
-          asset.image = file
+        asset = Asset.new(title: file.original_filename.sub(/\.\w{3,}$/,''))
+        asset.image = file
 
-          # force write_exif_data to run early so that we can load in EXIF
-          asset.sync_exif_data
-        end
-
+        # force write_exif_data to run early so that we can load in EXIF
+        asset.sync_exif_data
 
         if asset.save
-          render :json => asset.json
+          render json: asset.as_json
         else
-          puts "Error: #{asset.errors.to_s}"
-          render :text => 'ERROR'
+          render text: 'ERROR'
         end
       end
 
       #----------
 
       def metadata
-        @assets = Asset.where(:id => params[:ids].split(','))
+        @assets = Asset.where(id: params[:ids].split(','))
       end
 
       #----------
 
       def update_metadata
-        params[:asset].each {|k,v|
-          a = Asset.find(k)
-          a.update_attributes(v)
-        }
+        params[:asset].each do |id,attributes|
+          asset = Asset.find(id)
+          asset.update_attributes(attributes)
+        end
 
         redirect_to a_assets_path
       end
@@ -82,9 +78,9 @@ module AssetHostCore
         # Hard-coding the order here (ID) because the AssetHostBrowserUI uses ID if no
         # ORDER option is passed in, which it currently isn't, so the grid is ordered by
         # ID.
-        @assets = AssetHostCore::Asset.visible.order('id desc')
-        @prev = @assets.where('id > ?', @asset.id).last
-        @next = @assets.where('id < ?', @asset.id).first
+        @assets   = AssetHostCore::Asset.visible.order('id desc')
+        @prev     = @assets.where('id > ?', @asset.id).last
+        @next     = @assets.where('id < ?', @asset.id).first
       end
 
       #----------
@@ -118,7 +114,7 @@ module AssetHostCore
         @asset.sync_exif_data
 
         if @asset.save
-          render :json => @asset.json
+          render json: @asset.as_json
         else
           puts "Error: #{@asset.errors.to_s}"
           render :text => 'ERROR'
