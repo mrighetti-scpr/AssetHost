@@ -25,7 +25,7 @@ RSpec.configure do |config|
   config.order = "random"
 
   config.include FactoryGirl::Syntax::Methods
-  config.include ImageLoader
+  config.include FixtureLoader
 
   config.before :each do
     # FakeWeb
