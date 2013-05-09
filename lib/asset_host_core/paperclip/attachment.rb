@@ -193,18 +193,20 @@ module Paperclip
 
       if p.credit =~ /Getty Images/
         # smart import for Getty Images photos
-        copyright = [p.by_line,p.credit].join("/")
-        title = p.headline
-        description = p.description
+        copyright     = [p.by_line,p.credit].join("/")
+        title         = p.headline
+        description   = p.description
+
       elsif p.credit =~ /AP/
         # smart import for AP photos
-        copyright = [p.by_line,p.credit].join("/")
-        title = p.title
-        description = p.description
+        copyright     = [p.by_line,p.credit].join("/")
+        title         = p.title
+        description   = p.description
+        
       else
-        copyright = p.byline || p.credit
-        title = p.title
-        description = p.description
+        copyright     = p.byline || p.credit
+        title         = p.title
+        description   = p.description
       end
 
       instance_write(:width, p.image_width)
