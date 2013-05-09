@@ -248,9 +248,10 @@ module AssetHostCore
       @asset  = asset
       @output = output
       
-      [:width, :height, :tag, :url].each do |a|
-        self.send("#{a}=",@asset.image.send(a,output.code_sym))
-      end
+      @width    = @asset.image.width(output.code_sym)
+      @height   = @asset.image.height(output.code_sym)
+      @url      = @asset.image.url(output.code_sym)
+      @tag      = @asset.image.tag(output.code_sym)
     end
   end
 end
