@@ -34,7 +34,7 @@ module Paperclip
     
     def delete_path(path)
       @queued_for_delete = [ path ]
-      self.flush_deletes()
+      self.flush_deletes
     end
 
     #----------
@@ -56,9 +56,7 @@ module Paperclip
     #----------
 
     def width(style = default_style)
-      if !self.instance_read("width")
-        return nil
-      end
+      return nil if !self.instance_read("width")
 
       if s = self.styles[style]
         # load dimensions
@@ -66,7 +64,7 @@ module Paperclip
           return ao.width
         else
           # TODO: Need to add code to guess dimensions if we don't yet have an output
-          g = Paperclip::Geometry.parse(s.processor_options[:size])       
+          g = Paperclip::Geometry.parse(s.processor_options[:size])
           if g.modifier == '#'
             if g.square?
               # match w/h from style
@@ -88,11 +86,9 @@ module Paperclip
     #----------
 
     def height(style = default_style)
-      if !self.instance_read("height")
-        return nil
-      end
+      return nil if !self.instance_read("height")
 
-      if s = self.styles[style] 
+      if s = self.styles[style]
         # load dimensions
         if ao = self.instance.output_by_style(style)
           return ao.height
@@ -130,17 +126,13 @@ module Paperclip
       w = self.instance_read("width")
       h = self.instance_read("height")
 
-      if !w || !h
-        return 0
-      end
+      return 0 if !w || !h
 
       g = Paperclip::Geometry.parse(style.processor_options[:size])
       ratio = Paperclip::Geometry.new( g.width/w, g.height/h )
 
       # we need to compute off the smaller number
       factor = (ratio.width > ratio.height) ? ratio.height : ratio.width
-
-      return factor
     end
 
     #----------
@@ -152,17 +144,14 @@ module Paperclip
         tags[style] = self.tag(style,args)
       end
 
-      return tags
+      tags
     end
 
     #----------
 
     def tag(style = default_style, args={})
       s = self.styles[style.to_sym]
-
-      if !s
-        return nil
-      end
+      return nil if !s
 
       if (s.instance_variable_get :@other_args)[:rich] && self.instance.native
         args = args.merge(self.instance.native.attrs())
@@ -170,7 +159,7 @@ module Paperclip
 
       htmlargs = args.collect { |k,v| %Q!#{k}="#{v}"! }.join(" ")
 
-      return %Q(<img src="#{self.url(style)}" width="#{self.width(style)}" height="#{self.height(style)}" alt="#{self.instance.title.to_s.gsub('"', ERB::Util::HTML_ESCAPE['"'])}" #{htmlargs}/>).html_safe
+      %Q(<img src="#{self.url(style)}" width="#{self.width(style)}" height="#{self.height(style)}" alt="#{self.instance.title.to_s.gsub('"', ERB::Util::HTML_ESCAPE['"'])}" #{htmlargs}/>).html_safe
     end
 
     #----------
