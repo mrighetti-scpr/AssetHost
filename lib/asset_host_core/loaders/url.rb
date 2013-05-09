@@ -28,15 +28,15 @@ module AssetHostCore
 
         # build asset
         asset = AssetHostCore::Asset.new(
-          :title          => filename,
-          :url            => @url,
-          :notes          => "Fetched from URL: #{@url}"
+          :title    => filename,
+          :url      => @url,
+          :notes    => "Fetched from URL: #{@url}"
         )
         
         # add image
         asset.image = image_file
         asset.sync_exif_data
-
+        
         # save Asset
         asset.save
         asset
