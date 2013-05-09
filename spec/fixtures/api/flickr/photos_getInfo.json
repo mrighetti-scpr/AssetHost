@@ -1,0 +1,78 @@
+{
+  "photo": {
+    "id": "6238340909",
+    "secret": "999",
+    "server": "6112",
+    "farm": 7,
+    "dateuploaded": "1318452385",
+    "isfavorite": 0,
+    "license": "0",
+    "safety_level": "0",
+    "rotation": 0,
+    "originalsecret": "999",
+    "originalformat": "jpg",
+    "owner": {
+      "nsid": "23176711@N07",
+      "username": "AudioVision - Public Radio, Visualized",
+      "realname": "AudioVision",
+      "location": "Los Angeles, United States",
+      "iconserver": "8522",
+      "iconfarm": 9,
+      "path_alias": "scpr"
+    },
+    "title": {
+      "_content": "John's Wayne cowboy hat"
+    },
+    "description": {
+      "_content": "This is a cowboy hat."
+    },
+    "visibility": {
+      "ispublic": 1,
+      "isfriend": 0,
+      "isfamily": 0
+    },
+    "dates": {
+      "posted": "1318452385",
+      "taken": "2011-10-12 13:46:25",
+      "takengranularity": "0",
+      "lastupdate": "1354903259"
+    },
+    "views": "234",
+    "editability": {
+      "cancomment": 0,
+      "canaddmeta": 0
+    },
+    "publiceditability": {
+      "cancomment": 0,
+      "canaddmeta": 0
+    },
+    "usage": {
+      "candownload": 1,
+      "canblog": 0,
+      "canprint": 0,
+      "canshare": 1
+    },
+    "comments": {
+      "_content": "0"
+    },
+    "notes": {
+      "note": []
+    },
+    "people": {
+      "haspeople": 0
+    },
+    "tags": {
+      "tag": []
+    },
+    "urls": {
+      "url": [
+        {
+          "type": "photopage",
+          "_content": "http://www.flickr.com/photos/scpr/6238340909/"
+        }
+      ]
+    },
+    "media": "photo"
+  },
+  "stat": "ok"
+}
