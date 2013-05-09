@@ -41,7 +41,6 @@ module AssetHostCore
           file.original_filename = "upload.jpg"
         end
 
-        asset = nil
         Asset.transaction do
           asset = Asset.create(:title => file.original_filename.sub(/\.\w{3}$/,''))
           asset.image = file
