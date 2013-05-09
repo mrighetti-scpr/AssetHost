@@ -3,10 +3,23 @@
 <div class="row">
     <div class="span6">
         <%- @asset.tags[@tag] %>
-        <ul class="unstyled">
-            <li><strong>URL</strong><br /><a href="<%= @asset.urls[@tag] %>" target="_blank"><%= @asset.urls[@tag] %></a></li>
-            <li><strong>Size</strong><br /> <%= @asset.sizes[@tag].width %> x <%= @asset.sizes[@tag].height %></li>
-        </ul>
+        <table style="margin-top: 10px;">
+            <tr><td style="width:100px;"><strong style="margin-right:10px;">Asset ID</strong></td><td><%= @asset.id %></td></tr>
+            <tr>
+                <td><strong style="margin-right:10px;">Size</strong></td>
+                <td><%= @asset.sizes[@tag].width %> x <%= @asset.sizes[@tag].height %></td>
+            </tr>
+
+            <tr>
+                <td><strong style="margin-right:10px;">URL</strong></td>
+                <td><input type="text" value="<%= @asset.urls[@tag] %>" style="margin-right:10px;width:300px;" />(<a href="<%= @asset.urls[@tag] %>" target="_blank">link</a>)</td>
+            </tr>
+            
+            <tr>
+                <td><strong style="margin-right:10px;">Tag</strong></td>
+                <td><input type="text" value="<%= @asset.tags[@tag] %>" style="width:300px;" /></td>
+            </tr>
+        </table>
     </div>
 
     <div class="span2">
