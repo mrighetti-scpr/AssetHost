@@ -1,4 +1,6 @@
 ENV["RAILS_ENV"] ||= 'test'
+SPEC_ROOT = File.dirname(__FILE__)
+
 require 'bundler/setup'
 
 require 'combustion'
@@ -12,7 +14,8 @@ load 'factories.rb'
 
 FakeWeb.allow_net_connect = false
 
-Dir["support/**/*.rb"].each { |f| require f }
+
+Dir["#{SPEC_ROOT}/support/**/*.rb"].each { |f|require f }
 
 RSpec.configure do |config|
   config.filter_run focus: true
@@ -22,6 +25,7 @@ RSpec.configure do |config|
   config.order = "random"
 
   config.include FactoryGirl::Syntax::Methods
+  config.include ImageLoader
 
   config.before :each do
     # FakeWeb
