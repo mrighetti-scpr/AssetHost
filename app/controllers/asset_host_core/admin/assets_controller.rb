@@ -108,8 +108,6 @@ module AssetHostCore
         if !file
           render :text => 'ERROR' and return
         end
-
-        puts "file is #{file}"
         
         # FIXME: Put in place to keep Firefox 7 happy
         if !file.original_filename
