@@ -10,10 +10,10 @@ module AssetHostCore
         
         attachment_definitions[name][:delayed] = true
 
-        define_method "grab_dimensions_for_#{name}" do
+        define_method "write_exif_data_for_#{name}" do
           if self.send("#{name}").dirty?
             # need to extract dimensions from the attachment
-            self.attachment_for(name)._grab_dimensions
+            self.attachment_for(name).write_exif_data
           end
         end
 
@@ -25,7 +25,7 @@ module AssetHostCore
         end
 
         # register our event handler
-        before_save :"grab_dimensions_for_#{name}"
+        before_save :"write_exif_data_for_#{name}"
         
         if respond_to?(:after_commit)
           after_commit  :"enqueue_delayed_processing_for_#{name}"

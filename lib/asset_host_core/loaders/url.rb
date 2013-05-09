@@ -29,22 +29,13 @@ module AssetHostCore
         # build asset
         asset = AssetHostCore::Asset.new(
           :title          => filename,
-          :caption        => '',
-          :owner          => '',
-          :image_taken    => '',
           :url            => @url,
           :notes          => "Fetched from URL: #{@url}"
         )
         
         # add image
         asset.image = image_file
-        
-        # force _grab_dimensions to run early so that we can load in EXIF
-        asset.image._grab_dimensions
-
-        asset.title     = asset.image_title
-        asset.caption   = asset.image_description
-        asset.owner     = asset.image_copyright
+        asset.sync_exif_data
 
         # save Asset
         asset.save

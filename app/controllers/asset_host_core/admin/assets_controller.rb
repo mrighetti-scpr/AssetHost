@@ -46,14 +46,8 @@ module AssetHostCore
           asset = Asset.create(:title => file.original_filename.sub(/\.\w{3}$/,''))
           asset.image = file
 
-          # force _grab_dimensions to run early so that we can load in EXIF
-          asset.image._grab_dimensions()
-
-          [
-            ['title','image_title'],
-            ['caption','image_description'],
-            ['owner','image_copyright']
-          ].each {|f| asset[f[0]] = asset[f[1]] }
+          # force write_exif_data to run early so that we can load in EXIF
+          asset.sync_exif_data
         end
 
 
@@ -124,15 +118,7 @@ module AssetHostCore
 
         # tell paperclip to replace our image
         @asset.image = file
-
-        # force _grab_dimensions to run early so that we can load in EXIF
-        @asset.image._grab_dimensions()
-
-        [
-          ['title','image_title'],
-          ['caption','image_description'],
-          ['owner','image_copyright']
-        ].each {|f| @asset[f[0]] = @asset[f[1]] }
+        @asset.sync_exif_data
 
         if @asset.save
           render :json => @asset.json

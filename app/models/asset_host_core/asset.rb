@@ -201,7 +201,18 @@ module AssetHostCore
       
       return result
     end
-    
+
+    #----------
+    # Writes the exif data to the attachment and then
+    # syncs the corresponding Asset attributes
+    def sync_exif_data
+      self.image.write_exif_data
+
+      self.title     = self.image_title
+      self.caption   = self.image_description
+      self.owner     = self.image_copyright
+    end
+
     #----------
 
     def method_missing(method, *args)

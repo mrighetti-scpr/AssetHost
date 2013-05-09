@@ -176,7 +176,7 @@ module Paperclip
 
     #----------
 
-    def _grab_dimensions
+    def write_exif_data
       return unless @queued_for_write[:original]
 
       begin
