@@ -1,7 +1,6 @@
 module AssetHostCore
-  module Config
+  class Config
     class << self
-      
       def current_user_method(&blk)
         @current_user = blk if blk
         @current_user
@@ -28,5 +27,13 @@ module AssetHostCore
         @api_authentication
       end
     end
+
+
+    attr_accessor :flickr_api_key,
+      :brightcove_api_key, 
+      :youtube_api_key,
+      :thumb_size,
+      :modal_size,
+      :detail_size
   end
 end

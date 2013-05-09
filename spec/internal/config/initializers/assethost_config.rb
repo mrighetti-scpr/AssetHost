@@ -2,9 +2,6 @@ Combustion::Application.configure do
   config.assethost = ActiveSupport::OrderedOptions.new
   config.assethost.server         = "a.scpr.org"
 
-  config.assethost.flickr_api_key   = "flackrs"
-  config.assethost.youtube_api_key  = 'youtoobs'
-  config.assethost.brightcove       = "brightcovs"
 
   config.assethost.redis_pubsub   = { server: { host: "127.0.0.1", port: 6379, db: 0 }, key: "AHSCPR" }
 
@@ -16,7 +13,14 @@ Combustion::Application.configure do
   }
 
   config.assethost.resque_queue   = :ahhost
-  config.assethost.thumb_size     = "thumb"
-  config.assethost.modal_size     = "lead"
-  config.assethost.detail_size    = "wide"
+end
+
+AssetHostCore.configure do |config|
+  config.flickr_api_key       = "flackrs"
+  config.youtube_api_key      = 'youtoobs'
+  config.brightcove_api_key   = "brightcovs"
+
+  config.thumb_size   = "thumb"
+  config.modal_size   = "lead"
+  config.detail_size  = "wide"
 end

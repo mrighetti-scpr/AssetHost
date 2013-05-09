@@ -6,13 +6,14 @@ module AssetHostCore
     class Brightcove < Base
       
       def self.try_url(url)
+        return nil if AssetHostCore.config.brightcove_api_key.blank?
         nil
       end
 
       #----------
       
       def load
-        brightcove = ::Brightcove::API.new( Rails.application.config.assethost.brightcove )
+        brightcove = ::Brightcove::API.new(AssetHostCore.config.brightcove_api_key)
         
         begin
           # get our video info

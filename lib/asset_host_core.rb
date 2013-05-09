@@ -19,7 +19,22 @@ module AssetHostCore
     def as_asset(url)
       AssetHostCore::Loaders.load(url)
     end
+
+    #----------------
+
+    def configure
+      yield config
+    end
+
+    #----------------
+
+    def config
+      @config ||= AssetHostCore::Config.new
+    end
   end
+
+
+  #----------------
   
   def self.hooks(&block)
     block.call(AssetHostCore::Config)
