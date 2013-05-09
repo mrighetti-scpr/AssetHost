@@ -187,10 +187,6 @@ module Paperclip
 
       # -- determine metadata -- #
 
-      title         = ""
-      description   = ""
-      copyright     = ""
-
       if p.credit =~ /Getty Images/
         # smart import for Getty Images photos
         copyright     = [p.by_line,p.credit].join("/")
