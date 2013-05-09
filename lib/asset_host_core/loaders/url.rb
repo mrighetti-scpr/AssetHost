@@ -24,11 +24,11 @@ module AssetHostCore
       #----------
       
       def load
-        file = @url.match(/\/(.+)$/)[0]
+        filename = @url.match(/\/(.+)$/)[0]
 
         # build asset
         asset = AssetHostCore::Asset.new(
-          :title          => file,
+          :title          => filename,
           :caption        => '',
           :owner          => '',
           :image_taken    => '',

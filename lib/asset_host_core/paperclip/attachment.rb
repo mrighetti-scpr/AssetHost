@@ -187,9 +187,9 @@ module Paperclip
 
       # -- determine metadata -- #
 
-      title = ""
-      description = ""
-      copyright = ""
+      title         = ""
+      description   = ""
+      copyright     = ""
 
       if p.credit =~ /Getty Images/
         # smart import for Getty Images photos
@@ -207,12 +207,12 @@ module Paperclip
         description = p.description
       end
 
-      instance_write(:width,p.image_width)
-      instance_write(:height,p.image_height)
-      instance_write(:title,title)
-      instance_write(:description,description)
-      instance_write(:copyright,copyright)
-      instance_write(:taken,p.datetime_original)
+      instance_write(:width, p.image_width)
+      instance_write(:height, p.image_height)
+      instance_write(:title, title)
+      instance_write(:description, description)
+      instance_write(:copyright, copyright)
+      instance_write(:taken, p.datetime_original)
 
       true
     end
