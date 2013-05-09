@@ -165,7 +165,6 @@ module Paperclip
       end
 
       if (s.instance_variable_get :@other_args)[:rich] && self.instance.native
-        #return self.instance.native.tag(self.width(style),self.height(style))
         args = args.merge(self.instance.native.attrs())
       end
 
