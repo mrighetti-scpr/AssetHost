@@ -35,7 +35,7 @@ class AssetHost.AssetAdmin
     class @PreviewView extends Backbone.View
         template: JST['asset_host_core/templates/asset_preview']
         events:
-            'click li': '_sizeClick'
+            'click .asset_sizes li': '_sizeClick'
 
         initialize: -> 
             @size = AssetHost.SIZES.detail
