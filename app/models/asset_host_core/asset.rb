@@ -43,7 +43,8 @@ module AssetHostCore
     })
 
     treat_as_image_asset :image
-    
+    validates :image, attachment_presence: true
+
     after_commit :publish_asset_update, :if => :persisted?
     after_commit :publish_asset_delete, :on => :destroy
 
@@ -51,7 +52,7 @@ module AssetHostCore
     
     def size(code)
       @_sizes ||= {}
-      @_sizes[ code ] ||= AssetSize.new(self,Output.where(:code => code).first)
+      @_sizes[ code ] ||= AssetSize.new(self, Output.where(code: code).first)
     end
 
     #----------
@@ -71,7 +72,7 @@ module AssetHostCore
         :image_file_size    => self.image_file_size,
 
         :url        => "http://#{Rails.application.config.assethost.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
-        :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { :width => self.image.width(s), :height => self.image.height(s) }; h },
+        :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
         :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image.url(s); h }
       }
     end
@@ -114,7 +115,7 @@ module AssetHostCore
     
     #----------
     
-    def self.interpolate(pattern,attachment,style)
+    def self.interpolate(pattern, attachment, style)
       # we support: 
       # global:
       #   :rails_root -- Rails.root
@@ -133,41 +134,36 @@ module AssetHostCore
       # first see what we've been passed as a style. could be string, symbol, 
       # Output or AssetOutput
       
-      ao = nil
-      output = nil
-      asset = attachment.instance
-            
-      result = pattern.clone
+      asset   = attachment.instance
+      result  = pattern.clone
       
       if style.respond_to?(:to_sym) && style.to_sym == :original
         # special case...
+
       elsif style.is_a? AssetOutput
-        ao = style
-        output = ao.output
+        ao      = style
+        output  = ao.output
+
       elsif style.is_a? Output
-        output = style
-        ao = attachment.instance.outputs.where(:output_id => output).first
+        output  = style
+        ao      = attachment.instance.outputs.where(output_id: output.id).first
+        return nil if !ao
 
-        if !ao
-          return nil
-        end
       else
-        output = Output.where(:code => style).first
-
-        if !output
-          return nil
-        end
+        output = Output.where(code: style).first
+        return nil if !output
         
-        ao = attachment.instance.outputs.where(:output_id => output).first
+        ao = attachment.instance.outputs.where(output_id: output.id).first
       end
       
+
       # global rules
-      result.gsub!(":rails_root",Rails.root.to_s)
+      result.gsub!(":rails_root", Rails.root.to_s)
       
       if asset
         # asset-based rules
-        result.gsub!(":id",asset.id.to_s)
-        result.gsub!(":fingerprint",asset.image_fingerprint)
+        result.gsub!(":id", asset.id.to_s)
+        result.gsub!(":fingerprint", asset.image_fingerprint.to_s)
       else
         if pattern =~ /:(?:id|fingerprint)/
           return false
@@ -176,14 +172,14 @@ module AssetHostCore
       
       if style.respond_to?(:to_sym) && style.to_sym == :original
         # hardcoded handling for the original file
-        result.gsub!(":style","original")
-        result.gsub!(":extension",File.extname(attachment.original_filename).gsub(/^\.+/, ""))
+        result.gsub!(":style", "original")
+        result.gsub!(":extension", File.extname(attachment.original_filename).gsub(/^\.+/, ""))
         result.gsub!(":sprint","original")
       else
         if output
           # style-based rules
-          result.gsub!(":style",output.code.to_s)
-          result.gsub!(":extension",output.extension)
+          result.gsub!(":style", output.code.to_s)
+          result.gsub!(":extension", output.extension)
         else
           if pattern =~ /:(?:style|extension)/
             return false
@@ -193,13 +189,13 @@ module AssetHostCore
 
         if ao && ao.fingerprint
           # output-based rules
-          result.gsub!(":sprint",ao.fingerprint)
+          result.gsub!(":sprint", ao.fingerprint)
         else
-          result.gsub!(":sprint","NOT_YET_RENDERED")
+          result.gsub!(":sprint", "NOT_YET_RENDERED")
         end
       end
       
-      return result
+      result
     end
 
     #----------
@@ -229,13 +225,13 @@ module AssetHostCore
     private
 
     def publish_asset_update
-      AssetHostCore::Engine.redis_publish :action => "UPDATE", :id => self.id
-      return true
+      AssetHostCore::Engine.redis_publish(action: "UPDATE", id: self.id)
+      true
     end
     
     def publish_asset_delete
-      AssetHostCore::Engine.redis_publish :action => "DELETE", :id => self.id
-      return true
+      AssetHostCore::Engine.redis_publish(action: "DELETE", id: self.id)
+      true
     end
   end
   
