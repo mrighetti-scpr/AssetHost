@@ -17,7 +17,7 @@ module AssetHostCore
         send_file img, :type => "image/jpeg", :disposition => 'inline' and return
       end
     
-      @asset = Asset.find(id: params[:id])
+      @asset = Asset.find(params[:id])
     
       # valid style?
       style = Output.find_by_code!(params[:style])
@@ -52,6 +52,7 @@ module AssetHostCore
           # crap.  totally failed.
           redirect_to @asset.image.url(style.code) and return
         else
+
           # we're in the middle of rendering
           # sleep for 500ms to try and let the render complete, then try again
           sleep 0.5
