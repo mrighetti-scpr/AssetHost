@@ -46,11 +46,17 @@ module Paperclip
         self.instance.outputs.collect { |ao| ao.output.code_sym }
       ].flatten.uniq
       
-      Resque.enqueue(AssetHostCore::ResqueJob,self.instance.class.name,self.instance.id,self.name,*styles)
+      enqueue_styles(*styles)
     end
 
-    def enqueue_styles(styles)
-      Resque.enqueue(AssetHostCore::ResqueJob,self.instance.class.name,self.instance.id,self.name,styles)
+    def enqueue_styles(*styles)
+      Resque.enqueue(
+        AssetHostCore::ResqueJob,
+        self.instance.class.name,
+        self.instance.id,
+        self.name,
+        styles
+      )
     end
 
     #----------
