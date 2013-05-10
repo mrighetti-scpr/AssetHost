@@ -2,31 +2,20 @@ require 'paperclip'
 
 module Paperclip
   class Attachment
-    # Overwrite styles loader to allow caching despite dynamic loading
-    def styles
-      styling_option = @options[:styles]
-      
-      if !@normalized_styles
-        @normalized_styles = ActiveSupport::OrderedHash.new
-        styling_option.call(self).each do |name, args|
-          @normalized_styles[name] = Paperclip::Style.new(name, args.dup, self)
-        end
-      end
-      @normalized_styles
-    end
-
     #----------
 
     # overwrite to only delete original when clear() is called.  styles will 
     # be deleted by the thumbnailer
-    def queue_existing_for_delete #:nodoc:
-      return unless file?
-
-      @queued_for_delete = [path(:original)]
+    def queue_all_for_delete #:nodoc:
+      return if !file?
+      unless @options[:preserve_files]
+        @queued_for_delete += [path(:original) if exists?(:original)]
+      end
 
       instance_write(:file_name, nil)
       instance_write(:content_type, nil)
       instance_write(:file_size, nil)
+      instance_write(:created_at, nil) if has_enabled_but_unset_created_at?
       instance_write(:updated_at, nil)
     end
 
