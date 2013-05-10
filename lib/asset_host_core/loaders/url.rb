@@ -35,7 +35,6 @@ module AssetHostCore
         
         # add image
         asset.image = image_file
-        asset.sync_exif_data
         
         # save Asset
         asset.save

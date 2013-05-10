@@ -44,9 +44,6 @@ module AssetHostCore
         asset = Asset.new(title: file.original_filename.sub(/\.\w{3,}$/,''))
         asset.image = file
 
-        # force write_exif_data to run early so that we can load in EXIF
-        asset.sync_exif_data
-
         if asset.save
           render json: asset.as_json
         else
@@ -111,7 +108,6 @@ module AssetHostCore
 
         # tell paperclip to replace our image
         @asset.image = file
-        @asset.sync_exif_data
 
         if @asset.save
           render json: @asset.as_json

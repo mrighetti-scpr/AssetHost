@@ -45,6 +45,8 @@ module AssetHostCore
     treat_as_image_asset :image
     validates :image, attachment_presence: true
 
+    before_create :sync_exif_data
+
     after_commit :publish_asset_update, :if => :persisted?
     after_commit :publish_asset_delete, :on => :destroy
 
@@ -199,14 +201,11 @@ module AssetHostCore
     end
 
     #----------
-    # Writes the exif data to the attachment and then
-    # syncs the corresponding Asset attributes
+    # syncs the exif to the corresponding Asset attributes
     def sync_exif_data
-      self.image.write_exif_data
-
-      self.title     = self.image_title
-      self.caption   = self.image_description
-      self.owner     = self.image_copyright
+      self.title     = self.image_title       if self.title.blank?
+      self.caption   = self.image_description if self.caption.blank?
+      self.owner     = self.image_copyright   if self.owner.blank?
     end
 
     #----------
