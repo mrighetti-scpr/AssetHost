@@ -17,7 +17,7 @@ module AssetHostCore
           end
         end
 
-        define_method "enqueue_delayed_processing_for_#{name}" do 
+        define_method "enqueue_delayed_processing_for_#{name}" do
           # we render on two things: image fingerprint changed, or image gravity changed
           if self.previous_changes.include?("image_fingerprint") || self.previous_changes.include?("image_gravity")
             self.attachment_for(name).enqueue
