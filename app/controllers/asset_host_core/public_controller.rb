@@ -20,7 +20,7 @@ module AssetHostCore
       @asset = Asset.find(params[:id])
     
       # valid style?
-      style = Output.find_by_code!(params[:style])
+      output = Output.find_by_code!(params[:style])
     
       # do the fingerprints match? If not, redirect them to the correct URL
       if @asset.image_fingerprint && params[:aprint] != @asset.image_fingerprint
@@ -28,19 +28,19 @@ module AssetHostCore
       end
     
       # do we have a rendered output for this style?
-      ao = @asset.outputs.where(:output_id => style)
+      asset_outputs = @asset.outputs.where(output_id: output.id)
     
-      if ao.first
-        if ao.first.fingerprint
+      if asset_outputs.present?
+        if asset_outputs.first.fingerprint.present?
           # Yes, return the image
           # the file may still not have been written yet. loop a try to return it
         
-          (0..5).each do 
-            if @asset.image.exists? style.code_sym
+          5.times do 
+            if @asset.image.exists? output.code_sym
               # got it.  cache and return
               
-              path = @asset.image.path(style.code)
-              Rails.cache.write("img:#{@asset.id}:#{@asset.image_fingerprint}:#{style.code}",path)
+              path = @asset.image.path(output.code)
+              Rails.cache.write("img:#{@asset.id}:#{@asset.image_fingerprint}:#{output.code}",path)
               
               send_file path, :type => "image/jpeg", :disposition => 'inline' and return
             end
@@ -50,27 +50,27 @@ module AssetHostCore
           end
         
           # crap.  totally failed.
-          redirect_to @asset.image.url(style.code) and return
+          redirect_to @asset.image.url(output.code) and return
         else
 
           # we're in the middle of rendering
           # sleep for 500ms to try and let the render complete, then try again
           sleep 0.5
-          redirect_to @asset.image.url(style.code) and return
+          redirect_to @asset.image.url(output.code) and return
         end
       
       else
         # No, fire a render for the style
       
         # create an AssetOutput with no fingerprint
-        @asset.outputs.create(:output_id => style.id, :image_fingerprint => @asset.image_fingerprint)
+        @asset.outputs.create(output_id: output.id, image_fingerprint: @asset.image_fingerprint)
       
         # and fire the queue  
-        @asset.image.enqueue_styles(style.code)
+        @asset.image.enqueue_styles(output.code)
       
         # now, sleep for 500ms to try and let the render complete, then try again
         sleep 0.5
-        redirect_to @asset.image.url(style.code) and return
+        redirect_to @asset.image.url(output.code) and return
       end
     end
   end
