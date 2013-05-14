@@ -5,11 +5,9 @@ module AssetHostCore
     def self.perform(instance_klass, instance_id, attachment_name, style_args)
       instance = instance_klass.constantize.find(instance_id)
       
-      if style_args
-        style_args.collect! { |s| s.to_sym }
-      end
+      styles = style_args.map(&:to_sym) if style_args
       
-      instance.send(attachment_name).reprocess!(*style_args)
+      instance.send(attachment_name).reprocess!(*styles)
     end
   end
 end
