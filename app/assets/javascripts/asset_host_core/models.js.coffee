@@ -464,8 +464,8 @@ class AssetHost.Models
                         @set {"ASSET": $.parseJSON(@xhr.responseText)}
                         @trigger "uploaded", this
 
-            @xhr.open('POST',this.collection.urlRoot, true);
-            @xhr.setRequestHeader('X_FILE_NAME', @get('file').fileName)
+            @xhr.open('POST',this.collection.urlRoot, true)
+            @xhr.setRequestHeader('X_FILE_NAME', @get('file').name)
             @xhr.setRequestHeader('CONTENT_TYPE', @get('file').type)
             @xhr.setRequestHeader('HTTP_X_FILE_UPLOAD','true')
 
