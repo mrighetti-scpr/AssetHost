@@ -6,7 +6,7 @@ module AssetHostCore
     before_save :delete_cache_and_img, if: -> { self.fingerprint_changed? || self.image_fingerprint_changed? }
     before_destroy :delete_cache_and_img_and_fingerprint
     
-    after_commit :cache_img_path, if: -> { self.image_fingerprint? && self.fingerprint? }
+    after_commit :cache_img_path, if: -> { self.image_fingerprint.present? && self.fingerprint.present? }
 
     scope :rendered, -> { where("fingerprint != ''") }
     
@@ -45,7 +45,7 @@ module AssetHostCore
     
     # on destroy, we need to do the normal save deletes and also delete our fingerprint
     def delete_cache_and_img_and_fingerprint
-      self.delete_cache_and_img()
+      self.delete_cache_and_img
       
       # why do we bother clearing our fingerprint if the AssetOutput itself 
       # is about to get deleted? If we don't, the after_commit handler will 
