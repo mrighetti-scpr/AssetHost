@@ -1,12 +1,10 @@
 require "asset_host_core/engine"
 
-require "paperclip"
 require "asset_host_core/paperclip"
 
 require "asset_host_core/config"
 
 require "asset_host_core/resque_job"
-require "asset_host_core/asset_thumbnail"
 require "asset_host_core/model_methods"
 
 require "asset_host_core/loaders"
