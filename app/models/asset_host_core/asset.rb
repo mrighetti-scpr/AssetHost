@@ -43,7 +43,6 @@ module AssetHostCore
     })
 
     treat_as_image_asset :image
-    validates :image, attachment_presence: true
 
     before_create :sync_exif_data
 
