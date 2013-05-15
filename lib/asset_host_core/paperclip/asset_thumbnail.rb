@@ -1,10 +1,10 @@
-module AssetHostCore
+module Paperclip
   class AssetThumbnail < Paperclip::Thumbnail
     attr_accessor :prerender
     attr_accessor :output
     attr_accessor :asset
 
-    def initialize file, options = {}, attachment = nil
+    def initialize(file, options = {}, attachment = nil)
       @prerender    = options[:prerender]
       @size         = options[:size]
       @output       = options[:output]
@@ -23,6 +23,9 @@ module AssetHostCore
     def make
       # do we have an AssetOutput already?
       ao = @asset.outputs.where(:output_id => @output).first
+
+      $stdout.puts "***IN MAKE"
+      $stdout.puts ao
 
       dst = nil
 
