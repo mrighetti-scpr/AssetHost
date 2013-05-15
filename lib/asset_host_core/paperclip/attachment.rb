@@ -1,5 +1,3 @@
-require 'paperclip'
-
 module Paperclip
   class Attachment
     # Overwrite styles loader to allow caching despite dynamic loading
