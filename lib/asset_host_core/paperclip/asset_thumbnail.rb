@@ -22,10 +22,7 @@ module Paperclip
     # this output before. Afterward, update our  AssetOutput entry 
     def make
       # do we have an AssetOutput already?
-      ao = @asset.outputs.where(:output_id => @output).first
-
-      $stdout.puts "***IN MAKE"
-      $stdout.puts ao
+      ao = @asset.outputs.where(output_id: @output).first
 
       dst = nil
 
@@ -38,7 +35,7 @@ module Paperclip
         if @size =~ /(\d+)?x?(\d+)?([\#>])?$/ && $~[3] == "#"
           # crop...  scale using dimensions as minimums, then crop to dimensions
           scale = "-scale #{$~[1]}x#{$~[2]}^"
-          crop = "-crop #{$~[1]}x#{$~[2]}+0+0"
+          crop  = "-crop #{$~[1]}x#{$~[2]}+0+0"
 
           @convert_options = [@convert_options.shift,scale,crop,@convert_options].flatten
         else

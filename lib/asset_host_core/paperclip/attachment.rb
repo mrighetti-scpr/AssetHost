@@ -40,8 +40,8 @@ module Paperclip
     def enqueue
       # queue up any outputs that a) already exist or b) are set to prerender
       styles = [
-        AssetHostCore::Output.where(:prerender => true).collect(&:code_sym),
-        self.instance.outputs.collect { |ao| ao.output.code_sym }
+        AssetHostCore::Output.where(prerender: true).map(&:code_sym),
+        self.instance.outputs.map { |ao| ao.output.code_sym }
       ].flatten.uniq
       
       enqueue_styles(*styles)
