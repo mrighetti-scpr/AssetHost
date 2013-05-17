@@ -33,6 +33,15 @@ module AssetHostCore
       AssetHostCore::ResqueJob.instance_variable_set :@queue, Rails.application.config.assethost.resque_queue
     end
     
+    initializer 'asset_host_core.register_processor' do
+      Paperclip.configure do |c|
+        # Since this isn't in the standard location that Paperclip
+        # looks for it (lib/paperclip_processors), we should just
+        # register is manually to be safe.
+        c.register_processor :asset_thumbnail, Paperclip::AssetThumbnail
+      end
+    end
+
     # add resque's rake tasks
     rake_tasks do
       require "resque/tasks"
