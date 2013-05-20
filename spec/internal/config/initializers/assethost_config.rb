@@ -17,7 +17,7 @@ end
 
 AssetHostCore.configure do |config|
   config.flickr_api_key       = "flackrs"
-  config.youtube_api_key      = 'youtoobs'
+  config.google_api_key      = 'goggles'
   config.brightcove_api_key   = "brightcovs"
 
   config.thumb_size   = "thumb"

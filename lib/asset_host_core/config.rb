@@ -31,7 +31,7 @@ module AssetHostCore
 
     attr_accessor :flickr_api_key,
       :brightcove_api_key, 
-      :youtube_api_key,
+      :google_api_key,
       :thumb_size,
       :modal_size,
       :detail_size
