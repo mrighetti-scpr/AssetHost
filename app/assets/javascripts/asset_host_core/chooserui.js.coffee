@@ -26,15 +26,16 @@ class AssetHost.ChooserUI
         @drop.html @emptyMsg
         
         # set up collection and view to manage assets
-        @myassets = new AssetHost.Models.Assets
-        @assetsView = new AssetHost.Models.AssetDropView collection: @myassets
-        
+        @myassets       = new AssetHost.Models.Assets
+        @assetsView     = new AssetHost.Models.AssetDropView collection: @myassets
+        @urlInput       = new ChooserUI.URLInput(chooserUI: @)
+
         @assetsView.bind 'click', (asset) =>
             new ChooserUI.EditModal model:asset
         
         @assetsView.bind 'remove', (asset) => 
             @myassets.remove(asset)
-                
+        
         # connect to our AssetBrowser instance, if one is given        
         if @browser
             @browser.assets.bind "selected", (asset) => 
@@ -77,7 +78,8 @@ class AssetHost.ChooserUI
         
         # add our two lists into the drop zone
         @drop.append(@assetsView.el,@uploadsView.el)
-        
+        @drop.after(@urlInput.render())
+
         # should we add a Save and Close button to the display?
         if @options.saveButton
             @saveAndClose = new AssetHost.Models.SaveAndCloseView collection: @myassets
@@ -156,9 +158,7 @@ class AssetHost.ChooserUI
         else
             # drop is a URL. Pass it to AssetHost API and see what happens
             uri = evt.dataTransfer.getData 'text/uri-list'
-            
-            jQuery.ajax "#{AssetHost.PATH_PREFIX}/api/as_asset",
-                data: { url: uri},
+            @importUri uri,
                 success: (data) => 
                     # did we get an Asset in response?
                     if data.id
@@ -167,10 +167,53 @@ class AssetHost.ChooserUI
                     else
                         # No...  Display error
                         alert data.error
-		
+                        false
+
         false
-    
+
     #----------
+
+    importUri: (uri, callbacks={}) ->
+        $.ajax "#{AssetHost.PATH_PREFIX}/api/as_asset", 
+            _.extend
+                data: url: uri,
+                callbacks
+
+    #----------
+
+    class @URLInput extends Backbone.View
+        template: JST["asset_host_core/templates/url_input"]
+        className: "ah_chooser_url_input"
+        events:
+            'click button.add': "addToChooser"
+
+        initialize: (attributes={}) ->
+            @chooserUI  = attributes['chooserUI']
+
+        addToChooser: (event) ->
+            input = $(event.target).siblings('input')
+            uri   = input.val()
+            
+            @chooserUI.importUri uri,
+                success: _.bind @importSuccess, this
+                error: _.bind @importError, this
+                complete: _.bind @importComplete, this
+
+        importSuccess: (data, textStatus, jqXHR) ->
+            $('input', @$el).val('')
+
+        importError: (jqXHR, textStatus, errorThrown) ->
+            @$el.after("This URL couldn't be imported. (#{errorThrown})")
+        
+        importComplete: (jqXHR, status) ->
+            # done
+
+        # Must return $el
+        render: ->
+            @$el.html @template()
+
+    #----------
+
     
     class @EditModal extends Backbone.View
         template: JST["asset_host_core/templates/edit_modal"]
