@@ -49,6 +49,18 @@ module AssetHostCore
     after_commit :publish_asset_update, :if => :persisted?
     after_commit :publish_asset_delete, :on => :destroy
 
+
+    attr_accessible :title,
+      :caption,
+      :owner,
+      :url,
+      :notes,
+      :creator_id,
+      :image,
+      :image_taken,
+      :native
+
+
     #----------
     
     def size(code)

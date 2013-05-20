@@ -33,33 +33,27 @@ module AssetHostCore
             h = r['frameHeight']
           end
         end
-        
-        # create asset
+
+        @file = resp['videoStillURL']
+
+        native = AssetHostCore::BrightcoveVideo.create(
+          :videoid  => resp['id'],
+          :length   => resp['length']
+        )
+
+
         asset = AssetHostCore::Asset.new(
           :title          => resp["name"],
           :caption        => resp["shortDescription"],
           :owner          => "",
           :image_taken    => DateTime.strptime(resp["publishedDate"],"%Q"),
           :url            => nil,
-          :notes          => "Brightcove import as ID #{resp['id']}"
+          :notes          => "Brightcove import as ID #{resp['id']}",
+          :image          => image_file,
+          :native         => native
         )
         
-        self.file = resp['videoStillURL']
         
-        # add image
-        asset.image = image_file
-        
-        # now create our BrightcoveVideo native object
-        native = AssetHostCore::BrightcoveVideo.new(
-          :videoid  => resp['id'],
-          :length   => resp['length']
-        )
-        
-        native.save
-        
-        asset.native = native
-        
-        # save Asset
         asset.save
         asset
       end

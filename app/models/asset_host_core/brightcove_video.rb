@@ -2,6 +2,8 @@ module AssetHostCore
   class BrightcoveVideo < Video
     has_one :asset
 
+    attr_accessible :videoid, :length
+    
     def attrs
       {
         "data-assethost"  => "BrightcoveVideo",
