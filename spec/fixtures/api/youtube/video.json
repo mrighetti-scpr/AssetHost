@@ -1,0 +1,44 @@
+{
+  "kind": "youtube#videoListResponse",
+  "etag": "\"a0wP00HsE4pk2wtEZAypPNNMDK8/ytHEHvN3epLNhrb_4-Q3VvavyUI\"",
+  "pageInfo": {
+    "totalResults": 1,
+    "resultsPerPage": 1
+  },
+  "items": [
+    {
+      "id": "a1Y73sPHKxw",
+      "kind": "youtube#video",
+      "etag": "\"a0wP00HsE4pk2wtEZAypPNNMDK8/8RKzdMSjT69oZkqzsjAOHWStkE0\"",
+      "snippet": {
+        "publishedAt": "2007-06-20T00:35:29.000Z",
+        "channelId": "UCr1QbZ_vXF-lm8p2kJvrkww",
+        "title": "Dramatic Chipmunk",
+        "description": "The best 5 second clip on the internet.",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/a1Y73sPHKxw/default.jpg"
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/a1Y73sPHKxw/mqdefault.jpg"
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/a1Y73sPHKxw/hqdefault.jpg"
+          }
+        },
+        "channelTitle": "cregets",
+        "categoryId": "23"
+      },
+      "contentDetails": {
+        "duration": "PT5S",
+        "dimension": "2d",
+        "definition": "sd",
+        "caption": "false",
+        "licensedContent": false
+      },
+      "player": {
+        "embedHtml": "<iframe type='text/html' src='http://www.youtube.com/embed/a1Y73sPHKxw' width='640' height='360' frameborder='0' allowfullscreen='true'/>"
+      }
+    }
+  ]
+}
