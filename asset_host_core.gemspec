@@ -24,7 +24,11 @@ Gem::Specification.new do |s|
   s.add_dependency "resque", "~> 1.23.0"
   s.add_dependency "mini_exiftool", "~> 1.6.0"
 
+  s.add_dependency "faraday", "~> 0.8.7"
+  s.add_dependency "faraday_middleware", "~> 0.9.0"
+  s.add_dependency "google-api-client", "~> 0.6.3"
   s.add_dependency "brightcove-api", "~> 1.0.12"
+
   s.add_dependency "bootstrap-sass", "~> 2.3.1"
   s.add_dependency 'sass-rails',   '~> 3.2.3'
   s.add_dependency 'coffee-rails', '~> 3.2.1'
