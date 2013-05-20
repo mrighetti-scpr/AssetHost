@@ -156,7 +156,7 @@ class AssetHost.Models
                 @render()
             
         #----------
-                    
+        
         render: ->
             # set up views for each collection member
             @collection.each (f) => 
@@ -165,7 +165,7 @@ class AssetHost.Models
 
             # make sure all of our view elements are added
             @$el.append( _(@_views).map (v) -> v.el )
-
+            
             @$el.sortable
                 update: (evt,ui) => 
                     _(@el.children).each (li,idx) => 
