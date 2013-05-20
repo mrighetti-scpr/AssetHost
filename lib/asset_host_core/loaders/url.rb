@@ -10,7 +10,9 @@ module AssetHostCore
       #-----------
 
       def self.try_url(url)
-        uri       = URI.parse(url)
+        uri = URI.parse(url)
+        return nil unless uri.is_a?(URI::HTTP)
+
         response  = Net::HTTP.get_response(uri)
 
         # Check that it's actually an image we're grabbing
@@ -24,19 +26,16 @@ module AssetHostCore
       #----------
       
       def load
-        filename = @url.match(/\/(.+)$/)[0]
+        filename = File.basename(@url)
 
         # build asset
         asset = AssetHostCore::Asset.new(
           :title    => filename,
           :url      => @url,
-          :notes    => "Fetched from URL: #{@url}"
+          :notes    => "Fetched from URL: #{@url}",
+          :image    => image_file
         )
-        
-        # add image
-        asset.image = image_file
-        
-        # save Asset
+
         asset.save
         asset
       end

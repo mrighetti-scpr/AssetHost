@@ -31,5 +31,12 @@ describe AssetHostCore::Loaders::URL do
       asset.persisted?.should eq true
       asset.image.file?.should eq true
     end
+
+    it "sets the filename correctly" do
+      loader = AssetHostCore::Loaders::URL.try_url('http://imgur.com/a/whatever.jpg')
+      asset  = loader.load
+
+      asset.title.should eq "whatever.jpg"
+    end
   end
 end
