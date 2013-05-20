@@ -7,6 +7,8 @@ require "asset_host_core/config"
 require "asset_host_core/resque_job"
 require "asset_host_core/model_methods"
 
+require 'google/api_client'
+require 'faraday_middleware'
 require "asset_host_core/loaders"
 
 module AssetHostCore
