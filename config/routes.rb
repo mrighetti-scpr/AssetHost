@@ -36,8 +36,6 @@ AssetHostCore::Engine.routes.draw do
     end
 
     resources :outputs
-    resources :brightcove
-    
     
     match 'chooser', :to => "home#chooser", :as => 'chooser'
     

@@ -21,7 +21,7 @@
 
       <ul class="nav">
         <li><%= link_to "Assets", assethost.a_assets_path %></li>
-        <li><%= link_to "Brightcove", assethost.a_brightcove_index_path %></li>
+
       <% if current_user.is_admin? %>
         <li><%= link_to "Manage Outputs", assethost.a_outputs_path %></li>
       <% end %>
