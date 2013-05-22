@@ -48,4 +48,10 @@ ActiveRecord::Schema.define do
     t.integer :length
     t.timestamps
   end
+
+  create_table :asset_host_core_youtube_videos do |t|
+    t.integer :videoid, :null => false
+    t.timestamps
+  end
+
 end
