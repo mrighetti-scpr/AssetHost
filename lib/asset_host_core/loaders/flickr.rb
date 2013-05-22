@@ -65,11 +65,7 @@ module AssetHostCore
       private
 
       def image_file(url)
-        @image_file ||= begin
-          response = Net::HTTP.get_response(URI.parse(url))
-          file = Tempfile.new("IAFlickr", encoding: 'ascii-8bit')
-          file << response.body
-        end
+        @image_file ||= open(url)
       end
     end
 

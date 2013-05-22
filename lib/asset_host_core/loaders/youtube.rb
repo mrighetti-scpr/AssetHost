@@ -62,12 +62,7 @@ module AssetHostCore
       private
 
       def image_file(url)
-        @image_file ||= begin
-          uri = URI.parse(url)
-          response = Faraday.get(url)
-          file = Tempfile.new("IAYouTube", encoding: 'ascii-8bit')
-          file << response.body
-        end
+        @image_file ||= open(url)
       end
 
       def client
