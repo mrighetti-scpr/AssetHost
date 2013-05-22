@@ -169,7 +169,7 @@ class AssetHost.ChooserUI
 
     importSetup: (jqXHR, settings) ->
         $('.importNotification').hide()
-        @assetsView.$el.spin()
+        $(@assetsView.el).spin()
 
     importSuccess: (data, textStatus, jqXHR) ->
         # We might get a success response even if the asset wasn't imported
@@ -186,7 +186,7 @@ class AssetHost.ChooserUI
         $('#importError').show()
     
     importComplete: (jqXHR, status) ->
-        @assetsView.$el.spin(false)
+        $(@assetsView.el).spin(false)
 
     #----------
 
