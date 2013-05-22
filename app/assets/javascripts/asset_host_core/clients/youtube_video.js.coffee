@@ -1,9 +1,9 @@
 class AssetHost.Client.YoutubeVideo
-    template: JST['asset_host_core/templates/youtube_embed']
+    template: JST['asset_host_core/clients/templates/youtube_embed']
     
     constructor: (el, options={}) ->
         @el   = $(el)
-        
+
         # get videoid from data-ah-videoid attribute
         @videoid = @el.attr("data-ah-videoid")
         

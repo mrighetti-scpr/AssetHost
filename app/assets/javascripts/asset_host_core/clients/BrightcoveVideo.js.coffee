@@ -1,10 +1,11 @@
+
 class AssetHost.Client.BrightcoveVideo
     DefaultOptions:
         playerKey:      "AQ~~,AAAAmtVKbGE~,pW41hkPiaos27C7knwyeOWQgVlG4w7v5"
         playerId:       "1247178207001"
         brightcoveJS:   "http://admin.brightcove.com/js/BrightcoveExperiences_all.js"
     
-    template: JST['asset_host_core/templates/brightcove_embed']
+    template: JST['asset_host_core/clients/templates/brightcove_embed']
     
     constructor: (el, options={}) ->
         @opts = _.defaults options, @DefaultOptions
