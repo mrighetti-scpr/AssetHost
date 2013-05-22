@@ -4,6 +4,7 @@ require 'brightcove-api'
 module AssetHostCore
   module Loaders
     class Brightcove < Base
+      SOURCE = "Brightcove"
       
       # Since brightcove videos don't have canoncial URL's,
       # we have to make-up a way to import them
