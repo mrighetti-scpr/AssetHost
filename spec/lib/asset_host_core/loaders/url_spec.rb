@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe AssetHostCore::Loaders::URL do
-  describe '::try_url' do
+  describe '::build_from_url' do
     it 'returns a loader if the URL is an image' do
       FakeWeb.register_uri(:get, %r{imgur\.com}, 
         body: "raw image", content_type: "image/jpeg")
       
-      loader = AssetHostCore::Loaders::URL.try_url("http://imgur.com/a/whatever.jpg")
+      loader = AssetHostCore::Loaders::URL.build_from_url("http://imgur.com/a/whatever.jpg")
       loader.should_not eq nil
     end
 
@@ -14,7 +14,7 @@ describe AssetHostCore::Loaders::URL do
       FakeWeb.register_uri(:get, %r{news\.com}, 
         body: "Not an image!", content_type: "text/html")
       
-      loader = AssetHostCore::Loaders::URL.try_url("http://news.com/whatever.html")
+      loader = AssetHostCore::Loaders::URL.build_from_url("http://news.com/whatever.html")
       loader.should eq nil
     end
   end
@@ -26,14 +26,14 @@ describe AssetHostCore::Loaders::URL do
     end
 
     it 'creates and returns an asset' do
-      loader = AssetHostCore::Loaders::URL.try_url('http://imgur.com/a/whatever.jpg')
+      loader = AssetHostCore::Loaders::URL.build_from_url('http://imgur.com/a/whatever.jpg')
       asset = loader.load
       asset.persisted?.should eq true
       asset.image.file?.should eq true
     end
 
     it "sets the filename correctly" do
-      loader = AssetHostCore::Loaders::URL.try_url('http://imgur.com/a/whatever.jpg')
+      loader = AssetHostCore::Loaders::URL.build_from_url('http://imgur.com/a/whatever.jpg')
       asset  = loader.load
 
       asset.title.should eq "whatever.jpg"

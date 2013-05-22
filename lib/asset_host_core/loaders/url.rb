@@ -9,7 +9,7 @@ module AssetHostCore
 
       #-----------
 
-      def self.try_url(url)
+      def self.build_from_url(url)
         uri = URI.parse(url)
         return nil unless uri.is_a?(URI::HTTP)
 

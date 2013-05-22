@@ -5,50 +5,40 @@ module AssetHostCore
   module Loaders
     class Brightcove < Base
       
-      def self.try_url(url)
+      # Since brightcove videos don't have canoncial URL's,
+      # we have to make-up a way to import them
+      def self.build_from_url(url)
         return nil if AssetHostCore.config.brightcove_api_key.blank?
-        nil
+        
+        url.match(/brightcove:(?<id>\d+)/) do |m|
+          self.new(url: nil, id: m[:id])
+        end
       end
 
       #----------
       
+      # Brightcove videos don't have URL's
       def load
         brightcove = ::Brightcove::API.new(AssetHostCore.config.brightcove_api_key)
         
-        begin
-          # get our video info
-          response = brightcove.get("find_video_by_id", { :video_id => @id })
-        rescue
-          # invalid video...
-          return nil
-        end
+        # get our video info
+        response = brightcove.get("find_video_by_id", { video_id: @id }).parsed_response
         
-        resp = response.parsed_response
-        
-        w = h = 0
-        
-        resp['renditions'].each do |r|
-          if r['frameWidth'] > w
-            w = r['frameWidth']
-            h = r['frameHeight']
-          end
-        end
-
-        @file = resp['videoStillURL']
+        @file = response['videoStillURL']
 
         native = AssetHostCore::BrightcoveVideo.create(
-          :videoid  => resp['id'],
-          :length   => resp['length']
+          :videoid  => response['id'],
+          :length   => response['length']
         )
 
 
         asset = AssetHostCore::Asset.new(
-          :title          => resp["name"],
-          :caption        => resp["shortDescription"],
+          :title          => response["name"],
+          :caption        => response["shortDescription"],
           :owner          => "",
-          :image_taken    => DateTime.strptime(resp["publishedDate"],"%Q"),
+          :image_taken    => DateTime.strptime(response["publishedDate"],"%Q"),
           :url            => nil,
-          :notes          => "Brightcove import as ID #{resp['id']}",
+          :notes          => "Brightcove import as ID #{response['id']}",
           :image          => image_file,
           :native         => native
         )

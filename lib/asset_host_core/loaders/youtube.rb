@@ -5,7 +5,9 @@ module AssetHostCore
 
       #----------------
 
-      def self.try_url(url)
+      def self.build_from_url(url)
+        return nil if AssetHostCore.config.google_api_key.blank?
+        
         url.match(/youtube\.com\/watch\?.*v=(?<id>[\w-]+)/i) do |m|
           self.new(url: url, id: m[:id])
         end

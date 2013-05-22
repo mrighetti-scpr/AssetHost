@@ -7,12 +7,12 @@ module AssetHostCore
     class Flickr < Base
       SOURCE = "Flickr"
 
-      def self.try_url(url)
+      def self.build_from_url(url)
         return nil if AssetHostCore.config.flickr_api_key.blank?
 
         matches = [
           %r{flickr\.com/photos/[\w@]+/(?<id>\d+)},
-          %r{static\.flickr\.com/\d+/(?<id>\d+)_[\w\d]+}
+          %r{staticflickr\.com/\d+/(?<id>\d+)_[\w\d]+}
         ]
 
         match = nil

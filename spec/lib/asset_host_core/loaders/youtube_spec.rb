@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe AssetHostCore::Loaders::YouTube do
-  describe '::try_url' do
+  describe '::build_from_url' do
     it 'matches a youtube URL' do
-      loader = AssetHostCore::Loaders::YouTube.try_url('http://www.youtube.com/watch?v=y8Kyi0WNg40')
+      loader = AssetHostCore::Loaders::YouTube.build_from_url('http://www.youtube.com/watch?v=y8Kyi0WNg40')
       loader.should be_a AssetHostCore::Loaders::YouTube
     end
 
     it 'does not match other stuff' do
-      loader = AssetHostCore::Loaders::YouTube.try_url('nope.com/nope')
+      loader = AssetHostCore::Loaders::YouTube.build_from_url('nope.com/nope')
       loader.should eq nil
     end
   end
@@ -24,7 +24,7 @@ describe AssetHostCore::Loaders::YouTube do
       FakeWeb.register_uri(:get, %r{i\.ytimg\.com},
         content_type: "image/jpeg", body: load_image('chipmunk.jpg'))
 
-      @loader = AssetHostCore::Loaders::YouTube.try_url('http://www.youtube.com/watch?v=y8Kyi0WNg40')
+      @loader = AssetHostCore::Loaders::YouTube.build_from_url('http://www.youtube.com/watch?v=y8Kyi0WNg40')
       @asset  = @loader.load
     end
 

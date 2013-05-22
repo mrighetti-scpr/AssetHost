@@ -3,7 +3,7 @@ module AssetHostCore
     class AssetHost < Base
       SOURCE = "AssetHost"
 
-      def self.try_url(url)
+      def self.build_from_url(url)
         assethost_root = "#{Rails.application.config.assethost.server}#{AssetHostCore::Engine.mounted_path}"
 
         matches = [

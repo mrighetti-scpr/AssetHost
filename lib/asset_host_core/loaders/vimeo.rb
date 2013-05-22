@@ -5,7 +5,8 @@ module AssetHostCore
 
       #----------------
 
-      def self.try_url(url)
+      def self.build_from_url(url)
+        # Don't need a key just to read from the public API
         url.match(/vimeo\.com\/(?<id>\d+)/i) do |m|
           self.new(url: url, id: m[:id])
         end

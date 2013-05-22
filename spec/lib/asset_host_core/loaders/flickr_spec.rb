@@ -1,25 +1,25 @@
 require 'spec_helper'
 
 describe AssetHostCore::Loaders::Flickr do
-  describe '::try_url' do
+  describe '::build_from_url' do
     it 'matches flickr urls and returns a new loader' do
-      loader = AssetHostCore::Loaders::Flickr.try_url("http://www.flickr.com/photos/kpcc/123")
+      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://www.flickr.com/photos/kpcc/123")
       loader.should be_a AssetHostCore::Loaders::Flickr
       loader.id.should eq "123"
 
-      loader = AssetHostCore::Loaders::Flickr.try_url("http://static.flickr.com/999/456_abc")
+      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://static.flickr.com/999/456_abc")
       loader.should be_a AssetHostCore::Loaders::Flickr
       loader.id.should eq "456"
     end
 
     it "returns nil if the URL doesn't match" do
-      loader = AssetHostCore::Loaders::Flickr.try_url("http://nope.nope/nope")
+      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://nope.nope/nope")
       loader.should eq nil
     end
 
     it 'returns nil if flickr key is not set' do
       AssetHostCore.config.stub(:flickr_api_key) { nil }
-      loader = AssetHostCore::Loaders::Flickr.try_url("http://static.flickr.com/999/456_abc")
+      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://static.flickr.com/999/456_abc")
 
       loader.should eq nil
     end

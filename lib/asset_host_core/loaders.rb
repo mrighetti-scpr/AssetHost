@@ -20,7 +20,7 @@ module AssetHostCore
     class << self
       def load(url)
         loader = nil
-        MODULES.find { |klass| loader = klass.try_url(url) }
+        MODULES.find { |klass| loader = klass.build_from_url(url) }
         loader.try(:load)
       end
       
