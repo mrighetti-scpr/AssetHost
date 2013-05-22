@@ -1,10 +1,10 @@
 module AssetHostCore
   class BrightcoveVideo < Video
-    attr_accessible :videoid, :length
+    attr_accessible :length
     
     def attrs
       {
-        "data-assethost"  => "BrightcoveVideo",
+        "data-assethost"  => "BrightcoveVideo", # The native client class
         "data-ah-videoid" => self.videoid
       }
     end

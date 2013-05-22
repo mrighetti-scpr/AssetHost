@@ -1,7 +1,5 @@
 module AssetHostCore
   class YoutubeVideo < Video
-    attr_accessible :videoid
-    
     def attrs
       {
         "data-assethost"  => "YoutubeVideo",

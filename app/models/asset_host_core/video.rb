@@ -3,5 +3,6 @@ module AssetHostCore
     self.abstract_class = true
 
     has_one :asset
+    attr_accessible :videoid
   end
 end
