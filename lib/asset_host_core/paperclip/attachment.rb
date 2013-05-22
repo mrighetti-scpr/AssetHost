@@ -158,7 +158,7 @@ module Paperclip
       return nil if !s
 
       if (s.instance_variable_get :@other_args)[:rich] && self.instance.native
-        args = args.merge(self.instance.native.attrs())
+        args = args.merge(self.instance.native.attrs)
       end
 
       htmlargs = args.collect { |k,v| %Q!#{k}="#{v}"! }.join(" ")

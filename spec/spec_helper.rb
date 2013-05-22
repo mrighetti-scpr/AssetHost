@@ -26,8 +26,4 @@ RSpec.configure do |config|
 
   config.include FactoryGirl::Syntax::Methods
   config.include FixtureLoader
-
-  config.before :each do
-    # FakeWeb
-  end
 end
