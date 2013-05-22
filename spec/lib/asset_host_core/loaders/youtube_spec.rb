@@ -30,6 +30,11 @@ describe AssetHostCore::Loaders::YouTube do
 
     it 'creates a new asset' do
       @asset.should be_a AssetHostCore::Asset
+      @asset.persisted?.should eq true
+    end
+
+    it 'sets the native to be a youtube video' do
+      @asset.native.should be_a AssetHostCore::YoutubeVideo
     end
 
     it 'sets the owner' do

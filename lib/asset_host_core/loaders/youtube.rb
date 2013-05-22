@@ -24,6 +24,10 @@ module AssetHostCore
         snippet = video["snippet"]
         return nil if !snippet
 
+        native = AssetHostCore::YoutubeVideo.create(
+          :videoid => video["id"]
+        )
+
         asset = AssetHostCore::Asset.new(
           :image          => image_file(snippet["thumbnails"]["high"]["url"]),
           :title          => snippet["title"],
@@ -31,7 +35,8 @@ module AssetHostCore
           :url            => @url,
           :owner          => "#{snippet["channelTitle"]} (via YouTube)",
           :notes          => "Imported from YouTube: #{@url}",
-          :image_taken    => snippet["publishedAt"]
+          :image_taken    => snippet["publishedAt"],
+          :native         => native
         )
 
         asset.save
