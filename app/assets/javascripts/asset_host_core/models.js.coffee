@@ -128,11 +128,11 @@ class AssetHost.Models
         #----------
             
         render: ->
-            @$el.html @template
+            $(@el).html @template
                 asset: @model.toJSON()
                 chop: @model.chopCaption()
 
-            @$el.attr "data-asset-id", @model.get("id")
+            $(@el).attr "data-asset-id", @model.get("id")
             @
     
     #----------
@@ -164,9 +164,9 @@ class AssetHost.Models
                 @_views[f.cid] ?= new Models.AssetDropAssetView(model: f, drop: @)
 
             # make sure all of our view elements are added
-            @$el.append( _(@_views).map (v) -> v.el )
+            $(@el).append( _(@_views).map (v) -> v.el )
             
-            @$el.sortable
+            $(@el).sortable
                 update: (evt,ui) => 
                     _(@el.children).each (li,idx) => 
                         id = $(li).attr('data-asset-id')
@@ -191,11 +191,11 @@ class AssetHost.Models
             @search() if e.which == 13
             
         search: ->
-            query = @$el.find("input")[0].value
+            query = $(@el).find("input")[0].value
             @trigger "search", query
             
         render: ->
-            @$el.html @template(query: @collection.query())
+            $(@el).html @template(query: @collection.query())
             @
         
     #----------
@@ -207,24 +207,24 @@ class AssetHost.Models
         
         initialize: ->
             @id = "ab_#{@model.get('id')}"
-            @$el.attr("data-asset-url",@model.get('url'))
+            $(@el).attr("data-asset-url",@model.get('url'))
 
             @render()
             
-            @$el.find('button')[0].addEventListener "click", (evt) => 
+            $(@el).find('button')[0].addEventListener "click", (evt) => 
                 @trigger "click", @model
                 true
             
             # add tooltip
-            @$el.tooltip
+            $(@el).tooltip
                 title: @tipTemplate(@model.toJSON())
                 html: true
 
             @model.bind "change", => @render()
         
         render: ->
-            @$el.html @template(@model.toJSON())
-            @$el.attr "draggable", true
+            $(@el).html @template(@model.toJSON())
+            $(@el).attr "draggable", true
             @
         
     #----------
@@ -246,11 +246,11 @@ class AssetHost.Models
             @_pages ?= (new AssetHost.Models.PaginationLinks(@collection)).render()
             
         loading: ->
-            @$el.css(opacity: ".1")
+            $(@el).css(opacity: ".1")
             @container.spin()
 
         doneLoading: ->
-            @$el.css(opacity: "1")
+            $(@el).css(opacity: "1")
             @container.spin(false)
 
         render: ->
@@ -261,7 +261,7 @@ class AssetHost.Models
                 @_views[a.cid].bind "click", (a) => @trigger "click", a
                 
             # make sure all of our view elements are added
-            @$el.append( _(@_views).map (v) -> v.el )
+            $(@el).append( _(@_views).map (v) -> v.el )
             
             # clear loading status
             @doneLoading()
@@ -285,7 +285,7 @@ class AssetHost.Models
             $(@render().el).on "hide", => @options.close?()
         
         close: ->
-            @$el.modal('hide')
+            $(@el).modal('hide')
         
         _select: ->
             @close()
@@ -296,7 +296,7 @@ class AssetHost.Models
             @model.trigger('admin',@model)
         
         render: ->
-            @$el.html @template 
+            $(@el).html @template 
                 asset: @model.toJSON()
                 select: if @options.select? then @options.select else true
                 admin: if @options.admin? then @options.admin else false
@@ -319,7 +319,7 @@ class AssetHost.Models
             @trigger 'saveAndClose', @collection.toJSON()
         
         render: ->
-            @$el.html @template(count: @collection.size())
+            $(@el).html @template(count: @collection.size())
             @
         
     #----------
@@ -427,7 +427,7 @@ class AssetHost.Models
                     rendered[ i ] = true
             
 
-            @$el.html @template
+            $(@el).html @template
                 current: current
                 pages: pages
                 links: links.join(@options.separator)
@@ -538,9 +538,9 @@ class AssetHost.Models
             @model.upload()
 
         render: ->
-            @$el.attr('class',@model.get("STATUS"))
+            $(@el).attr('class',@model.get("STATUS"))
 
-            @$el.html @template
+            $(@el).html @template
                 exif: @exif
                 name: @model.get('name')
                 size: @model.readableSize()
@@ -549,7 +549,7 @@ class AssetHost.Models
                 xhr: if @model.xhr then true else false
             
             
-            @$el.prepend(@img) if @img
+            $(@el).prepend(@img) if @img
             @
 
     #----------

@@ -49,7 +49,7 @@ class AssetHost.AssetAdmin
                 @render()
 
         render: -> 
-            @$el.html @template
+            $(@el).html @template
                 asset: @model.toJSON()
                 tag: @size 
 

@@ -1,5 +1,5 @@
 #= require ./assethost
-#= require backbone.min
+#= require backbone
 #= require ./models
 
 class AssetHost.Slideshow
@@ -7,8 +7,8 @@ class AssetHost.Slideshow
         el:         "#photo"
         deeplink:   false
 
-    constructor: (options) ->
-        @options = _(_({}).extend(@DefaultOptions)).extend options||{}
+    constructor: (options={}) ->
+        @options = _.defaults options, @DefaultOptions
         
         # add in events
         _.extend(this, Backbone.Events)

@@ -224,14 +224,14 @@ class AssetHost.ChooserUI
 
         importSetup: (jqXHR, settings) ->
             $('.importNotification').hide()
-            @$el.spin('small')
+            $(@el).spin('small')
 
         importSuccess: (data, textStatus, jqXHR) ->
             # We might get a success response even if the asset wasn't imported
             if data.id
                 $('#importSuccess').html('Successfully imported.')
                 $('#importSuccess').show()
-                $('input', @$el).val('')
+                $('input', $(@el)).val('')
                 @chooserUI.myassets.add data
             else
                 $('#importError').html("This URL couldn't be imported.")
@@ -242,11 +242,11 @@ class AssetHost.ChooserUI
             $('#importError').show()
         
         importComplete: (jqXHR, status) ->
-            @$el.spin(false)
+            $(@el).spin(false)
 
         # Must return $el
         render: ->
-            @$el.html @template()
+            $(@el).html @template()
 
     #----------
 
@@ -287,7 +287,7 @@ class AssetHost.ChooserUI
             
         close: ->
             Backbone.ModelBinding.unbind(this)
-            @$el.modal('hide')
+            $(@el).modal('hide')
         
         #----------
         
@@ -315,7 +315,7 @@ class AssetHost.ChooserUI
         #----------    
         
         render: ->
-            @$el.html @template(@model.toJSON())
+            $(@el).html @template(@model.toJSON())
             
             # set metadata state
             @$(".meta_dirty").hide()
@@ -349,7 +349,7 @@ class AssetHost.ChooserUI
             
         render: ->
             if @ids
-                @$el.html @template(text: @text)
+                $(@el).html @template(text: @text)
 
 
     #----------
@@ -373,6 +373,6 @@ class AssetHost.ChooserUI
                 (i,f) -> if f.xhr then i else i+1
             , 0)
             
-            @$el.html if staged > 1 then @template(count: staged) else ''
+            $(@el).html if staged > 1 then @template(count: staged) else ''
                 
             @
