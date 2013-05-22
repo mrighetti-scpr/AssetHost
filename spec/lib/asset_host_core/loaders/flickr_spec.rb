@@ -7,7 +7,7 @@ describe AssetHostCore::Loaders::Flickr do
       loader.should be_a AssetHostCore::Loaders::Flickr
       loader.id.should eq "123"
 
-      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://static.flickr.com/999/456_abc")
+      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://staticflickr.com/999/456_abc")
       loader.should be_a AssetHostCore::Loaders::Flickr
       loader.id.should eq "456"
     end
@@ -19,7 +19,7 @@ describe AssetHostCore::Loaders::Flickr do
 
     it 'returns nil if flickr key is not set' do
       AssetHostCore.config.stub(:flickr_api_key) { nil }
-      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://static.flickr.com/999/456_abc")
+      loader = AssetHostCore::Loaders::Flickr.build_from_url("http://staticflickr.com/999/456_abc")
 
       loader.should eq nil
     end
@@ -44,7 +44,7 @@ describe AssetHostCore::Loaders::Flickr do
 
 
       it 'gets the image information from flickr' do
-        loader  = AssetHostCore::Loaders::Flickr.new(url: "http://static.flickr.com/999/456_abc", id: "456")
+        loader  = AssetHostCore::Loaders::Flickr.new(url: "http://staticflickr.com/999/456_abc", id: "456")
         asset   = loader.load
 
         asset.title.should eq "John's Wayne cowboy hat"
@@ -53,7 +53,7 @@ describe AssetHostCore::Loaders::Flickr do
       end
 
       it "uses the last size as the source image" do
-        loader  = AssetHostCore::Loaders::Flickr.new(url: "http://static.flickr.com/999/456_abc", id: "456")
+        loader  = AssetHostCore::Loaders::Flickr.new(url: "http://staticflickr.com/999/456_abc", id: "456")
         loader.should_receive(:image_file).with("http://farm7.staticflickr.com/6112/6238340909_234e5623a1_o.jpg")
         loader.load
       end
