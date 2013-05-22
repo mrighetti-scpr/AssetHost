@@ -48,5 +48,9 @@ describe AssetHostCore::Loaders::YouTube do
     it 'sets the caption' do
       @asset.caption.should match /best 5 second clip/
     end
+    
+    it 'sets the image' do
+      @asset.image.should be_a Paperclip::Attachment
+    end
   end
 end
