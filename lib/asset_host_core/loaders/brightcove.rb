@@ -34,7 +34,7 @@ module AssetHostCore
         asset = AssetHostCore::Asset.new(
           :title          => response["name"],
           :caption        => response["shortDescription"],
-          :owner          => "",
+          :owner          => "KPCC",
           :image_taken    => DateTime.strptime(response["publishedDate"],"%Q"),
           :url            => nil,
           :notes          => "Brightcove import as ID #{response['id']}",
