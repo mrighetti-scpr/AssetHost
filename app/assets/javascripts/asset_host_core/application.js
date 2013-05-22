@@ -11,6 +11,7 @@
 //= require spin.min
 //= require spin.jquery
 
+//= require bootstrap-transition
 //= require bootstrap-tooltip
 //= require bootstrap-modal
 

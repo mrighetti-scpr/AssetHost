@@ -36,7 +36,7 @@ class AssetHost.ChooserUI
         @assetsView.bind 'remove', (asset) => 
             @myassets.remove(asset)
         
-        # connect to our AssetBrowser instance, if one is given        
+        # connect to our AssetBrowser instance, if one is given
         if @browser
             @browser.assets.bind "selected", (asset) => 
                 @myassets.add(asset)
@@ -50,7 +50,7 @@ class AssetHost.ChooserUI
         @uploads.bind "uploaded", (f) =>
             # add this to our selected assets
             @myassets.add(f.get('ASSET'))
-            
+
             # also add it to our browser, just for fun
             @browser?.assets?.add f.get('ASSET')
 
@@ -65,7 +65,9 @@ class AssetHost.ChooserUI
         
         # manage the upload all button
         @uploadAll = new ChooserUI.UploadAllButton collection:@uploads
-        @drop.after @uploadAll.el
+
+        @drop.append(@assetsView.el, @uploadsView.el)
+        @drop.after(@urlInput.render()) # Below all the buttons
         
         # manage button that pops up after uploads
         if @options.afterUploadURL and @options.afterUploadText
@@ -76,9 +78,8 @@ class AssetHost.ChooserUI
                 
             @drop.after @afterUpload.el
         
-        # add our two lists into the drop zone
-        @drop.append(@assetsView.el,@uploadsView.el)
-        @drop.after(@urlInput.render())
+        @drop.after(@uploadAll.el)
+
 
         # should we add a Save and Close button to the display?
         if @options.saveButton
@@ -159,17 +160,33 @@ class AssetHost.ChooserUI
             # drop is a URL. Pass it to AssetHost API and see what happens
             uri = evt.dataTransfer.getData 'text/uri-list'
             @importUri uri,
-                success: (data) => 
-                    # did we get an Asset in response?
-                    if data.id
-                        # Yes...  Add as asset
-                        @myassets.add data
-                    else
-                        # No...  Display error
-                        alert data.error
-                        false
-
+                beforeSend: _.bind @importSetup, this
+                success: _.bind @importSuccess, this
+                error: _.bind @importError, this
+                complete: _.bind @importComplete, this
+        
         false
+
+    importSetup: (jqXHR, settings) ->
+        $('.importNotification').hide()
+        @assetsView.$el.spin()
+
+    importSuccess: (data, textStatus, jqXHR) ->
+        # We might get a success response even if the asset wasn't imported
+        if data.id
+            $('#importSuccess').html('Successfully imported.')
+            $('#importSuccess').show()
+            @myassets.add data
+        else
+            $('#importError').html("This URL couldn't be imported.")
+            $('#importError').show()
+
+    importError: (jqXHR, textStatus, errorThrown) ->
+        $('#importError').html("This URL couldn't be imported. (#{errorThrown})")
+        $('#importError').show()
+    
+    importComplete: (jqXHR, status) ->
+        @assetsView.$el.spin(false)
 
     #----------
 
@@ -181,38 +198,59 @@ class AssetHost.ChooserUI
 
     #----------
 
+
+
     class @URLInput extends Backbone.View
         template: JST["asset_host_core/templates/url_input"]
         className: "ah_chooser_url_input"
         events:
-            'click button.add': "addToChooser"
+            'click a.add': "addToChooser"
 
         initialize: (attributes={}) ->
             @chooserUI  = attributes['chooserUI']
 
         addToChooser: (event) ->
+            event.preventDefault()
+            event.stopPropagation()
+
             input = $(event.target).siblings('input')
             uri   = input.val()
             
             @chooserUI.importUri uri,
+                beforeSend: _.bind @importSetup, this
                 success: _.bind @importSuccess, this
                 error: _.bind @importError, this
                 complete: _.bind @importComplete, this
 
+        importSetup: (jqXHR, settings) ->
+            $('.importNotification').hide()
+            @$el.spin('small')
+
         importSuccess: (data, textStatus, jqXHR) ->
-            $('input', @$el).val('')
+            # We might get a success response even if the asset wasn't imported
+            if data.id
+                $('#importSuccess').html('Successfully imported.')
+                $('#importSuccess').show()
+                $('input', @$el).val('')
+                @chooserUI.myassets.add data
+            else
+                $('#importError').html("This URL couldn't be imported.")
+                $('#importError').show()
 
         importError: (jqXHR, textStatus, errorThrown) ->
-            @$el.after("This URL couldn't be imported. (#{errorThrown})")
+            $('#importError').html("This URL couldn't be imported. (#{errorThrown})")
+            $('#importError').show()
         
         importComplete: (jqXHR, status) ->
-            # done
+            @$el.spin(false)
 
         # Must return $el
         render: ->
             @$el.html @template()
 
     #----------
+
+
 
     
     class @EditModal extends Backbone.View
@@ -293,7 +331,7 @@ class AssetHost.ChooserUI
     class @AfterUploadButton extends Backbone.View
         template: JST['asset_host_core/templates/after_upload_button']
         events:
-            'click button': '_clicked'
+            'click a': '_clicked'
             
         initialize: (options) ->
             @text   = options.text
@@ -304,7 +342,9 @@ class AssetHost.ChooserUI
                 @ids.push f.get('ASSET').id
                 @render()
         
-        _clicked: ->
+        _clicked: (event) ->
+            event.preventDefault()
+            event.stopPropagation()
             window.location = _.template @url.replace(/{{([^}]+)}}/,"<%= $1 %>"), ids:@ids.join(",") 
             
         render: ->

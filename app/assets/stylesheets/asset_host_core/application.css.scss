@@ -345,6 +345,12 @@ span.asset_tip {
     } 
 }
 
+
+.ah_chooser_url_input {
+  margin-top: 10px;
+  input { margin: 0 5px 0 0; } // Override bootstrap style
+}
+
 .BrightcoveVideoOverlay {
     filter:alpha(opacity=50);
     opacity: 0.5;

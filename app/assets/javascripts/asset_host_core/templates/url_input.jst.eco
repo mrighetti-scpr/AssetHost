@@ -1,1 +1,7 @@
-<input type="text" name="url_input" /><button class="add">Add</button>
+<input type="text" name="url_input" id="urlInput" /><a class="add btn" href="#">Add</a>
+<a href="#importHelp" role="button" class="btn btn-primary" data-toggle="modal" style="margin-top:10px;">Importing Help</a>
+
+<div id="importError" class="alert alert-error importNotification" style="display:none; margin-top: 10px"></div>
+<div id="importSuccess" class="alert alert-success importNotification" style="display:none; margin-top: 10px"></div>
+
+<%- JST['asset_host_core/templates/import_help']() %>
