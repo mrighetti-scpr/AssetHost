@@ -19,16 +19,16 @@ class AssetHost.BrowserUI
         if @options.total
             @assets.total_entries = @options.total
                         
-        @browserEl = $( @options.assetBrowserEl )
+        @browserEl = $(@options.assetBrowserEl)
         @browser = new AssetHost.Models.AssetBrowserView collection: @assets
 
         @browserEl.html @browser.el
         @browserEl.after @browser.pages().el
-                
+
         # add search box
         @search = new AssetHost.Models.AssetSearchView collection:@assets
         $('#search_box').html @search.render().el
-                
+        
         # -- Handle Routing -- #
         
         @router = new BrowserUI.Router
@@ -53,15 +53,15 @@ class AssetHost.BrowserUI
         @browser.bind "click", (asset) =>
             @clearDisplay()
             @_previewAsset(asset)
-            
+
         Backbone.history.start pushState:true, root:@options.root_path
-        
+
         $(@browserEl).delegate "button", "dragstart", (evt) ->
             if url = $(evt.currentTarget).attr 'data-asset-url'
                 evt.originalEvent.dataTransfer.setData 'text/uri-list', url
         
         @assets.trigger 'reset'
-    
+
     #----------
         
     navToAssets: ->

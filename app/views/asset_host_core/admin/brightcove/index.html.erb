@@ -25,15 +25,15 @@
 <script type="text/javascript">
     var browser = new AssetHost.BrowserUI({
         root_path: '/a/brightcove',
-        assets:<%= @assets.map(&:json).to_json.html_safe %>,
+        assets: <%= @assets.to_json.html_safe %>,
         page: <%= @assets.current_page %>,
         total: <%= @assets.total_count %>,
         query: <%= @query.to_json.html_safe %>,
         modalSelect: true,
         modalAdmin: false
-    })
+    });
+
     browser.assets.bind('selected',function (a) { 
         window.location = AssetHost.PATH_PREFIX+"/a/assets/"+a.get("id")
-    })
-
+    });
 </script>

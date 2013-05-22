@@ -14,10 +14,10 @@ class AssetHost.ChooserUI
         @options = _.defaults options, @DefaultOptions
         
         # add in events
-        _.extend(this, Backbone.Events)
+        _.extend @, Backbone.Events
         
         # do we have an asset browser to attach to?
-        @browser = this.options.browser || false 
+        @browser = @options.browser || false 
         
         @drop = $( @options['dropEl'] )
         

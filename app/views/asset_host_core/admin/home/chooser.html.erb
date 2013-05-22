@@ -24,14 +24,16 @@
 </div>
 
 <script type="text/javascript">
+  var browser = new AssetHost.BrowserUI({
+    assets: <%= @assets.to_json.html_safe %>,
+    page: <%= @assets.current_page %>,
+    total: <%= @assets.total_count %>,
+    modalSelect: true,
+    modalAdmin: true
+  });
+
   chooser = new AssetHost.ChooserUI({
-    browser:new AssetHost.BrowserUI({
-      assets:<%= @assets.map(&:json).to_json.html_safe %>,
-      page: <%= @assets.current_page %>,
-      total: <%= @assets.total_count %>,
-      modalSelect: true,
-      modalAdmin: true
-    });
+    browser: browser
   });
   
   window.opener.postMessage("LOADED","*");

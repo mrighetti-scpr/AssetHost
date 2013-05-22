@@ -11,9 +11,9 @@
         query: <%= @query.to_json.html_safe %>,
         modalSelect: true,
         modalAdmin: false
-    })
+    });
 
     browser.assets.bind('selected',function (a) { 
         window.location = "<%= assethost.a_assets_path %>/"+a.get("id")
-    })
+    });
 </script>
