@@ -35,7 +35,7 @@ module AssetHostCore
           :native         => native
         )
 
-        asset.save
+        asset.save!
         asset
       end
 

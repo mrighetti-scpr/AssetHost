@@ -55,7 +55,7 @@ module AssetHostCore
         end
         
         # save Asset
-        asset.save
+        asset.save!
         asset
       end
       

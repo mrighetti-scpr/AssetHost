@@ -43,7 +43,7 @@ module AssetHostCore
         )
         
         
-        asset.save
+        asset.save!
         asset
       end
       
