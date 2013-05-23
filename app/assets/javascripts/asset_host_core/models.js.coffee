@@ -49,7 +49,7 @@ class AssetHost.Models
         
     class @PaginatedAssets extends @Assets
         initialize: ->
-            _.bindAll(this, 'parse','url')
+            _.bindAll(this, 'parse', 'url')
             
             @_page          = 1
             @_query         = ''
@@ -58,12 +58,10 @@ class AssetHost.Models
             
             @
         
-        parse: (resp, options={}) ->
-            xhr = options.xhr
-
+        parse: (resp, xhr) ->
             @next_page      = xhr.getResponseHeader('X-Next-Page')
             @total_entries  = xhr.getResponseHeader('X-Total-Entries')
-            
+
             resp
             
         url: ->
