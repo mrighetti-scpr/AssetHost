@@ -37,7 +37,6 @@ module AssetHostCore
         )
 
         asset.save
-        $stdout.puts asset.errors.full_messages
         asset
       end
 
