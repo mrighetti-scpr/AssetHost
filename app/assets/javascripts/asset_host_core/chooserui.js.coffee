@@ -85,7 +85,7 @@ class AssetHost.ChooserUI
         if @options.saveButton
             @saveAndClose = new AssetHost.Models.SaveAndCloseView collection: @myassets
             @saveAndClose.bind 'saveAndClose', (json) => @trigger 'saveAndClose', json
-            @drop.after @saveAndClose.el
+            @drop.before @saveAndClose.el
             
         # attach drag-n-drop listeners to my_assets
         @drop.bind "dragenter", (evt) => @_dropDragEnter evt
