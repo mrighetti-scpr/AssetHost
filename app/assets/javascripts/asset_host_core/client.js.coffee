@@ -3,8 +3,12 @@
 #= require underscore.min
 #= require ./slideshow
 
+#= require spin.jquery
+#= require spin.min
+
 #= require_self
-#= require_tree ./clients
+#= require_directory ./clients/templates
+#= require_directory ./clients
 
 class AssetHost.Client
     DefaultOptions:

@@ -14,14 +14,47 @@ module AssetHostCore
 
       #----------------
 
+      def load
+        data = fetch_data
+
+        video = data[0]
+        return nil if !video
+
+        native = AssetHostCore::VimeoVideo.create(
+          :videoid => video["id"]
+        )
+
+        asset = AssetHostCore::Asset.new(
+          :image          => image_file(video["thumbnail_large"]),
+          :title          => video["title"],
+          :caption        => video["title"], # Description is too long
+          :url            => @url,
+          :owner          => "#{video["user_name"]} (via Vimeo)",
+          :notes          => "Imported from Vimeo: #{@url}",
+          :image_taken    => video["upload_date"],
+          :native         => native
+        )
+
+        asset.save
+        asset
+      end
+
+      #----------------
+
       def fetch_data
-        connection.get do |request|
+        response = connection.get do |request|
           request.url "video/#{@id}.json"
         end
+
+        response.body
       end
 
 
       private
+
+      def image_file(url)
+        @image_file ||= open(url)
+      end
 
       def connection
         @connection ||= begin

@@ -2,8 +2,8 @@ require "asset_host_core/loaders/base"
 require "asset_host_core/loaders/asset_host"
 require "asset_host_core/loaders/youtube"
 require "asset_host_core/loaders/vimeo"
-require "asset_host_core/loaders/brightcove"
 require "asset_host_core/loaders/flickr"
+require "asset_host_core/loaders/brightcove"
 require "asset_host_core/loaders/url"
 
 module AssetHostCore
@@ -12,9 +12,10 @@ module AssetHostCore
     MODULES = [
       AssetHost,
       YouTube,
+      Vimeo,
       Flickr,
       Brightcove,
-      URL
+      URL # This needs to be last, to act as a last-resort.
     ]
 
     class << self
