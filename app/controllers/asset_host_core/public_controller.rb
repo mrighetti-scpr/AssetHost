@@ -14,11 +14,19 @@ module AssetHostCore
       # if we have a cache key with aprint and style, assume we're good 
       # to just return that value
       if img = Rails.cache.read("img:#{params[:id]}:#{params[:aprint]}:#{params[:style]}")
-        send_file img, type: "image/jpeg", disposition: 'inline' and return
+        _send_file(img) and return
       end
     
       @asset = Asset.find(params[:id])
-    
+
+      # Special case for "original"
+      # This isn't a "style", just someone has requested 
+      # the raw image file.
+      if params[:aprint] == "original"
+        _send_file(@asset.image.path) and return
+      end
+
+
       # valid style?
       output = Output.find_by_code!(params[:style])
     
@@ -46,7 +54,7 @@ module AssetHostCore
               path = @asset.image.path(output.code)
               Rails.cache.write("img:#{@asset.id}:#{@asset.image_fingerprint}:#{output.code}",path)
               
-              send_file path, type: "image/jpeg", disposition: 'inline' and return
+              _send_file(path) and return
             end
           
             # nope... sleep!
@@ -76,6 +84,13 @@ module AssetHostCore
         sleep 0.5
         redirect_to @asset.image.url(output.code) and return
       end
+    end
+
+
+    private
+
+    def _send_file(file)
+      send_file file, type: "image/jpeg", disposition: 'inline'
     end
   end
 end
