@@ -36,7 +36,8 @@ module AssetHostCore
           :image    => image_file
         )
 
-        asset.save!
+        asset.save
+        $stdout.puts asset.errors.full_messages
         asset
       end
 
