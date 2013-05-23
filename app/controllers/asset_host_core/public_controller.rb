@@ -2,7 +2,7 @@ module AssetHostCore
   class PublicController < ApplicationController
     
     def home
-      render :text => "", :status => :ok, :layout => false
+      render text: "", status: :ok, layout: false
     end
     
     #----------
@@ -14,7 +14,7 @@ module AssetHostCore
       # if we have a cache key with aprint and style, assume we're good 
       # to just return that value
       if img = Rails.cache.read("img:#{params[:id]}:#{params[:aprint]}:#{params[:style]}")
-        send_file img, :type => "image/jpeg", :disposition => 'inline' and return
+        send_file img, type: "image/jpeg", disposition: 'inline' and return
       end
     
       @asset = Asset.find(params[:id])
@@ -24,7 +24,11 @@ module AssetHostCore
     
       # do the fingerprints match? If not, redirect them to the correct URL
       if @asset.image_fingerprint && params[:aprint] != @asset.image_fingerprint
-        redirect_to image_path(:aprint => @asset.image_fingerprint, :id => @asset.id, :style => params[:style]), :status => :moved_permanently and return
+        redirect_to image_path(
+          :aprint   => @asset.image_fingerprint,
+          :id       => @asset.id,
+          :style    => params[:style]
+        ), status: :moved_permanently and return
       end
     
       # do we have a rendered output for this style?
@@ -42,7 +46,7 @@ module AssetHostCore
               path = @asset.image.path(output.code)
               Rails.cache.write("img:#{@asset.id}:#{@asset.image_fingerprint}:#{output.code}",path)
               
-              send_file path, :type => "image/jpeg", :disposition => 'inline' and return
+              send_file path, type: "image/jpeg", disposition: 'inline' and return
             end
           
             # nope... sleep!
