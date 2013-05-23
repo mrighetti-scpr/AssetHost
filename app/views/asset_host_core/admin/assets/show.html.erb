@@ -31,7 +31,7 @@
                 <%= f.input :caption, :as => :text, :input_html => {:rows => 5}, :hint => @asset.image_description? ? "From Image: #{@asset.image_description}" : nil %>
             </fieldset>
         </div>
-        <div class="span2">
+        <div class="span2 replace-asset">
             <h3>Replace:</h3>
             <div id="replacedrop" style="height: 180px;margin-top: 16px">
                 <p style="font-size: 18px;line-height: 24px;color: #aaa;text-align: center;margin: 8px">Drop File Here to Replace Asset</p>

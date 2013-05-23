@@ -126,11 +126,11 @@ ul.asset_sizes {
 #replacedrop, #filedrop {
     background: #ffe;
     border: 1px solid darken(#ffc,40%);
-    min-height: 32px;
+    min-height: 100px;
+    padding-bottom: 50px;
     
   ul {
     list-style-type: none;
-    padding: 0;
     margin: 0;
     background: #ffc;
     
@@ -140,18 +140,18 @@ ul.asset_sizes {
       margin-bottom: 2px;
       border: 1px solid #aaa;
       overflow: auto;
+      background: #fff;
             
       button {
-               display: inline;
-               float: right;
-            }
+         display: inline;
+         float: right;
+      }
 
-            img {
-                display: inline;
-                float: left;
-                margin: -2px 4px 0 -2px;
-            }
-            
+      img {
+          display: inline;
+          float: left;
+          margin: -2px 4px 0 -2px;
+      }
     }
     
     
@@ -257,7 +257,7 @@ form.formtastic, div.formtastic {
 */
 
 #saveAndClose {
-    margin: 16px auto;
+    margin: 0 auto 5px auto;
 }
 
 #assets_loading {
@@ -269,25 +269,23 @@ form.formtastic, div.formtastic {
 
 ul.assets, ul.uploads li {
     overflow: auto;
-    
+
     p {
        margin: 2px 0;
     }
     
     img {
-        max-width: 100px;
-        max-height: 100px;
+        max-width: 80px;
     }
 }
 
 #my_assets {
-    height: 430px;
-    overflow: auto;
+    min-height: 200px;
     background: #ffc;
-    
+    padding-bottom: 40px;
+
     ul {
        margin: 0;
-       padding: 0;
        list-style-type: none;
        
        li {
@@ -374,3 +372,6 @@ span.asset_tip {
     max-height: inherit;
 }
 
+.replace-asset input {
+  width: 95%;
+}
