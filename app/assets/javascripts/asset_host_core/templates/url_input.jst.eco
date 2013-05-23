@@ -1,3 +1,4 @@
+<h6>Import via URL/Key</h6>
 <input type="text" name="url_input" id="urlInput" /><a class="add btn" href="#">Add</a>
 <a href="#importHelp" role="button" class="btn btn-primary" data-toggle="modal" style="margin-top:10px;">Importing Help</a>
 
