@@ -1,5 +1,4 @@
 #= require ./assethost
-#= require jquery.livequery
 #= require underscore.min
 #= require ./slideshow
 
@@ -24,7 +23,7 @@ class AssetHost.Client
             ahAttr = @options.attr
             
             # find all assethost elements and look for rich functionality
-            $("img[#{@options.attr}]").livequery ->
+            $("img[#{@options.attr}]").each ->
                 rich = $(this).attr ahAttr
                 
                 if Client[rich]
