@@ -1,4 +1,10 @@
 language: ruby
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libimage-exiftool-perl
+  - exiftool -ver
+
 rvm:
   - 2.0.0
   - 1.9.3
