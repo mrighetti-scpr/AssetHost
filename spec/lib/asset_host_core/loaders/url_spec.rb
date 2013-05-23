@@ -28,7 +28,7 @@ describe AssetHostCore::Loaders::URL do
     it 'creates and returns an asset' do
       loader = AssetHostCore::Loaders::URL.build_from_url('http://imgur.com/a/whatever.jpg')
       asset = loader.load
-      puts assets.to_yaml
+      puts asset.to_yaml
       asset.persisted?.should eq true
       asset.image.file?.should eq true
     end
