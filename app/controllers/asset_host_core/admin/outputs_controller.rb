@@ -15,7 +15,7 @@ module AssetHostCore
           redirect_to a_output_path @output
         else
           flash[:error] = "Failed to create output: #{@output.errors}"
-          render :action => :edit
+          render action: :edit
         end
       end
     
@@ -35,7 +35,7 @@ module AssetHostCore
           redirect_to a_output_path @output
         else
           flash[:error] = "Failed to create output: #{@output.errors}"
-          render :action => :new
+          render action: :new
         end
       end
 
