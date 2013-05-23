@@ -19,7 +19,7 @@ class AssetHost.ChooserUI
         # do we have an asset browser to attach to?
         @browser = @options.browser || false 
         
-        @drop = $( @options['dropEl'] )
+        @drop = $(@options['dropEl'])
         
         # hang onto whatever starts out in drop... we'll use it when it's empty
         @emptyMsg = $ '<div/>', html: @drop.html()
