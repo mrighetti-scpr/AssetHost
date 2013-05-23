@@ -1,6 +1,6 @@
 module AssetHostCore
   module Api
-    class AssetsController < ApplicationController
+    class AssetsController < AssetHostCore::ApplicationController
       before_filter :set_access_control_headers
       before_filter :_authenticate_api_user!
       before_filter :find_asset, only: [:show, :update, :tag]

@@ -1,6 +1,6 @@
 module AssetHostCore
   module Admin
-    class AssetsController < ApplicationController
+    class AssetsController < AssetHostCore::ApplicationController
       before_filter :_authenticate_user!
       before_filter :load_asset, only: [:show, :update, :replace, :destroy]
       skip_before_filter :verify_authenticity_token, only: [:upload, :replace]

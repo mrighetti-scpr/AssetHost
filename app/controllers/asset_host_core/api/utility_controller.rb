@@ -1,6 +1,6 @@
 module AssetHostCore
   module Api
-    class UtilityController < ApplicationController
+    class UtilityController < AssetHostCore::ApplicationController
       before_filter :_authenticate_api_user!
     
       respond_to :json

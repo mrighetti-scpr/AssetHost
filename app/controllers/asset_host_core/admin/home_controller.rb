@@ -1,6 +1,6 @@
 module AssetHostCore
   module Admin
-    class HomeController < ApplicationController
+    class HomeController < AssetHostCore::ApplicationController
       before_filter :_authenticate_user!
 
       def chooser
