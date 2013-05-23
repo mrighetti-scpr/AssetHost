@@ -8,6 +8,3 @@ before_install:
 rvm:
   - 2.0.0
   - 1.9.3
-
-notifications:
-  email: false
