@@ -1,6 +1,5 @@
 #= require ./assethost
 #= require underscore.min
-#= require ./slideshow
 
 #= require spin.jquery
 #= require spin.min
