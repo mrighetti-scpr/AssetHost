@@ -39,7 +39,7 @@ AssetHostCore::Engine.routes.draw do
     
     match 'chooser', :to => "home#chooser", :as => 'chooser'
     
-    root :to => "home#index"
+    root :to => "assets#index"
   end
 
   
