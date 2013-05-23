@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    asset_host_core (0.1.13)
+    asset_host_core (1.0.0)
       bootstrap-sass (~> 2.3.1)
       brightcove-api (~> 1.0.12)
       cocaine (= 0.3.2)
