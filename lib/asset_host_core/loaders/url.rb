@@ -36,7 +36,7 @@ module AssetHostCore
           :image    => image_file
         )
 
-        asset.save!
+        asset.save
         asset
       end
 
