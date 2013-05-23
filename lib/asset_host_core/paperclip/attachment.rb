@@ -171,11 +171,7 @@ module Paperclip
     def write_exif_data
       return unless @queued_for_write[:original]
 
-      begin
-        p = ::MiniExiftool.new(@queued_for_write[:original].path)
-      rescue
-        return false
-      end
+      p = ::MiniExiftool.new(@queued_for_write[:original].path)
 
       # -- determine metadata -- #
 
