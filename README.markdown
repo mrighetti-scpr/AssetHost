@@ -85,11 +85,11 @@ replaced on the client-side via an AssetHost.Client plugin.
 Brightcove videos can be imported as assets and used to place videos into 
 image display contexts. The video is delivered as an img tag, and the 
 AssetHost.Client library will see the tag and call the 
-AssetHost.Client.Brightcove plugin. The plugin will place an overlay on top 
-of the image with a class of BrightcoveVideoOverlay.  When clicked, the 
-image will be replaced by a Brightcove player object.
+AssetHost.Client.Brightcove plugin. The plugin will replace the asset with
+the video.
 
-Brightcove assets can be imported using the interface at /a/brightcove/
+Brightcove assets can be imported via a key in the URL Input field. See
+Importing Help for more.
 
 
 # Setup

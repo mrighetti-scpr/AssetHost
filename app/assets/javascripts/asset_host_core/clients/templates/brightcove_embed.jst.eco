@@ -1,14 +1,18 @@
-<div style="display:none"></div>
-
-<object id="ah_bcove_<%= @videoid %>" class="BrightcoveExperience">
-  <param name="bgcolor" value="#FFFFFF" />
-  <param name="width" value="<%= @width %>" />
-  <param name="height" value="<%= @height %>" />
-  <param name="playerID" value="<%= @playerid %>" />
-  <param name="playerKey" value="<%= @playerkey %>" />
-  <param name="isVid" value="true" />
-  <param name="isUI" value="true" />
-  <param name="dynamicStreaming" value="true" />
-  <param name="@videoPlayer" value="<%= @videoid %>" />
-  <param name="wmode" value="transparent" />
-</object>
+<div class="brightcove-video">
+  <object id="ah_bcove_<%= @videoid %>" class="BrightcoveExperience">
+    <param name="bgcolor" value="#FFFFFF" />
+    <param name="width" value="<%= @width %>" />
+    <param name="height" value="<%= @height %>" />
+    <param name="playerID" value="<%= @playerid %>" />
+    <param name="playerKey" value="<%= @playerkey %>" />
+    <param name="isVid" value="true" />
+    <param name="isUI" value="true" />
+    <param name="dynamicStreaming" value="true" />
+    <param name="@videoPlayer" value="<%= @videoid %>" />
+    <param name="wmode" value="transparent" />
+    <param name="autoStart" value ="false" />
+    <param name="includeAPI" value="true" /> 
+    <param name="templateLoadHandler" value="onTemplateLoaded" /> 
+    <param name="templateReadyHandler" value="onTemplateReady" /> 
+  </object>
+</div>

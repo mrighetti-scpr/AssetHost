@@ -1,15 +1,25 @@
+window.BrightcoveVideos ?= {}
+
+window.onTemplateLoaded = (id) ->
+    @player = brightcove.api.getExperience(id)
+    @modVP  = @player.getModule(brightcove.api.modules.APIModules.VIDEO_PLAYER)
+
+window.onTemplateReady = (event) ->
+    @BrightcoveVideos[@player.id].swap()
+
+
 
 class AssetHost.Client.BrightcoveVideo
     DefaultOptions:
         playerKey:      "AQ~~,AAAAmtVKbGE~,pW41hkPiaos27C7knwyeOWQgVlG4w7v5"
         playerId:       "1247178207001"
-        brightcoveJS:   "http://admin.brightcove.com/js/BrightcoveExperiences_all.js"
+        brightcoveJS:   "http://admin.brightcove.com/js/BrightcoveExperiences.js"
     
     template: JST['asset_host_core/clients/templates/brightcove_embed']
     
     constructor: (el, options={}) ->
         @opts = _.defaults options, @DefaultOptions
-        @el   = $(el)
+        @el   = $(el) # The asset
         
         # we're given an img element.  we'll stick an overlay with a play 
         # button on it, and then on click we'll launch the video
@@ -21,36 +31,34 @@ class AssetHost.Client.BrightcoveVideo
         # get videoid from data-ah-videoid attribute
         @videoid = @el.attr("data-ah-videoid")
         
-        # create an element off-screen for loading
-        @overlay = $ "<div/>", style:"position:relative;left:0;height:0;margin:0;padding:0;border:0"
-        @el.before @overlay
-        @click = $ "<div/>", class:"BrightcoveVideoOverlay", style:"width:#{@w}px;height:#{@h}px"
-        @overlay.append @click
-        @click.bind "click", (e) => @launch()
-        
+        $(document).ready =>
+            @launch()
+
     #----------
     
     launch: ->
+        @el.parent().spin(color: "#fff", shadow: true)
+
         # render template
-        @html = @template( 
+        @video = $ @template( 
             width:      @w 
             height:     @h
             videoid:    @videoid
             playerid:   @opts.playerId
             playerkey:  @opts.playerKey
         )
-        
+
+        window.BrightcoveVideos[$("object", @video).attr('id')] = @
+
+        @el.after @video
+
         if window.brightcove?
-            @overlay.detach()
-            @swap()
+            brightcove.createExperiences()
         else
-            $.getScript @opts.brightcoveJS, => 
-                @overlay.detach()
-                @swap()
+            $.getScript @opts.brightcoveJS, ->
+                brightcove.createExperiences()
 
     swap: ->
-        wrap = $("<div/>",style:"width:#{@w}px;height:#{@h}px")
-        @el.wrap wrap
-        @el.replaceWith @html
-        
-        brightcove.createExperiences()
+        @el.parent().spin(false)
+        @el.hide()
+        @video.show()
