@@ -41,7 +41,7 @@ describe AssetHostCore::Loaders::Vimeo do
     end
 
     it 'sets the caption' do
-      @asset.caption.should match /Way out west/
+      @asset.caption.should match /Living Lebowski, Dude/
     end
 
     it 'sets the image' do
