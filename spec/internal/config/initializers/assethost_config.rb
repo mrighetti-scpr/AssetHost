@@ -3,7 +3,7 @@ Combustion::Application.configure do
   config.assethost.server         = "a.scpr.org"
 
 
-  config.assethost.redis_pubsub   = { server: { host: "127.0.0.1", port: 6379, db: 0 }, key: "AHSCPR" }
+#  config.assethost.redis_pubsub   = { server: { host: "127.0.0.1", port: 6379, db: 0 }, key: "AHSCPR" }
 
   config.assethost.paperclip_options = {
     :path           => ':rails_root/public/images/:id_:fingerprint_:sprint.:extension',
