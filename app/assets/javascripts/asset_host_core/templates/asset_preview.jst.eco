@@ -1,8 +1,10 @@
 <h4><%= @asset.title || @asset.id %></h4>
 
 <div class="row">
-    <div class="span6">
-        <%- @asset.tags[@tag] %>
+    <div class="span6 asset-preview">
+        <div class="asset-wrapper">
+            <%- @asset.tags[@tag] %>
+        </div>
         <table style="margin-top: 10px;">
             <tr><td style="width:100px;"><strong style="margin-right:10px;">Asset ID</strong></td><td><%= @asset.id %></td></tr>
             <tr>

@@ -52,6 +52,23 @@ ul.asset_sizes {
     }
 }
 
+.asset-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16/9 ratio */
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 1.3em;
+
+  iframe { 
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-height: 260px;
+  }
+}
+
 .assetbox {
     margin-right: -12px;
   ul {
@@ -351,23 +368,6 @@ span.asset_tip {
   input { margin: 0 5px 0 0; } // Override bootstrap style
 }
 
-.BrightcoveVideoOverlay {
-    filter:alpha(opacity=50);
-    opacity: 0.5;
-    background: url('/assets/asset_host_core/videoplayer-play.png') bottom left no-repeat;
-    cursor: pointer;
-    -webkit-transition: opacity linear 0.2s;
-    -moz-transition: opacity linear 0.2s;
-    transition: opacity linear 0.2s;
-}
-
-.BrightcoveVideoOverlay:hover {
-    filter:alpha(opacity=90);
-    opacity: 0.9;
-    -webkit-transition: opacity linear 0.2s;
-    -moz-transition: opacity linear 0.2s;
-    transition: opacity linear 0.2s;
-}
 .ah_asset_edit {
     width: 660px;
     padding: 12px;
