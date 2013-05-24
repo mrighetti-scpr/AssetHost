@@ -213,6 +213,7 @@ module AssetHostCore
 
     #----------
     # syncs the exif to the corresponding Asset attributes
+    # We don't want to override anything that was set explicitly.
     def sync_exif_data
       self.title     = self.image_title       if self.title.blank?
       self.caption   = self.image_description if self.caption.blank?
