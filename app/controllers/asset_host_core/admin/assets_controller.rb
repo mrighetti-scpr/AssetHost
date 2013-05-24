@@ -41,8 +41,7 @@ module AssetHostCore
           file.original_filename = "upload.jpg"
         end
 
-        asset = Asset.new(title: file.original_filename.sub(/\.\w{3,}$/,''))
-        asset.image = file
+        asset = Asset.new(image: file)
 
         if asset.save
           render json: asset.as_json
