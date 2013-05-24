@@ -22,13 +22,13 @@
 <br/>
 
 <div id="editform">
-    <%= simple_form_for(@asset, :as => :asset, :url => a_asset_path(@asset), :html => {:class => "form-horizontal"}) do |f| %>
+    <%= simple_form_for(@asset, as: :asset, url: a_asset_path(@asset), html: { class: "form-horizontal" }) do |f| %>
     <div class="row">
         <div class="span6">
             <fieldset>
                 <legend>Basics</legend>
-                <%= f.input :title, :hint => @asset.image_title? ? "From Image: #{@asset.image_title}" : nil %>
-                <%= f.input :caption, :as => :text, :input_html => {:rows => 5}, :hint => @asset.image_description? ? "From Image: #{@asset.image_description}" : nil %>
+                <%= f.input :title, hint: @asset.image_title? ? "<small><strong>From Image:</strong> #{@asset.image_title}</small>" : nil %>
+                <%= f.input :caption, as: :text, input_html: { rows: 5 }, hint: @asset.image_description? ? "<small><strong>From Image:</strong> #{@asset.image_description}</small>" : nil %>
             </fieldset>
         </div>
         <div class="span2 replace-asset">
@@ -42,16 +42,16 @@
         <div class="span8">
             <fieldset>
                 <legend>Rights</legend>
-                <%= f.input :owner, :hint => @asset.image_copyright? ? "From Image: #{@asset.image_copyright}" : nil, input_html: { class: "span5" } %>
+                <%= f.input :owner, hint: @asset.image_copyright? ? "<small><strong>From Image:</strong> #{@asset.image_copyright}</small>" : nil, input_html: { class: "span5" } %>
                 <%= f.input :url, input_html: { class: "span5" } %>
             </fieldset>
     
             <fieldset>
                 <legend>Metadata</legend>
                 <div class="form-horizontal">
-                    <%= f.input :image_taken, :as => :date %>
+                    <%= f.input :image_taken, as: :date %>
                 </div>
-                <%= f.input :image_gravity, :as => :select, :collection => AssetHostCore::Asset::GRAVITY_OPTIONS %>
+                <%= f.input :image_gravity, as: :select, collection: AssetHostCore::Asset::GRAVITY_OPTIONS %>
             </fieldset>
 
             <fieldset>
@@ -65,8 +65,8 @@
                 <%= link_to "Destroy Asset", 
                     a_asset_path(@asset), 
                     :method => :delete, 
-                    :class => "btn btn-danger pull-right", 
-                    :data => { :confirm => "Are you sure you want to delete this asset? You are responsible for making sure no content is using it before deletion." } %>
+                    :class  => "btn btn-danger pull-right", 
+                    :data   => { confirm: "Are you sure you want to delete this asset? You are responsible for making sure no content is using it before deletion." } %>
 
             </div>
         </div>
