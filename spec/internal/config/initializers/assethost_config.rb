@@ -15,6 +15,26 @@ Combustion::Application.configure do
   config.assethost.resque_queue   = :ahhost
 end
 
+
+AssetHostCore.hooks do |config|
+  config.current_user_method do
+    true
+  end
+  
+  config.sign_out_path do
+    Rails.application.routes.url_helpers.root_path
+  end
+  
+  config.authentication_method do
+    true
+  end
+  
+  config.api_authentication_method do
+    true
+  end
+end
+
+
 AssetHostCore.configure do |config|
   config.flickr_api_key       = "flackrs"
   config.google_api_key      = 'goggles'
