@@ -2,18 +2,18 @@
 
 <h1><%= @PAGE_TITLE %></h1>
 
-<%= simple_form_for(@assets, :as => :asset, :url => metadata_a_assets_path, :method => :put) do |f| %>
+<%= simple_form_for :assets, url: metadata_a_assets_path, method: :put do |f| %>
     <% @assets.each do |asset| %>
         <div class="row">
-        <%= f.simple_fields_for asset do |af| %>
+        <%= f.simple_fields_for asset.id.to_s, asset do |af| %>
             <hr/>
             <div class="span3">
-                <%= asset.image.tag( AssetHostCore.config.modal_size ) %>
+                <%= asset.image.tag(AssetHostCore.config.modal_size) %>
             </div>
             <div class="span5">
                 <h3>Asset #<%=asset.id%></h3>
                 <%= af.input :title %>
-                <%= af.input :caption, :as => :text, :input_html => {:rows => 3}%>
+                <%= af.input :caption, as: :text, input_html: { rows: 3 }%>
                 <%= af.input :owner %>
                 <%= af.input :url %>
             </div>

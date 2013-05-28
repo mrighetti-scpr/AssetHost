@@ -59,7 +59,7 @@ module AssetHostCore
       #----------
 
       def update_metadata
-        params[:asset].each do |id,attributes|
+        params[:assets].each do |id, attributes|
           asset = Asset.find(id)
           asset.update_attributes(attributes)
         end
