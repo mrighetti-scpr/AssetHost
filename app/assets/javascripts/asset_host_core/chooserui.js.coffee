@@ -193,6 +193,7 @@ class AssetHost.ChooserUI
     importUri: (uri, callbacks={}) ->
         $.ajax "#{AssetHost.PATH_PREFIX}/api/as_asset", 
             _.extend
+                dataType: "json",
                 data: url: uri,
                 callbacks
 
