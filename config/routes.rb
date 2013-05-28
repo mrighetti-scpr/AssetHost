@@ -8,7 +8,7 @@ AssetHostCore::Engine.routes.draw do
         get 'r/:context/(:scheme)', :action => :render
         get 'tag/:style', :action => :tag
       end
-    end 
+    end
     
     resources :outputs
 
