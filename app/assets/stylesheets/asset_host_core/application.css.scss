@@ -59,7 +59,7 @@ ul.asset_sizes {
   overflow: hidden;
   margin-bottom: 1.3em;
 
-  iframe { 
+  iframe, object, embed { 
     position: absolute;
     top: 0;
     left: 0;
