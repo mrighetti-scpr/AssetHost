@@ -1,7 +1,5 @@
 # AssetHost
 
-**This is an unstable development branch! Please use the "stable" branch in production.**
-
 [![Build Status](https://travis-ci.org/SCPR/AssetHost.png)](https://travis-ci.org/SCPR/AssetHost)
 
 AssetHost is an attempt to create a one-stop-shop for hosting and linking 
