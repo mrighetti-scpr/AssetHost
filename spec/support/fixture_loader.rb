@@ -1,6 +1,6 @@
 module FixtureLoader
   def load_image(filename)
-    File.read(File.join('spec', 'fixtures', 'images', filename))
+    File.open(File.join('spec', 'fixtures', 'images', filename))
   end
 
   def load_api_response(filename)
