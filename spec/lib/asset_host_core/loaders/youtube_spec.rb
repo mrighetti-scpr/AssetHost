@@ -24,33 +24,50 @@ describe AssetHostCore::Loaders::YouTube do
       FakeWeb.register_uri(:get, %r{i\.ytimg\.com},
         content_type: "image/jpeg", body: load_image('chipmunk.jpg'))
 
-      @loader = AssetHostCore::Loaders::YouTube.build_from_url('http://www.youtube.com/watch?v=y8Kyi0WNg40')
-      @asset  = @loader.load
+      @loader = AssetHostCore::Loaders::YouTube.build_from_url('http://www.youtube.com/watch?v=y8Kyi0WNg40?ah-noTrim')
     end
 
     it 'creates a new asset' do
-      @asset.should be_a AssetHostCore::Asset
-      @asset.persisted?.should eq true
+      asset  = @loader.load
+      asset.should be_a AssetHostCore::Asset
+      asset.persisted?.should eq true
     end
 
     it 'sets the native to be a youtube video' do
-      @asset.native.should be_a AssetHostCore::YoutubeVideo
+      asset  = @loader.load
+      asset.native.should be_a AssetHostCore::YoutubeVideo
     end
 
     it 'sets the owner' do
-      @asset.owner.should match /cregets/
+      asset  = @loader.load
+      asset.owner.should match /cregets/
     end
 
     it 'sets the title' do
-      @asset.title.should eq "Dramatic Chipmunk"
+      asset  = @loader.load
+      asset.title.should eq "Dramatic Chipmunk"
     end
 
     it 'sets the caption' do
-      @asset.caption.should match /best 5 second clip/
+      asset  = @loader.load
+      asset.caption.should match /best 5 second clip/
     end
     
     it 'sets the image' do
-      @asset.image.should be_a Paperclip::Attachment
+      asset  = @loader.load
+      asset.image.should be_a Paperclip::Attachment
+    end
+
+    it 'trims letterboxing by default' do
+      loader = AssetHostCore::Loaders::YouTube.build_from_url('http://www.youtube.com/watch?v=y8Kyi0WNg40')
+      Paperclip::Trimmer.should_receive(:make).and_return(load_image('chipmunk.jpg'))
+      loader.load
+    end
+
+    it 'does not trim if requested' do
+      no_trim_loader = AssetHostCore::Loaders::YouTube.build_from_url('http://www.youtube.com/watch?v=y8Kyi0WNg40?ah-noTrim')
+      Paperclip::Trimmer.should_not_receive(:make)
+      no_trim_loader.load
     end
   end
 end
