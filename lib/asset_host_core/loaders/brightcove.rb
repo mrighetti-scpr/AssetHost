@@ -37,7 +37,7 @@ module AssetHostCore
           :owner          => "KPCC",
           :image_taken    => DateTime.strptime(response["publishedDate"],"%Q"),
           :url            => nil,
-          :notes          => "Imported from Brightcove: #{@url}",
+          :notes          => "Imported from Brightcove: #{@id}",
           :image          => image_file(response['videoStillURL']),
           :native         => native
         )
