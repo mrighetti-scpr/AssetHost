@@ -20,7 +20,8 @@
             <tr>
               <td>YouTube</td>
               <td>URL</td>
-              <td>http://www.youtube.com/watch?v=a1Y73sPHKxw</td>
+              <td>http://www.youtube.com/watch?v=a1Y73sPHKxw<br />
+                <strong>Note:</strong> Poster images for YouTube videos are trimmed of any black letterboxing. Add <code>?ah-noTrim</code> to the URL to bypass this.</td>
             </tr>
             <tr>
               <td>Vimeo</td>
