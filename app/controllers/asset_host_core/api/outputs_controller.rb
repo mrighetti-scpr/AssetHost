@@ -6,15 +6,20 @@ module AssetHostCore
       respond_to :json
 
       def index
-        @outputs = Output.all
-        respond_with @outputs
+        outputs = Output.all
+        respond_with outputs
       end
     
       #----------
     
       def show
-        @output = Output.find_by_code!(params[:id])
-        respond_with @output
+        output = Output.find_by_code(params[:id])
+
+        if !output
+          render_not_found and return
+        end
+        
+        respond_with output
       end
     end
   end

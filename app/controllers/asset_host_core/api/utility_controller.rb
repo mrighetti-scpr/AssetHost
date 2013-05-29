@@ -8,8 +8,7 @@ module AssetHostCore
       # Take a URL and try to find or create an asset out of it
       def as_asset
         if !params[:url]
-          render text: "Must provide an asset URL", status: :bad_request
-          return
+          render_bad_request(message: "Must provide an asset URL") and return
         end
       
         # see if we have a loader for this URL
@@ -27,8 +26,7 @@ module AssetHostCore
           respond_with asset, location: a_asset_path(asset)
         
         else
-          error = { error: "Unable to find or load an asset at the URL #{params[:url]}" }
-          respond_with error, status: :not_found
+          render_not_found(message: "Unable to find or load an asset at the URL #{params[:url]}") and return
         end
       end
     end

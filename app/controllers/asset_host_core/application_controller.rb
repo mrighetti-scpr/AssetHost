@@ -24,5 +24,34 @@ module AssetHostCore
     def _authenticate_api_user!
       instance_eval &AssetHostCore::Config.api_authentication_method
     end
+
+    #----------
+
+    private
+
+    def render_not_found(options={})
+      options[:message] ||= "Not Found"
+      render_error(status: 404, message: options[:message])
+    end
+
+    def render_bad_request(options={})
+      options[:message] ||= "Bad Request"
+      render_error(status: 400, message: options[:message])
+    end
+
+    def render_error(options={})
+      options[:message] ||= "Error"
+
+      respond_to do |format|
+        format.html { render status: options[:status] }
+        
+        format.json do
+          render :json => { 
+            :status => options[:status], 
+            :error  => options[:message] 
+          }, :status => options[:status]
+        end
+      end
+    end
   end
 end

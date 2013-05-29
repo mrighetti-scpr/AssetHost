@@ -75,7 +75,11 @@ module AssetHostCore
       end
 
       def find_asset
-        @asset = Asset.find(params[:id])
+        @asset = Asset.find_by_id(params[:id])
+
+        if !@asset
+          render_not_found and return false
+        end
       end
     end
   end
