@@ -3,14 +3,14 @@ AssetHostCore::Engine.routes.draw do
 
 
   namespace :api do
-    resources :assets, :id => /\d+/ do
+    resources :assets, :id => /\d+/, defaults: { format: :json } do
       member do
         get 'r/:context/(:scheme)', :action => :render
         get 'tag/:style', :action => :tag
       end
     end
     
-    resources :outputs
+    resources :outputs, defaults: { format: :json }
 
     match 'as_asset', :to => "utility#as_asset", :as => "as_asset"
   end
