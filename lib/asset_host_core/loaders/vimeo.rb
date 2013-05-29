@@ -53,7 +53,14 @@ module AssetHostCore
       private
 
       def image_file(url)
-        @image_file ||= open(url)
+        @image_file ||= begin
+          response = open(url)
+
+          tempfile = Tempfile.new('ah-vimeo', encoding: "ascii-8bit")
+          tempfile.write response.read
+
+          tempfile
+        end
       end
 
       def connection

@@ -65,7 +65,14 @@ module AssetHostCore
       private
 
       def image_file(url)
-        @image_file ||= open(url)
+        @image_file ||= begin
+          response = open(url)
+
+          tempfile = Tempfile.new('ah-flickr', encoding: "ascii-8bit")
+          tempfile.write response.read
+
+          tempfile
+        end
       end
     end
 
