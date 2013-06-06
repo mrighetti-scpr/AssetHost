@@ -58,7 +58,8 @@ module AssetHostCore
       :creator_id,
       :image,
       :image_taken,
-      :native
+      :native,
+      :image_gravity
 
 
     #----------
