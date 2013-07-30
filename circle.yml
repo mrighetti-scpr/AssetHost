@@ -1,3 +1,9 @@
+dependencies:
+  pre:
+    - sudo apt-get update
+    - sudo apt-get install libimage-exiftool-perl
+    - exiftool -ver
+
 database:
   override:
     - ''
