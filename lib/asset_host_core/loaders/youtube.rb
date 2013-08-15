@@ -28,8 +28,11 @@ module AssetHostCore
           :videoid => video["id"]
         )
 
+        thumbnail = snippet["thumbnails"]["maxres"] ||
+                    snippet["thumbnails"]["high"]
+
         asset = AssetHostCore::Asset.new(
-          :image          => image_file(snippet["thumbnails"]["high"]["url"]),
+          :image          => image_file(thumbnail["url"]),
           :title          => snippet["title"],
           :caption        => snippet["description"],
           :url            => @url,
