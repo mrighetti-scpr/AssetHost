@@ -31,6 +31,19 @@ module AssetHostCore
       end
     end
 
+    def authorize_admin
+      unless current_user.is_admin?
+        redirect_to assethost.root_path and return false
+      end
+    end
+
+    def authorize(ability, resource)
+      if !@api_user.may?(ability, resource)
+        render_forbidden and return false
+      end
+    end
+
+
     def render_not_found(options={})
       options[:message] ||= "Not Found"
       render_error(status: 404, message: options[:message])
@@ -45,6 +58,7 @@ module AssetHostCore
       options[:message] ||= "Unauthorized"
       render_error(status: 401, message: options[:message])
     end
+
 
     def render_error(options={})
       options[:message] ||= "Error"

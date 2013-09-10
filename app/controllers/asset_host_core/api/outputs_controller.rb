@@ -12,8 +12,6 @@ module AssetHostCore
         respond_with @outputs
       end
 
-      #----------
-
       def show
         respond_with @output
       end
@@ -22,9 +20,7 @@ module AssetHostCore
       private
 
       def authorize(ability)
-        if !@api_user.may?(ability, "AssetHostCore::Output")
-          render_forbidden and return false
-        end
+        super ability, "AssetHostCore::Output"
       end
 
       def get_output

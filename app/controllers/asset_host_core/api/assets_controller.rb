@@ -101,9 +101,7 @@ module AssetHostCore
       private
 
       def authorize(ability)
-        if !@api_user.may?(ability, "AssetHostCore::Asset")
-          render_forbidden and return false
-        end
+        super ability, "AssetHostCore::Asset"
       end
 
       def set_access_control_headers

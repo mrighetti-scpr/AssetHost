@@ -1,14 +1,16 @@
 module AssetHostCore
   module Admin
     class OutputsController < AssetHostCore::ApplicationController
-      before_filter :load_output, except: [:index, :new, :create]
-    
+      before_filter :authorize_admin
+      before_filter :get_output, except: [:index, :new, :create]
+      layout 'asset_host_core/full_width'
+
+
       def index
         @outputs = Output.all
       end
 
-      #----------
-    
+
       def update
         if @output.update_attributes(params[:output])
           flash[:notice] = "Output updated!"
@@ -18,18 +20,16 @@ module AssetHostCore
           render action: :edit
         end
       end
-    
-      #----------
-    
+
+
       def new
         @output = Output.new
       end
-    
-      #----------
-    
+
+
       def create
         @output = Output.new(params[:output])
-        
+
         if @output.save
           flash[:notice] = "Output created!"
           redirect_to a_output_path @output
@@ -39,11 +39,10 @@ module AssetHostCore
         end
       end
 
-      #----------
-    
+
       private
 
-      def load_output
+      def get_output
         @output = Output.find(params[:id])
       end
     end
