@@ -1,0 +1,24 @@
+<h2><%= @PAGE_TITLE = "Edit API User: #{@api_user.name}" %></h2>
+
+<%= simple_form_for [:a, @api_user] do |f| %>
+    <fieldset>
+        <%= render 'form_fields', f: f %>
+
+        <% if f.object.persisted? %>
+            <%= f.input :authentication_token, disabled: true %>
+            <%= link_to "Reset Token", reset_token_a_api_user_path(f.object), method: :put %>
+        <% end %>
+
+        <div class="form-actions">
+          <%= f.submit "Update", class: "btn btn-primary" %>
+          <%= link_to "Cancel", @output, class: "btn" %>
+
+          <%= link_to("Delete", @output,
+                class: "btn btn-danger pull-right",
+                method: :delete,
+                data: { confirm: "Click OK to delete this API User.\n" \
+                                 "Click CANCEL to return to editing." }
+                ) %>
+        </div>
+    </fieldset>
+<% end %>

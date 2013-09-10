@@ -35,6 +35,10 @@ AssetHostCore::Engine.routes.draw do
 
     resources :outputs
 
+    resources :api_users do
+      put 'reset_token', on: :member, as: :reset_token
+    end
+
     match 'chooser', :to => "home#chooser", :as => 'chooser'
 
     root :to => "assets#index"
