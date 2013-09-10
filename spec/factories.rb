@@ -1,4 +1,13 @@
 FactoryGirl.define do
+  factory :api_user, class: "AssetHostCore::ApiUser" do
+    name "Bryan"
+    email "bricker@scpr.org"
+    is_active true
+  end
+
+  factory :permission, class: "AssetHostCore::Permission" do
+  end
+
   factory :asset, class: "AssetHostCore::Asset" do
     title "Asset"
     caption "This has been an asset"

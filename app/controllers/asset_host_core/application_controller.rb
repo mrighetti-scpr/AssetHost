@@ -2,32 +2,34 @@ module AssetHostCore
   class ApplicationController < ::ApplicationController
     helper_method :_current_user
     helper_method :_sign_out_path
-    
+
     def _authenticate_user!
       instance_eval &AssetHostCore::Config.authentication_method
     end
-    
+
     #----------
-        
+
     def _current_user
       instance_eval &AssetHostCore::Config.current_user_method
     end
-    
+
     #----------
-    
+
     def _sign_out_path
       instance_eval &AssetHostCore::Config.sign_out_path
-    end
-    
-    #----------
-    
-    def _authenticate_api_user!
-      instance_eval &AssetHostCore::Config.api_authentication_method
     end
 
     #----------
 
     private
+
+    def authenticate_api_user
+      @api_user = ApiUser.authenticate(params[:auth_token])
+
+      if !@api_user
+        render_unauthorized and return false
+      end
+    end
 
     def render_not_found(options={})
       options[:message] ||= "Not Found"
@@ -39,16 +41,21 @@ module AssetHostCore
       render_error(status: 400, message: options[:message])
     end
 
+    def render_unauthorized(options={})
+      options[:message] ||= "Unauthorized"
+      render_error(status: 401, message: options[:message])
+    end
+
     def render_error(options={})
       options[:message] ||= "Error"
 
       respond_to do |format|
         format.html { render status: options[:status] }
-        
+
         format.json do
-          render :json => { 
-            :status => options[:status], 
-            :error  => options[:message] 
+          render :json => {
+            :status => options[:status],
+            :error  => options[:message]
           }, :status => options[:status]
         end
       end
