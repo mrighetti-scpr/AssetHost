@@ -6,7 +6,9 @@ module AssetHostCore
 
     has_many :permissions, as: :user
 
-    before_save :generate_api_token, on: :create
+    before_create :generate_api_token, if: -> {
+      self.authentication_token.blank?
+    }
 
     class << self
       def authenticate(auth_token)
@@ -22,10 +24,12 @@ module AssetHostCore
     end
 
 
-    private
-
     def generate_api_token
-      self.api_token = SecureRandom.urlsafe_base64
+      self.authentication_token = SecureRandom.urlsafe_base64
+    end
+
+    def generate_api_token!
+      generate_api_token and save
     end
   end
 end
