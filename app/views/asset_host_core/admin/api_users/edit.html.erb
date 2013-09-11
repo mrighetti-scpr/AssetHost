@@ -5,8 +5,8 @@
         <%= render 'form_fields', f: f %>
 
         <% if f.object.persisted? %>
-            <%= f.input :authentication_token, disabled: true %>
-            <%= link_to "Reset Token", reset_token_a_api_user_path(f.object), method: :put %>
+            <%= f.input :auth_token, disabled: true %>
+            <%= link_to "Reset Token", reset_token_a_api_user_path(f.object), method: :put, data: { confirm: "WARNING: Resetting the token will immediately cause all API calls for this account to stop working.\nClick OK to reset the API token for #{@api_user.name}.\nClick CANCEL to return to editing."} %>
         <% end %>
 
         <div class="form-actions">
