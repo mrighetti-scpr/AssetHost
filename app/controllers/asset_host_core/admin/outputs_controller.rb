@@ -1,6 +1,7 @@
 module AssetHostCore
   module Admin
     class OutputsController < AssetHostCore::ApplicationController
+      before_filter :_authenticate_user!
       before_filter :authorize_admin
       before_filter :get_output, except: [:index, :new, :create]
       layout 'asset_host_core/full_width'
