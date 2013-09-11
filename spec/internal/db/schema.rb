@@ -1,12 +1,12 @@
 ActiveRecord::Schema.define do
-
   create_table "asset_host_core_api_users", :force => true do |t|
-    t.string   "name",                 :null => false
-    t.string   "authentication_token"
+    t.string   "name",               :null => false
+    t.string   "auth_token"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "is_active"
     t.datetime "last_authenticated"
+    t.string   "email"
   end
 
   create_table "asset_host_core_asset_outputs", :force => true do |t|
@@ -86,5 +86,4 @@ ActiveRecord::Schema.define do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
-
 end
