@@ -5,6 +5,7 @@ module ParamHelper
   }
 
   def request_params(params={})
-    params.merge DEFAULTS
+    params[:auth_token] ||= @api_user.auth_token
+    params.reverse_merge(DEFAULTS)
   end
 end
