@@ -8,10 +8,10 @@
     <tr>
       <th>Edit</th>
       <th>Name</th>
+      <th>E-mail</th>
       <th>Auth Token</th>
       <th>Active?</th>
       <th>Last Auth</th>
-      <th>Created</th>
     </tr>
   </thead>
   <tbody>
@@ -19,10 +19,10 @@
       <tr>
         <td><%= link_to "Edit", edit_a_api_user_path(api_user), class: "btn" %></td>
         <td><%= api_user.name %></td>
+        <td><%= api_user.email %></td>
         <td><%= api_user.auth_token %></td>
         <td><%= api_user.is_active? %></td>
         <td><%= api_user.last_authenticated %></td>
-      <td><%= api_user.created_at %></td>
       </tr>
     <% end %>
   </tbody>
