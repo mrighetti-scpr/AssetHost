@@ -59,6 +59,11 @@ module AssetHostCore
       render_error(status: 401, message: options[:message])
     end
 
+    def render_forbidden(options={})
+      options[:message] ||= "Forbidden"
+      render_error(status: 403, message: options[:message])
+    end
+
 
     def render_error(options={})
       options[:message] ||= "Error"
