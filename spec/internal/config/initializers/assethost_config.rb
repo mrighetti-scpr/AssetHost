@@ -18,19 +18,30 @@ end
 
 AssetHostCore.hooks do |config|
   config.current_user_method do
-    true
+    begin
+      @current_user ||= User.find(session[:user_id])
+    rescue ActiveRecord::RecordNotFound
+      session[:user_id]   = nil
+      @current_user       = nil
+    end
   end
   
   config.sign_out_path do
-    Rails.application.routes.url_helpers.root_path
+    Rails.application.routes.url_helpers.logout_path
   end
   
   config.authentication_method do
-    true
+    if !current_user
+      session[:return_to] = request.fullpath
+      redirect_to Rails.application.routes.url_helpers.login_path
+      false
+    end
   end
   
   config.api_authentication_method do
-    true
+    if !current_api_user && !current_user
+      head :unauthorized
+    end
   end
 end
 
