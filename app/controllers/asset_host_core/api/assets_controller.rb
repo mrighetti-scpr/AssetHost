@@ -5,8 +5,7 @@ module AssetHostCore
 
       before_filter :authenticate_api_user
       before_filter -> { authorize(:read) }, only: [:index, :show, :tag]
-      before_filter -> { authorize(:update) }, only: [:update]
-      before_filter -> { authorize(:create) }, only: [:create]
+      before_filter -> { authorize(:write) }, only: [:update, :create]
 
       before_filter :get_asset, only: [:show, :update, :tag]
 
