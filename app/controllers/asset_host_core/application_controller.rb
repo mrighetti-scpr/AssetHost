@@ -40,6 +40,8 @@ module AssetHostCore
     def authorize(ability, resource)
       if !@api_user.may?(ability, resource)
         render_forbidden and return false
+      else
+        return true
       end
     end
 
