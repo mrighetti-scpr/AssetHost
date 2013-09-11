@@ -1,5 +1,8 @@
 module AssetHostCore
   class ApplicationController < ::ApplicationController
+
+    layout 'asset_host_core/application'
+
     helper_method :_current_user
     helper_method :_sign_out_path
 
