@@ -6,6 +6,8 @@
 </div>
 
 <%= simple_form_for [:a, @output], html: { class: "form-horizontal" } do |f| %>
+  <%= f.error_notification %>
+
   <fieldset>
     <%= render 'form_fields', f: f %>
 
@@ -16,7 +18,9 @@
       <%= link_to("Delete", a_output_path(@output),
             class: "btn btn-danger pull-right",
             method: :delete,
-            data: { confirm: "Click OK to delete this Output.\nClick CANCEL to return to editing." }
+            data: { confirm: "Click OK to delete this Output.\n" \
+                             "Click CANCEL to return to editing."
+                  }
             ) %>
     </div>
   </fieldset>
