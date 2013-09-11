@@ -1,6 +1,6 @@
 <h2><%= @PAGE_TITLE = "Edit API User: #{@api_user.name}" %></h2>
 
-<%= simple_form_for [:a, @api_user] do |f| %>
+<%= simple_form_for [:a, @api_user], html: { class: 'form-horizontal' } do |f| %>
     <%= f.error_notification %>
 
     <fieldset>
