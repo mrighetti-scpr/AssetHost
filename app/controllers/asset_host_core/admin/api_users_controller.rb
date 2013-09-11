@@ -33,7 +33,7 @@ module AssetHostCore
 
         if @api_user.save
           flash[:notice] = "Created API User"
-          redirect_to [:a, @api_user]
+          redirect_to [:a, :api_users]
         else
           render :new
         end
@@ -43,22 +43,22 @@ module AssetHostCore
       def update
         if @api_user.update_attributes(params[:api_user])
           flash[:notice] = "Updated API User"
-          redirect_to [:a, @api_user]
+          redirect_to [:a, :api_users]
         else
           render :edit
         end
       end
 
       def reset_token
-        @api_user.generate_api_token!
-        flash[:notice] = "Reset API Token"
-        redirect_to [:a, @api_user]
+        @api_user.generate_auth_token!
+        flash[:notice] = "Reset API Token for #{@api_user.name}"
+        redirect_to [:a, :api_users]
       end
 
       def destroy
         @api_user.destroy
         flash[:notice] = "Destroyed API User"
-        redirect_to [:a, @api_user]
+        redirect_to [:a, :api_users]
       end
 
 
