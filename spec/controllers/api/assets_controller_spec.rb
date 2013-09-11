@@ -1,16 +1,27 @@
 require 'spec_helper'
 
 describe AssetHostCore::Api::AssetsController do
-  request_params = {
-    :use_routes   => :assethost,
-    :format       => :json
-  }
+  before :each do
+    @api_user = create :api_user
+  end
 
   describe 'GET show' do
+    before :each do
+      @api_user.permissions.create(
+        :resource   => "AssetHostCore::Asset",
+        :ability    => "read"
+      )
+    end
+
     it 'returns the asset as json' do
       asset = create :asset
       get :show, request_params(id: asset.id)
       JSON.parse(response.body)["id"].should eq asset.id
+    end
+
+    it 'renders an unauthorized error if there is no auth token provided' do
+      get :show, request_params(id: 1).except(:auth_token)
+      response.status.should eq 401
     end
   end
 
@@ -18,6 +29,11 @@ describe AssetHostCore::Api::AssetsController do
     before :each do
       FakeWeb.register_uri(:get, %r{imgur\.com}, 
         body: load_image('fry.png'), content_type: "image/png")
+
+      @api_user.permissions.create(
+        :resource   => "AssetHostCore::Asset",
+        :ability    => "create"
+      )
     end
 
     it 'returns a bad request if URL is not present' do
