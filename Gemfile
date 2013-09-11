@@ -9,4 +9,6 @@ group :test do
   gem 'actionpack', '~> 3.2.13'
 end
 
+gem 'pry'
+
 gemspec
