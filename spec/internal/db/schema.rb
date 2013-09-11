@@ -1,4 +1,22 @@
 ActiveRecord::Schema.define do
+  create_table "users", :force => true do |t|
+    t.string   "username"
+    t.boolean  "is_admin",    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "password_digest"
+  end
+
+  create_table "asset_host_core_api_user_permissions", :force => true do |t|
+    t.integer  "api_user_id"
+    t.integer  "permission_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  add_index "asset_host_core_api_user_permissions", ["api_user_id"], :name => "index_asset_host_core_api_user_permissions_on_api_user_id"
+  add_index "asset_host_core_api_user_permissions", ["permission_id"], :name => "index_asset_host_core_api_user_permissions_on_permission_id"
+
   create_table "asset_host_core_api_users", :force => true do |t|
     t.string   "name",               :null => false
     t.string   "auth_token"
@@ -69,8 +87,6 @@ ActiveRecord::Schema.define do
   create_table "asset_host_core_permissions", :force => true do |t|
     t.string   "resource"
     t.string   "ability"
-    t.string   "user_type"
-    t.string   "user_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -86,4 +102,5 @@ ActiveRecord::Schema.define do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
 end

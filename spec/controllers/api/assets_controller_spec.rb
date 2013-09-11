@@ -15,12 +15,12 @@ describe AssetHostCore::Api::AssetsController do
 
     it 'returns the asset as json' do
       asset = create :asset
-      get :show, request_params(id: asset.id)
+      get :show, api_request_params(id: asset.id)
       JSON.parse(response.body)["id"].should eq asset.id
     end
 
     it 'renders an unauthorized error if there is no auth token provided' do
-      get :show, request_params(id: 1).except(:auth_token)
+      get :show, api_request_params(id: 1).except(:auth_token)
       response.status.should eq 401
     end
   end
@@ -32,23 +32,23 @@ describe AssetHostCore::Api::AssetsController do
 
       @api_user.permissions.create(
         :resource   => "AssetHostCore::Asset",
-        :ability    => "create"
+        :ability    => "write"
       )
     end
 
     it 'returns a bad request if URL is not present' do
-      post :create, request_params
+      post :create, api_request_params
       response.status.should eq 400
     end
 
     it 'responds with a 404 and returns asset if no asset is found' do
-      post :create, request_params(url: "nogoodbro")
+      post :create, api_request_params(url: "nogoodbro")
       response.status.should eq 404
       response.body["error"].should be_present
     end
 
     it 'creates an asset if the URL is valid' do
-      post :create, request_params(url: "http://imgur.com/someimg.png")
+      post :create, api_request_params(url: "http://imgur.com/someimg.png")
       json = JSON.parse(response.body)
       asset = AssetHostCore::Asset.find(json["id"])
 
@@ -56,7 +56,7 @@ describe AssetHostCore::Api::AssetsController do
     end
 
     it 'appends to the notes if present' do
-      post :create, request_params(url: "http://imgur.com/someimg.png", note: "Imported via Tests")
+      post :create, api_request_params(url: "http://imgur.com/someimg.png", note: "Imported via Tests")
       json = JSON.parse(response.body)
       asset = AssetHostCore::Asset.find(json["id"])
 
@@ -64,7 +64,7 @@ describe AssetHostCore::Api::AssetsController do
     end
 
     it 'hides the asset if is_hidden is present' do
-      post :create, request_params(url: "http://imgur.com/someimg.png", hidden: 1)
+      post :create, api_request_params(url: "http://imgur.com/someimg.png", hidden: 1)
       json = JSON.parse(response.body)
       asset = AssetHostCore::Asset.find(json["id"])
 
@@ -72,7 +72,7 @@ describe AssetHostCore::Api::AssetsController do
     end
 
     it 'sets attributes that are present' do
-      post :create, request_params(
+      post :create, api_request_params(
         :url        => "http://imgur.com/someimg.png",
         :caption    => "Test Image",
         :owner      => "Test Owner",

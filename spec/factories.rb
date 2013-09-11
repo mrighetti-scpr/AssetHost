@@ -1,4 +1,11 @@
 FactoryGirl.define do
+  factory :user do
+    username "bricker"
+    password "secret"
+    password_confirmation "secret"
+    is_admin false
+  end
+
   factory :api_user, class: "AssetHostCore::ApiUser" do
     name "Bryan"
     email "bricker@scpr.org"
