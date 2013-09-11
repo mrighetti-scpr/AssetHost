@@ -6,11 +6,13 @@ module AssetHostCore
     has_many :permissions, through: :api_user_permissions
 
     validates_uniqueness_of :auth_token
+    validates :name, :email, presence: true
 
     before_create :generate_auth_token, if: -> {
       self.auth_token.blank?
     }
 
+    attr_accessible :name, :email, :is_active, :permission_ids
 
     class << self
       def authenticate(auth_token)
