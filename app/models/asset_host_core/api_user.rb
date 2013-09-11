@@ -2,7 +2,8 @@ require 'securerandom'
 
 module AssetHostCore
   class ApiUser < ActiveRecord::Base
-    has_many :permissions, as: :user
+    has_many :api_user_permissions
+    has_many :permissions, through: :api_user_permissions
 
     validates_uniqueness_of :auth_token
 
