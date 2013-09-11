@@ -95,8 +95,6 @@ module AssetHostCore
         respond_with tag
       end
 
-      #----------
-
 
       private
 
