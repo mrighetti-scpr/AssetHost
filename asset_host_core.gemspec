@@ -40,4 +40,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "factory_girl", '~> 4.2.0'
   s.add_development_dependency "fakeweb", '~> 1.3.0'
   s.add_development_dependency 'capybara', '~> 2.1.0'
+  s.add_development_dependency 'launchy'
 end
