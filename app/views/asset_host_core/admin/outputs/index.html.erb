@@ -4,19 +4,23 @@
 <table class="table table-striped">
   <thead>
     <tr>
+      <th>Edit</th>
       <th>Code</th>
       <th>Size</th>
       <th>Pre-rendered?</th>
       <th>Rich?</th>
+      <th># Rendered</th>
     </tr>
   </thead>
   <tbody>
     <% @outputs.each do |output| %>
       <tr>
-        <td><%= link_to "#{output.code}", a_output_path(output.id) %></td>
+        <td><%= link_to "Edit", edit_a_output_path(output), class: "btn" %></td>
+        <td><%= output.code %></td>
         <td><%= output.size %></td>
         <td><%= output.prerender? %></td>
         <td><%= output.is_rich? %></td>
+        <td><%= output.asset_outputs.count %></td>
       </tr>
     <% end %>
   </tbody>

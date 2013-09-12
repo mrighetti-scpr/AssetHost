@@ -14,11 +14,10 @@ module AssetHostCore
 
       def update
         if @output.update_attributes(params[:output])
-          flash[:notice] = "Output updated!"
-          redirect_to a_output_path @output
+          flash[:notice] = "Updated Output."
+          redirect_to a_outputs_path
         else
-          flash[:error] = "Failed to create output: #{@output.errors}"
-          render action: :edit
+          render :edit
         end
       end
 
@@ -32,14 +31,19 @@ module AssetHostCore
         @output = Output.new(params[:output])
 
         if @output.save
-          flash[:notice] = "Output created!"
-          redirect_to a_output_path @output
+          flash[:notice] = "Created Output."
+          redirect_to a_outputs_path
         else
-          flash[:error] = "Failed to create output: #{@output.errors}"
-          render action: :new
+          render :new
         end
       end
 
+
+      def destroy
+        @output.destroy
+        flash[:notice] = "Destroyed Output."
+        redirect_to a_outputs_path
+      end
 
       private
 
