@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe AssetHostCore::Api::AssetsController do
-  before :each do
+  before do
     @api_user = create :api_user
   end
 
   describe 'GET show' do
-    before :each do
+    before do
       @api_user.permissions.create(
         :resource   => "AssetHostCore::Asset",
         :ability    => "read"
@@ -23,10 +23,16 @@ describe AssetHostCore::Api::AssetsController do
       get :show, api_request_params(id: 1).except(:auth_token)
       response.status.should eq 401
     end
+
+    it 'renders a forbidden error if user does not have read permission for assets' do
+      @api_user.permissions.clear
+      get :show, api_request_params(id: 1)
+      response.status.should eq 403
+    end
   end
 
   describe 'POST create' do
-    before :each do
+    before do
       FakeWeb.register_uri(:get, %r{imgur\.com}, 
         body: load_image('fry.png'), content_type: "image/png")
 
@@ -39,6 +45,17 @@ describe AssetHostCore::Api::AssetsController do
     it 'returns a bad request if URL is not present' do
       post :create, api_request_params
       response.status.should eq 400
+    end
+
+    it 'returns a 401 if no auth token is provided' do
+      post :create, api_request_params(url: "http://imgur.com/someimg.png").except(:auth_token)
+      response.status.should eq 401
+    end
+
+    it 'returns a 403 if user does not have asset write permission' do
+      @api_user.permissions.clear
+      post :create, api_request_params(url: "http://url.com/img.png")
+      response.status.should eq 403
     end
 
     it 'responds with a 404 and returns asset if no asset is found' do
@@ -85,6 +102,32 @@ describe AssetHostCore::Api::AssetsController do
       asset.caption.should eq "Test Image"
       asset.owner.should eq "Test Owner"
       asset.title.should eq "Test Title"
+    end
+  end
+
+  describe 'PUT update' do
+    before do
+      @api_user.permissions.create(
+        :resource   => "AssetHostCore::Asset",
+        :ability    => "write"
+      )
+    end
+
+    it 'updates the asset' do
+      asset = create :asset
+      put :update, api_request_params(id: asset.id, asset: { title: "New Title" })
+      asset.reload.title.should eq "New Title"
+    end
+
+    it 'returns a 401 if no auth token is provided' do
+      put :update, api_request_params(id: 0).except(:auth_token)
+      response.status.should eq 401
+    end
+
+    it 'returns a 403 if user does not have asset write permission' do
+      @api_user.permissions.clear
+      put :update, api_request_params(id: 0)
+      response.status.should eq 403
     end
   end
 end
