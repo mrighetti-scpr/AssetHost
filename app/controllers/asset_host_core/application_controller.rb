@@ -1,53 +1,8 @@
 module AssetHostCore
   class ApplicationController < ::ApplicationController
 
-    layout 'asset_host_core/application'
-
-    helper_method :_current_user
-    helper_method :_sign_out_path
-
-    def _authenticate_user!
-      instance_eval &AssetHostCore::Config.authentication_method
-    end
-
-    #----------
-
-    def _current_user
-      instance_eval &AssetHostCore::Config.current_user_method
-    end
-
-    #----------
-
-    def _sign_out_path
-      instance_eval &AssetHostCore::Config.sign_out_path
-    end
-
-    #----------
 
     private
-
-    def authenticate_api_user
-      @api_user = ApiUser.authenticate(params[:auth_token])
-
-      if !@api_user
-        render_unauthorized and return false
-      end
-    end
-
-    def authorize_admin
-      unless current_user.is_admin?
-        redirect_to assethost.root_path and return false
-      end
-    end
-
-    def authorize(ability, resource)
-      if !@api_user.may?(ability, resource)
-        render_forbidden and return false
-      else
-        return true
-      end
-    end
-
 
     def render_not_found(options={})
       options[:message] ||= "Not Found"

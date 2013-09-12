@@ -1,15 +1,12 @@
 module AssetHostCore
   module Api
-    class AssetsController < AssetHostCore::ApplicationController
+    class AssetsController < BaseController
       before_filter :set_access_control_headers
 
-      before_filter :authenticate_api_user
       before_filter -> { authorize(:read) }, only: [:index, :show, :tag]
       before_filter -> { authorize(:write) }, only: [:update, :create]
 
       before_filter :get_asset, only: [:show, :update, :tag]
-
-      respond_to :json
 
 
       def index
@@ -99,10 +96,6 @@ module AssetHostCore
 
       def authorize(ability)
         super ability, "AssetHostCore::Asset"
-      end
-
-      def set_access_control_headers
-        response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
       end
 
       def get_asset

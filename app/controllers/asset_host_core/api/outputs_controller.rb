@@ -1,11 +1,9 @@
 module AssetHostCore
   module Api
-    class OutputsController < AssetHostCore::ApplicationController
-      before_filter :authenticate_api_user
+    class OutputsController < BaseController
       before_filter -> { authorize(:read) }, only: [:index, :show]
       before_filter :get_output, only: [:show]
 
-      respond_to :json
 
       def index
         @outputs = Output.all
