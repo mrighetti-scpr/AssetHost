@@ -30,5 +30,10 @@ FactoryGirl.define do
 
 
   factory :output, class: "AssetHostCore::Output" do
+    code "thumb"
+    size "88x88#"
+    extension "jpg"
+    is_rich 0
+    prerender 0
   end
 end
