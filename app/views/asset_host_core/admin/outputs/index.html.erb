@@ -1,26 +1,27 @@
-<% @PAGE_TITLE = "Outputs" %>
-
-<h1>Outputs</h1>
+<h2><%= @PAGE_TITLE = "Outputs" %></h2>
+<p><%= link_to "Create a new output", new_a_output_path, :class => "btn btn-success" %></p>
 
 <table class="table table-striped">
   <thead>
     <tr>
+      <th>Edit</th>
       <th>Code</th>
       <th>Size</th>
       <th>Pre-rendered?</th>
       <th>Rich?</th>
+      <th># Rendered</th>
     </tr>
   </thead>
   <tbody>
-    <% for o in @outputs do %>
+    <% @outputs.each do |output| %>
       <tr>
-        <td><%= link_to "#{o.code}", a_output_path(o.id) %></td>
-        <td><%= o.size %></td>
-        <td><%= o.prerender? ? "Yes" : "No" %></td>
-        <td><%= o.is_rich? ? "Yes" : "No" %></td>
+        <td><%= link_to "Edit", edit_a_output_path(output), class: "btn" %></td>
+        <td><%= output.code %></td>
+        <td><%= output.size %></td>
+        <td><%= output.prerender? %></td>
+        <td><%= output.is_rich? %></td>
+        <td><%= output.asset_outputs.count %></td>
       </tr>
-    <% end %>   
+    <% end %>
   </tbody>
 </table>
-
-<p><%= link_to "Create a new output", new_a_output_path, :class => "btn btn-success" %></p>

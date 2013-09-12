@@ -1,49 +1,53 @@
 module AssetHostCore
   module Admin
-    class OutputsController < AssetHostCore::ApplicationController
-      before_filter :load_output, except: [:index, :new, :create]
-    
+    class OutputsController < BaseController
+      layout 'asset_host_core/full_width'
+
+      before_filter :authorize_admin
+      before_filter :get_output, except: [:index, :new, :create]
+
+
       def index
         @outputs = Output.all
       end
 
-      #----------
-    
+
       def update
         if @output.update_attributes(params[:output])
-          flash[:notice] = "Output updated!"
-          redirect_to a_output_path @output
+          flash[:notice] = "Updated Output."
+          redirect_to a_outputs_path
         else
-          flash[:error] = "Failed to create output: #{@output.errors}"
-          render action: :edit
+          render :edit
         end
       end
-    
-      #----------
-    
+
+
       def new
         @output = Output.new
       end
-    
-      #----------
-    
+
+
       def create
         @output = Output.new(params[:output])
-        
+
         if @output.save
-          flash[:notice] = "Output created!"
-          redirect_to a_output_path @output
+          flash[:notice] = "Created Output."
+          redirect_to a_outputs_path
         else
-          flash[:error] = "Failed to create output: #{@output.errors}"
-          render action: :new
+          render :new
         end
       end
 
-      #----------
-    
+
+      def destroy
+        @output.destroy
+        flash[:notice] = "Destroyed Output."
+        redirect_to a_outputs_path
+      end
+
       private
 
-      def load_output
+      def get_output
         @output = Output.find(params[:id])
       end
     end

@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency "thinking-sphinx", "~> 2.0.14"
   s.add_dependency "resque", "~> 1.23.0"
   s.add_dependency "mini_exiftool", "~> 1.6.0"
-
+  s.add_dependency 'bcrypt-ruby', '~> 3.0.0'
   s.add_dependency "faraday", "~> 0.8.7"
   s.add_dependency "faraday_middleware", "~> 0.9.0"
   s.add_dependency "google-api-client", "~> 0.6.3"
@@ -39,4 +39,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec-rails", '~> 2.13.0'
   s.add_development_dependency "factory_girl", '~> 4.2.0'
   s.add_development_dependency "fakeweb", '~> 1.3.0'
+  s.add_development_dependency 'capybara', '~> 2.1.0'
+  s.add_development_dependency 'launchy'
 end

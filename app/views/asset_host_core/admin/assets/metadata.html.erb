@@ -1,6 +1,4 @@
-<% @PAGE_TITLE = "Add Metadata" %>
-
-<h1><%= @PAGE_TITLE %></h1>
+<h2><%= @PAGE_TITLE = "Add Metadata" %></h2>
 
 <%= simple_form_for :assets, url: metadata_a_assets_path, method: :put do |f| %>
     <% @assets.each do |asset| %>

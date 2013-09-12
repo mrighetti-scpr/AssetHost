@@ -1,4 +1,20 @@
 FactoryGirl.define do
+  factory :user do
+    username "bricker"
+    password "secret"
+    password_confirmation "secret"
+    is_admin false
+  end
+
+  factory :api_user, class: "AssetHostCore::ApiUser" do
+    name "Bryan"
+    email "bricker@scpr.org"
+    is_active true
+  end
+
+  factory :permission, class: "AssetHostCore::Permission" do
+  end
+
   factory :asset, class: "AssetHostCore::Asset" do
     title "Asset"
     caption "This has been an asset"
@@ -14,5 +30,10 @@ FactoryGirl.define do
 
 
   factory :output, class: "AssetHostCore::Output" do
+    code "thumb"
+    size "88x88#"
+    extension "jpg"
+    is_rich 0
+    prerender 0
   end
 end

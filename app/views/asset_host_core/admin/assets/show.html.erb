@@ -1,6 +1,4 @@
-<%
-    @PAGE_TITLE = "Asset: #{@asset.title}"
-%>
+<% @PAGE_TITLE = "Asset: #{@asset.title}" %>
 
 <!-- assets pager -->
 <ul class="pager">
@@ -22,7 +20,7 @@
 <br/>
 
 <div id="editform">
-    <%= simple_form_for(@asset, as: :asset, url: a_asset_path(@asset), html: { class: "form-horizontal" }) do |f| %>
+    <%= simple_form_for([:a, @asset], html: { class: "form-horizontal" }) do |f| %>
     <div class="row">
         <div class="span6">
             <fieldset>

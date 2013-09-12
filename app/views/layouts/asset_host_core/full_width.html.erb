@@ -11,18 +11,7 @@
 
 <div id="content" class="container">
   <div class="row">
-
-  <% if current_user %>
-    <div class="span4">
-      <h3>Upload Assets</h3>
-      
-      <div id="filedrop" style="">
-        <p style="font-size:24px;line-height:36px;color: #aaa;text-align: center">Drop File(s) Here</i></p>
-      </div>
-    </div>
-  <% end %>
-
-    <div class='span8' id="content_right">
+    <div class='span12' id="content_right">
       <% if flash[:notice] %>
         <div class="alert alert-success"><%= flash[:notice] %></div>
       <% end %>
@@ -37,17 +26,6 @@
   <br class="clear"/>
   <br/>
 </div>
-
-<% if current_user %>
-  <% content_for :footerjss do %>
-      chooser = new AssetHost.ChooserUI({
-      dropEl: "#filedrop",
-      saveButton: 0,
-      afterUploadText: "Manage Metadata", 
-      afterUploadURL: "<%= assethost.metadata_a_assets_path + "?ids={{ids}}" %>"
-    })
-  <% end %>
-<% end %>
 
 </body>
   <%= render "asset_host_core/shared/footerjs" %>

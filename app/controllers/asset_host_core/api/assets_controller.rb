@@ -1,11 +1,12 @@
 module AssetHostCore
   module Api
-    class AssetsController < AssetHostCore::ApplicationController
+    class AssetsController < BaseController
       before_filter :set_access_control_headers
-      before_filter :_authenticate_api_user!
-      before_filter :find_asset, only: [:show, :update, :tag]
 
-      respond_to :json
+      before_filter -> { authorize(:read) }, only: [:index, :show, :tag]
+      before_filter -> { authorize(:write) }, only: [:update, :create]
+
+      before_filter :get_asset, only: [:show, :update, :tag]
 
 
       def index
@@ -14,9 +15,9 @@ module AssetHostCore
             :page          => params[:page] ? params[:page].to_i : 1,
             :per_page      => 24,
             :order         => "created_at DESC, @relevance DESC",
-            :field_weights => { 
-              :title   => 10, 
-              :caption => 3 
+            :field_weights => {
+              :title   => 10,
+              :caption => 3
             }
           )
         else
@@ -24,21 +25,19 @@ module AssetHostCore
             .page(params[:page])
             .per(24)
         end
-      
+
         response.headers['X-Next-Page']       = (@assets.last_page? ? nil : @assets.current_page + 1).to_s
         response.headers['X-Total-Entries']   = @assets.total_count.to_s
 
         respond_with @assets
       end
-    
-      #----------
+
 
       def show
         respond_with @asset
       end
-    
-      #----------
-    
+
+
       def update
         if @asset.update_attributes(params[:asset])
           respond_with @asset
@@ -46,14 +45,41 @@ module AssetHostCore
           respond_with @asset.errors.full_messages, :status => :error
         end
       end
-    
-      #----------
+
+
+      def create
+        if !params[:url]
+          render_bad_request(message: "Must provide an asset URL")
+          return false
+        end
+
+        # see if we have a loader for this URL
+        if asset = AssetHostCore.as_asset(params[:url])
+          if params[:note].present?
+            asset.notes += "\n#{params[:note]}"
+          end
+
+          asset.is_hidden   = params[:hidden].present?
+          asset.caption     = params[:caption] if params[:caption].present?
+          asset.owner       = params[:owner] if params[:owner].present?
+          asset.title       = params[:title] if params[:title].present?
+
+          asset.save
+          respond_with asset, location: a_asset_path(asset)
+
+        else
+          render_not_found(message: "Unable to find or load an asset at " \
+                                    "the URL #{params[:url]}")
+          return false
+        end
+      end
+
 
       def tag
         output  = Output.find_by_code!(params[:style])
         ao      = @asset.outputs.where(output_id: output.id).first
-        
-        tag = { 
+
+        tag = {
           :id           => @asset.id,
           :tag          => @asset.image.tag(params[:style].to_sym),
           :updated_at   => @asset.image_updated_at,
@@ -64,17 +90,15 @@ module AssetHostCore
 
         respond_with tag
       end
-    
-      #----------
-    
+
 
       private
 
-      def set_access_control_headers
-        response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
+      def authorize(ability)
+        super ability, "AssetHostCore::Asset"
       end
 
-      def find_asset
+      def get_asset
         @asset = Asset.find_by_id(params[:id])
 
         if !@asset

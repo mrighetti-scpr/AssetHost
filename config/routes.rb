@@ -9,17 +9,15 @@ AssetHostCore::Engine.routes.draw do
         get 'tag/:style', :action => :tag
       end
     end
-    
-    resources :outputs, defaults: { format: :json }
 
-    match 'as_asset', :to => "utility#as_asset", :as => "as_asset"
+    resources :outputs, defaults: { format: :json }
   end
 
 
 
-  namespace :a, :module => "admin" do 
+  namespace :a, :module => "admin" do
     resources :assets, :id => /\d+/ do
-      collection do 
+      collection do
         get '/search(/:q)', action: 'search', as: "search"
         get '/p/(:page)', action: 'index'
         get '/p/:page/:q', action: 'search'
@@ -36,12 +34,16 @@ AssetHostCore::Engine.routes.draw do
     end
 
     resources :outputs
-    
+
+    resources :api_users do
+      put 'reset_token', on: :member, as: :reset_token
+    end
+
     match 'chooser', :to => "home#chooser", :as => 'chooser'
-    
+
     root :to => "assets#index"
   end
 
-  
+
   root :to => "public#home"
 end
