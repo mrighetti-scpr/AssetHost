@@ -10,7 +10,13 @@ describe AssetHostCore::ApiUser do
 
     it 'does not allow inactive users' do
       user = create :api_user, auth_token: "12345", is_active: false
-      AssetHostCore::ApiUser.authenticate("12345").should be_nil
+      AssetHostCore::ApiUser.authenticate("12345").should be_false
+    end
+
+    it 'updates the last_authenticated column' do
+      user = create :api_user, auth_token: "12345"
+      AssetHostCore::ApiUser.authenticate("12345")
+      user.reload.last_authenticated.should be > 1.minute.ago
     end
   end
 

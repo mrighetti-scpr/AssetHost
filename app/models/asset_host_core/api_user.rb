@@ -16,7 +16,12 @@ module AssetHostCore
 
     class << self
       def authenticate(auth_token)
-        self.where(is_active: true, auth_token: auth_token).first
+        if user = self.where(is_active: true, auth_token: auth_token).first
+          user.update_column(:last_authenticated, Time.now)
+          user
+        else
+          false
+        end
       end
     end
 
