@@ -195,7 +195,8 @@ class AssetHost.ChooserUI
             _.extend
                 dataType    : "json"
                 type        : 'POST'
-                data: url   : uri
+                data:
+                    url: uri
                 callbacks
 
     #----------
