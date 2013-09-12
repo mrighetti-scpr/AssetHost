@@ -5,10 +5,10 @@ require "asset_host_core/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "asset_host_core"
+  s.name        = "asset_host"
   s.version     = AssetHostCore::VERSION
-  s.authors     = ["Eric Richardson"]
-  s.email       = ["erichardson@scpr.org"]
+  s.authors     = ["Eric Richardson", "Bryan Ricker"]
+  s.email       = ["bricker@kpcc.org"]
   s.homepage    = "http://github.com/SCPR/AssetHost"
   s.summary     = "One-stop-shop for media asset management, designed for a newsroom environment."
   s.description = "One-stop-shop for media asset management, designed for a newsroom environment."
