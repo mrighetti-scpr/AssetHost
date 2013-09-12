@@ -1,8 +1,6 @@
 module AssetHostCore
   module Admin
-    class HomeController < AssetHostCore::ApplicationController
-      before_filter :_authenticate_user!
-
+    class HomeController < BaseController
       def chooser
         @assets = AssetHostCore::Asset.order("updated_at desc")
           .page(params[:page])

@@ -1,8 +1,7 @@
 module AssetHostCore
   module Admin
-    class AssetsController < AssetHostCore::ApplicationController
-      before_filter :_authenticate_user!
-      before_filter :load_asset, only: [:show, :update, :replace, :destroy]
+    class AssetsController < BaseController
+      before_filter :get_asset, only: [:show, :update, :replace, :destroy]
       skip_before_filter :verify_authenticity_token, only: [:upload, :replace]
 
       #----------
@@ -133,7 +132,7 @@ module AssetHostCore
 
       protected
 
-      def load_asset
+      def get_asset
         @asset = Asset.find(params[:id])
       end
     end
