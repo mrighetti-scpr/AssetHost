@@ -7,6 +7,11 @@ describe AssetHostCore::ApiUser do
 
       AssetHostCore::ApiUser.authenticate("12345").should eq user
     end
+
+    it 'does not allow inactive users' do
+      user = create :api_user, auth_token: "12345", is_active: false
+      AssetHostCore::ApiUser.authenticate("12345").should be_nil
+    end
   end
 
   describe "auth token generation" do

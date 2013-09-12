@@ -16,7 +16,7 @@ module AssetHostCore
 
     class << self
       def authenticate(auth_token)
-        self.find_by_auth_token(auth_token)
+        self.where(is_active: true, auth_token: auth_token).first
       end
     end
 
