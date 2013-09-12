@@ -18,8 +18,8 @@ module AssetHostCore
       def search
         @query = params[:q]
 
-        @assets = Asset.visible.search(@query, 
-          :page          => params[:page] ? params[:page].to_i : 1, 
+        @assets = Asset.visible.search(@query,
+          :page          => params[:page] ? params[:page].to_i : 1,
           :per_page      => 24,
           :order         => "created_at DESC, @relevance DESC",
           :field_weights => {
@@ -27,8 +27,8 @@ module AssetHostCore
             :caption => 5
           }
         )
-        
-        render action: :index
+
+        render :index
       end
 
       #----------
@@ -70,10 +70,10 @@ module AssetHostCore
       #----------
 
       def show
-        # Use "visible" here because we are choosing next/prev based on the index listing
-        # Hard-coding the order here (ID) because the AssetHostBrowserUI uses ID if no
-        # ORDER option is passed in, which it currently isn't, so the grid is ordered by
-        # ID.
+        # Use "visible" here because we are choosing next/prev based on the
+        # index listing. Hard-coding the order here (ID) because the
+        # AssetHostBrowserUI uses ID if no ORDER option is passed in, which
+        # it currently isn't, so the grid is ordered by ID.
         @assets   = AssetHostCore::Asset.visible.order('id desc')
         @prev     = @assets.where('id > ?', @asset.id).last
         @next     = @assets.where('id < ?', @asset.id).first
@@ -95,11 +95,11 @@ module AssetHostCore
 
       def replace
         file = params[:file]
-        
+
         if !file
           render :text => 'ERROR' and return
         end
-        
+
         # FIXME: Put in place to keep Firefox 7 happy
         if !file.original_filename
           file.original_filename = "upload.jpg"
@@ -127,12 +127,12 @@ module AssetHostCore
           redirect_to a_asset_path(@asset)
         end
       end
-      
+
 
       #----------
-      
+
       protected
-      
+
       def load_asset
         @asset = Asset.find(params[:id])
       end
