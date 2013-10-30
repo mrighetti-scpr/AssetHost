@@ -1,12 +1,8 @@
 require "asset_host_core/engine"
-
 require "asset_host_core/paperclip"
-
 require "asset_host_core/config"
-
 require "asset_host_core/resque_job"
 require "asset_host_core/model_methods"
-
 require 'google/api_client'
 require 'open-uri'
 require 'faraday_middleware'
@@ -32,13 +28,10 @@ module AssetHostCore
     def config
       @config ||= AssetHostCore::Config.new
     end
-  end
 
-
-  #----------------
-  
-  def self.hooks(&block)
-    block.call(AssetHostCore::Config)
+    def hooks(&block)
+      block.call(AssetHostCore::Config)
+    end
   end
 end
 
