@@ -97,7 +97,6 @@ TODO: Setup generators for migrations
 See `spec/internal/db/schema.rb` for the tables you'll need to setup:
 
 * asset_host_core_outputs
-* 
 
 
 # Image Storage
