@@ -4,7 +4,7 @@
 </div>
 <div class="formtastic">
     <button class="admin btn">View in Admin</button>
-    
+
     <fieldset>
         <h3>Asset Metadata (Global)</h3>
         <ol>

@@ -24,7 +24,7 @@ module AssetHostCore
       end
 
       #----------
-      
+
       def load
         filename = File.basename(@url)
 
@@ -43,7 +43,7 @@ module AssetHostCore
       #----------
 
       private
-      
+
       def image_file
         @image_file ||= begin
           response = open(@url)

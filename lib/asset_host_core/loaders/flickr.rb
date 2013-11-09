@@ -16,25 +16,25 @@ module AssetHostCore
         ]
 
         match = nil
-        
+
         if matches.find { |m| match = url.match(m) }
           self.new(url: url, id: match[:id])
         else
           nil
         end
       end
-      
+
       #----------
-      
+
       def load
         return nil if AssetHostCore.config.flickr_api_key.blank?
 
         flickr = MiniFlickr.new
-        
+
         # we're going to try and go get it from flickr
         photo = flickr.call('flickr.photos.getInfo', photo_id: @id)["photo"]
         return nil if !photo
-        
+
         sizes     = flickr.call('flickr.photos.getSizes', photo_id: @id)["sizes"]["size"]
         licenses  = flickr.call('flickr.photos.licenses.getInfo')
 
@@ -53,15 +53,15 @@ module AssetHostCore
         if license = licenses["licenses"]["license"].find { |l| l['id'] == photo['license'] }
           asset.notes = [ license['name'], license['url'] ].join(" : ")
         end
-        
+
         # save Asset
         asset.save!
         asset
       end
-      
+
 
       #----------
-      
+
       private
 
       def image_file(url)
@@ -94,7 +94,7 @@ module AssetHostCore
 
         response = http.get(path_for_params(parameters))
 
-        # return an object parsed from the JSON    
+        # return an object parsed from the JSON
         ActiveSupport::JSON.decode(response.body)
       end
 

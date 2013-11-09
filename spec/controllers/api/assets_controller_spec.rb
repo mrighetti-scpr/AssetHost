@@ -33,7 +33,7 @@ describe AssetHostCore::Api::AssetsController do
 
   describe 'POST create' do
     before do
-      FakeWeb.register_uri(:get, %r{imgur\.com}, 
+      FakeWeb.register_uri(:get, %r{imgur\.com},
         body: load_image('fry.png'), content_type: "image/png")
 
       @api_user.permissions.create(

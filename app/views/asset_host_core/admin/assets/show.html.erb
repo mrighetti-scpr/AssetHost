@@ -7,7 +7,7 @@
             <%= link_to "&larr; #{@prev.title.blank? ? "Asset #{@prev.id}" : @prev.title[0..30]}".html_safe, a_asset_path(@prev) %>
         </li>
     <% end %>
-    
+
     <% if @next %>
         <li class="next">
             <%= link_to "#{@next.title.blank? ? "Asset #{@next.id}" : @next.title[0..30]} &rarr;".html_safe, a_asset_path(@next) %>
@@ -43,7 +43,7 @@
                 <%= f.input :owner, hint: @asset.image_copyright? ? "<small><strong>From Image:</strong> #{@asset.image_copyright}</small>" : nil, input_html: { class: "span5" } %>
                 <%= f.input :url, input_html: { class: "span5" } %>
             </fieldset>
-    
+
             <fieldset>
                 <legend>Metadata</legend>
                 <div class="form-horizontal">
@@ -56,14 +56,14 @@
                 <legend>Internal</legend>
                 <%= f.input :notes, input_html: { rows: 5 } %>
             </fieldset>
-    
+
 
             <div class="form-actions">
                 <%= f.submit "Update Asset", class: "btn btn-primary" %>
-                <%= link_to "Destroy Asset", 
-                    a_asset_path(@asset), 
-                    :method => :delete, 
-                    :class  => "btn btn-danger pull-right", 
+                <%= link_to "Destroy Asset",
+                    a_asset_path(@asset),
+                    :method => :delete,
+                    :class  => "btn btn-danger pull-right",
                     :data   => { confirm: "Are you sure you want to delete this asset? You are responsible for making sure no content is using it before deletion." } %>
 
             </div>
@@ -81,6 +81,6 @@
             replacePath: "<%= replace_a_asset_path @asset %>"
         }
     )
-    
+
     assetClient = new AssetHost.Client()
 </script>

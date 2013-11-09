@@ -16,7 +16,7 @@
                 <td><strong style="margin-right:10px;">URL</strong></td>
                 <td><input type="text" value="<%= @asset.urls[@tag] %>" style="margin-right:10px;width:300px;" />(<a href="<%= @asset.urls[@tag] %>" target="_blank">link</a>)</td>
             </tr>
-            
+
             <tr>
                 <td><strong style="margin-right:10px;">Tag</strong></td>
                 <td><input type="text" value="<%= @asset.tags[@tag] %>" style="width:300px;" /></td>

@@ -3,7 +3,7 @@
     <h1><%= @asset.title %></h1>
     <h2><%= @asset.owner %></h2>
     <h2><%= @asset.size %></h2>
-    <p><%= @asset.caption %></p> 
+    <p><%= @asset.caption %></p>
     <br style="clear:both;"/>
 </div>
 <div class="modal-footer">

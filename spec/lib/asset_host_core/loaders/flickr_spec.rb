@@ -31,7 +31,7 @@ describe AssetHostCore::Loaders::Flickr do
       before :each do
         FakeWeb.register_uri(:get, %r{flickr\.photos\.getInfo},
           content_type: "application/json", body: load_api_response('flickr/photos_getInfo.json'))
-        
+
         FakeWeb.register_uri(:get, %r{flickr\.photos\.getSizes},
           content_type: "application/json", body: load_api_response('flickr/photos_getSizes.json'))
 

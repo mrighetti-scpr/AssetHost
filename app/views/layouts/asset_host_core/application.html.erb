@@ -15,7 +15,7 @@
   <% if current_user %>
     <div class="span4">
       <h3>Upload Assets</h3>
-      
+
       <div id="filedrop" style="">
         <p style="font-size:24px;line-height:36px;color: #aaa;text-align: center">Drop File(s) Here</i></p>
       </div>
@@ -26,11 +26,11 @@
       <% if flash[:notice] %>
         <div class="alert alert-success"><%= flash[:notice] %></div>
       <% end %>
-      
+
       <% if flash[:error] %>
         <div class="alert alert-error"><%= flash[:error] %></div>
       <% end %>
-      
+
       <%= yield %>
     </div>
   </div>
@@ -43,7 +43,7 @@
       chooser = new AssetHost.ChooserUI({
       dropEl: "#filedrop",
       saveButton: 0,
-      afterUploadText: "Manage Metadata", 
+      afterUploadText: "Manage Metadata",
       afterUploadURL: "<%= assethost.metadata_a_assets_path + "?ids={{ids}}" %>"
     })
   <% end %>

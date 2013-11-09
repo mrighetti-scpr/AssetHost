@@ -52,7 +52,7 @@ describe AssetHostCore::Loaders::YouTube do
       asset  = @loader.load
       asset.caption.should match /best 5 second clip/
     end
-    
+
     it 'sets the image' do
       asset  = @loader.load
       asset.image.should be_a Paperclip::Attachment

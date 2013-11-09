@@ -24,7 +24,7 @@ module AssetHostCore
         MODULES.find { |klass| loader = klass.build_from_url(url) }
         loader.try(:load)
       end
-      
+
 
       def classes
         puts "Classes: " + MODULES.to_s

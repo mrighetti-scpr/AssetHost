@@ -25,11 +25,11 @@ AssetHostCore.hooks do |config|
       @current_user       = nil
     end
   end
-  
+
   config.sign_out_path do
     Rails.application.routes.url_helpers.logout_path
   end
-  
+
   config.authentication_method do
     if !current_user
       session[:return_to] = request.fullpath
@@ -37,7 +37,7 @@ AssetHostCore.hooks do |config|
       false
     end
   end
-  
+
   config.api_authentication_method do
     if !current_api_user && !current_user
       head :unauthorized

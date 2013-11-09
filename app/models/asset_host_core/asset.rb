@@ -39,7 +39,7 @@ module AssetHostCore
     has_attached_file :image, Rails.application.config.assethost.paperclip_options.merge({
       :styles       => proc { Output.paperclip_sizes },
       :processors   => [:asset_thumbnail],
-      :interpolator => self 
+      :interpolator => self
     })
 
     treat_as_image_asset :image
@@ -63,7 +63,7 @@ module AssetHostCore
 
 
     #----------
-    
+
     def size(code)
       @_sizes ||= {}
       @_sizes[ code ] ||= AssetSize.new(self, Output.where(code: code).first)
@@ -72,7 +72,7 @@ module AssetHostCore
     #----------
 
     def as_json(options={})
-      { 
+      {
         :id                 => self.id,
         :title              => self.title,
         :caption            => self.caption,
@@ -94,11 +94,11 @@ module AssetHostCore
     alias :json :as_json
 
     #----------
-    
+
     def tag(style)
       self.image.tag(style)
     end
-    
+
     #----------
 
     def isPortrait?
@@ -107,9 +107,9 @@ module AssetHostCore
 
     #----------
 
-    def url_domain 
+    def url_domain
       return nil if !self.url
-      
+
       domain = URI.parse(self.url).host
       domain == 'www.flickr.com' ? 'Flickr' : domain
     end
@@ -126,18 +126,18 @@ module AssetHostCore
         ["#{s[0]} (#{self.image.width(s[0])}x#{self.image.height(s[0])})",s[0]]
       end
     end
-    
+
     #----------
-    
+
     def self.interpolate(pattern, attachment, style)
-      # we support: 
+      # we support:
       # global:
       #   :rails_root -- Rails.root
       #
       # style-based:
       #   :style -- output code
       #   :extension -- extension for Output
-      # 
+      #
       # asset-based:
       #   :id -- asset id
       #   :fingerprint -- image fingerprint
@@ -145,12 +145,12 @@ module AssetHostCore
       # output-based:
       #   :sprint -- AssetOutput fingerprint
       #
-      # first see what we've been passed as a style. could be string, symbol, 
+      # first see what we've been passed as a style. could be string, symbol,
       # Output or AssetOutput
-      
+
       asset   = attachment.instance
       result  = pattern.clone
-      
+
       if style.respond_to?(:to_sym) && style.to_sym == :original
         # special case...
 
@@ -166,14 +166,14 @@ module AssetHostCore
       else
         output = Output.where(code: style).first
         return nil if !output
-        
+
         ao = attachment.instance.outputs.where(output_id: output.id).first
       end
-      
+
 
       # global rules
       result.gsub!(":rails_root", Rails.root.to_s)
-      
+
       if asset
         # asset-based rules
         result.gsub!(":id", asset.id.to_s)
@@ -183,7 +183,7 @@ module AssetHostCore
           return false
         end
       end
-      
+
       if style.respond_to?(:to_sym) && style.to_sym == :original
         # hardcoded handling for the original file
         result.gsub!(":style", "original")
@@ -208,7 +208,7 @@ module AssetHostCore
           result.gsub!(":sprint", "NOT_YET_RENDERED")
         end
       end
-      
+
       result
     end
 
@@ -233,29 +233,29 @@ module AssetHostCore
 
 
     #----------
-    
+
     private
 
     def publish_asset_update
       AssetHostCore::Engine.redis_publish(action: "UPDATE", id: self.id)
       true
     end
-    
+
     def publish_asset_delete
       AssetHostCore::Engine.redis_publish(action: "DELETE", id: self.id)
       true
     end
   end
-  
+
   #----------
-  
+
   class AssetSize
     attr_accessor  :width, :height, :tag, :url, :asset, :output
 
     def initialize(asset,output)
       @asset  = asset
       @output = output
-      
+
       @width    = @asset.image.width(output.code_sym)
       @height   = @asset.image.height(output.code_sym)
       @url      = @asset.image.url(output.code_sym)

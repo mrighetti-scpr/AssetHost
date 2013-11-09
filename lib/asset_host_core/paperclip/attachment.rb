@@ -3,7 +3,7 @@ module Paperclip
     # Overwrite styles loader to allow caching despite dynamic loading
     def styles
       styling_option = @options[:styles]
-      
+
       if !@normalized_styles
         @normalized_styles = ActiveSupport::OrderedHash.new
         styling_option.call(self).each do |name, args|
@@ -14,7 +14,7 @@ module Paperclip
     end
 
 
-    # overwrite to only delete original when clear() is called.  styles will 
+    # overwrite to only delete original when clear() is called.  styles will
     # be deleted by the thumbnailer
     def queue_existing_for_delete #:nodoc:
       return unless file?
@@ -29,7 +29,7 @@ module Paperclip
 
 
     #----------
-    
+
     def delete_path(path)
       @queued_for_delete = [ path ]
       self.flush_deletes
@@ -43,7 +43,7 @@ module Paperclip
         AssetHostCore::Output.where(prerender: true).map(&:code_sym),
         self.instance.outputs.map { |ao| ao.output.code_sym }
       ].flatten.uniq
-      
+
       enqueue_styles(*styles)
     end
 
@@ -76,7 +76,7 @@ module Paperclip
             else
               return g.width.to_i
             end
-          end 
+          end
 
           factor = self._compute_style_ratio(s)
           width = ((self.instance_read("width") || 0) * factor).round
@@ -97,12 +97,12 @@ module Paperclip
         if ao = self.instance.output_by_style(style)
           return ao.height
         else
-          # TODO: Need to add code to guess dimensions if we don't yet have an output  
+          # TODO: Need to add code to guess dimensions if we don't yet have an output
           g = Paperclip::Geometry.parse(s.processor_options[:size])
           if g.modifier == '#'
             # match w/h from style
             return g.height.to_i
-          end 
+          end
 
           factor = self._compute_style_ratio(s)
           height = ((self.instance_read("height") || 0) * factor).round
@@ -186,7 +186,7 @@ module Paperclip
         copyright     = [p.by_line,p.credit].join("/")
         title         = p.title
         description   = p.description
-        
+
       else
         copyright     = p.byline || p.credit
         title         = p.title

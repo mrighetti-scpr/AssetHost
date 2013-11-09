@@ -11,8 +11,8 @@
     <param name="@videoPlayer" value="<%= @videoid %>" />
     <param name="wmode" value="transparent" />
     <param name="autoStart" value ="false" />
-    <param name="includeAPI" value="true" /> 
-    <param name="templateLoadHandler" value="onTemplateLoaded" /> 
-    <param name="templateReadyHandler" value="onTemplateReady" /> 
+    <param name="includeAPI" value="true" />
+    <param name="templateLoadHandler" value="onTemplateLoaded" />
+    <param name="templateReadyHandler" value="onTemplateReady" />
   </object>
 </div>

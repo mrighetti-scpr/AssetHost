@@ -13,7 +13,7 @@
         modalAdmin: false
     });
 
-    browser.assets.bind('selected',function (a) { 
+    browser.assets.bind('selected',function (a) {
         window.location = "<%= assethost.a_assets_path %>/"+a.get("id")
     });
 </script>

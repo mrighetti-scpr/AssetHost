@@ -6,7 +6,7 @@ module AssetHostCore
         "data-ah-videoid" => self.videoid
       }
     end
-    
+
     def as_json
       {
         :class    => "YoutubeVideo",

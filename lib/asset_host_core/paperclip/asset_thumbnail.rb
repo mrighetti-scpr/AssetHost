@@ -21,8 +21,8 @@ module Paperclip
       ].flatten.compact
     end
 
-    # Perform processing, if prerender == true or we've had to render 
-    # this output before. Afterward, update our AssetOutput entry 
+    # Perform processing, if prerender == true or we've had to render
+    # this output before. Afterward, update our AssetOutput entry
     def make
       # do we have an AssetOutput already?
       ao = @asset.outputs.where(output_id: @output).first
@@ -30,7 +30,7 @@ module Paperclip
       dst = nil
 
       if @prerender || ao
-        if !ao 
+        if !ao
           # register empty AssetObject to denote processing
           ao = @asset.outputs.create(
             :output_id            => @output,
@@ -73,13 +73,13 @@ module Paperclip
         print = Digest::MD5.hexdigest(dst.read)
         dst.rewind if dst.respond_to?(:rewind)
 
-        ao.attributes = { 
+        ao.attributes = {
           :fingerprint          => print,
           :width                => width,
           :height               => height,
           :image_fingerprint    => @asset.image_fingerprint
         }
-        
+
         ao.save
 
         # just to be safe...

@@ -15,11 +15,11 @@
 
 ul.assets, ul.uploads li {
     overflow: auto;
-    
+
     p {
        margin: 2px 0;
     }
-    
+
     img {
         max-width: 100px;
         max-height: 100px;
@@ -30,24 +30,24 @@ ul.assets, ul.uploads li {
     height: 430px;
     overflow: auto;
     background: #ffc;
-    
+
     ul {
        margin: 0;
        padding: 0;
        list-style-type: none;
-       
+
        li {
            clear: both;
            background: #eee;
            border: 1px solid #aaa;
            padding: 2px;
            margin-bottom: 4px;
-           
+
            button {
               display: inline;
               float: right;
            }
-           
+
            img {
                display: inline;
                float: left;
@@ -55,23 +55,23 @@ ul.assets, ul.uploads li {
            }
        }
    }
-       
+
    ul.assets li {
        min-height: 86px;
    }
-       
+
    ul.uploads li {
        min-height: 32px;
    }
-       
+
    ul.uploads li.uploading {
        background: #cfc;
    }
-   
+
    ul.uploads li.pending {
        background: #afc;
    }
-       
+
    ul.uploads li.complete {
        background: #afa;
    }
@@ -82,7 +82,7 @@ ul.pages {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    
+
     li {
         display: inline;
         float: left;
@@ -91,13 +91,13 @@ ul.pages {
         margin: 4px;
         cursor: pointer;
     }
-    
+
     li.current {
         border: 1px solid #ffc;
         background: #ddd;
         font-weight: bold;
     }
-    
+
     li.spacer {
         cursor: inherit;
         border: none;
@@ -135,45 +135,45 @@ span.asset_tip {
         padding-left: 8px;
         padding-bottom: 8px;
     }
-    
+
     h1 {
         font: 18px/24px normal Arial, Helvetica, sans-serif;
     }
-    
+
     h2 {
         font: 14px/18px normal Arial, Helvetica, sans-serif;
         color: #444;
         margin: 0;
     }
-    
+
     .simplemodal-data {
         padding:8px;
     }
-        
+
     a.modalCloseImg {
-        background:image_url("asset_host_core/x.png") no-repeat; 
-        width:25px; 
-        height:29px; 
-        display:inline; 
-        z-index:3200; 
-        position:absolute; 
-        top:-15px; 
-        right:-16px; 
+        background:image_url("asset_host_core/x.png") no-repeat;
+        width:25px;
+        height:29px;
+        display:inline;
+        z-index:3200;
+        position:absolute;
+        top:-15px;
+        right:-16px;
         cursor:pointer;
     }
     h3 {
         color:#84b8d9;
-    } 
+    }
 }
 
 
 .awesome, .awesome:visited {
-	background: #222 image_url("asset_host_core/alert-overlay.png") repeat-x; 
-	display: inline-block; 
-	padding: 5px 10px 6px; 
-	color: #fff; 
+	background: #222 image_url("asset_host_core/alert-overlay.png") repeat-x;
+	display: inline-block;
+	padding: 5px 10px 6px;
+	color: #fff;
 	text-decoration: none;
-	-moz-border-radius: 5px; 
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
@@ -182,7 +182,7 @@ span.asset_tip {
 	position: relative;
 	cursor: pointer;
 }
- 
+
 	.awesome:hover							{ background-color: #111; color: #fff; }
 	.awesome:active							{ top: 1px; }
 	.small.awesome, .small.awesome:visited 			{ font-size: 11px; }

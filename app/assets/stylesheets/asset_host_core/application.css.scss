@@ -59,7 +59,7 @@ ul.asset_sizes {
   overflow: hidden;
   margin-bottom: 1.3em;
 
-  iframe, object, embed { 
+  iframe, object, embed {
     position: absolute;
     top: 0;
     left: 0;
@@ -76,12 +76,12 @@ ul.asset_sizes {
 
 .assetbox {
   margin-right: -12px;
-  
+
   ul {
     list-style-type: none;
     margin-right: -12px;
     padding: 0;
-    
+
     li {
       display: inline;
       float: left;
@@ -90,29 +90,29 @@ ul.asset_sizes {
       margin-right: 9px;
       margin-bottom: 9px;
       background: #eee;
-      
+
       button {
           padding: 0;
           border: 1px solid #ddd;
-          
+
           img {
-              
+
           }
       }
-      
+
       button:hover {
           cursor: pointer;
         }
-      
-      
+
+
       a {
         color: inherit;
-        
+
         :hover {
           text-decoration: none;
         }
       }
-      
+
       span {
           display: none;
       }
@@ -134,12 +134,12 @@ ul.asset_sizes {
     border: 1px solid darken(#ffc,40%);
     min-height: 100px;
     padding-bottom: 50px;
-    
+
   ul {
     list-style-type: none;
     margin: 0;
     background: #ffc;
-    
+
     li {
       display: block;
       padding: 2px;
@@ -147,7 +147,7 @@ ul.asset_sizes {
       border: 1px solid #aaa;
       overflow: auto;
       background: #fff;
-            
+
       button {
          display: inline;
          float: right;
@@ -159,34 +159,34 @@ ul.asset_sizes {
           margin: -2px 4px 0 -2px;
       }
     }
-    
-    
+
+
     li.help {
         font-size: 16px;
         color: #aaa;
         text-align: center;
         padding: 12px;
     }
-    
+
     .ready {
       background: #efc;
     }
-  
+
     .uploading {
       background: #cfc;
     }
-    
+
     .complete {
       background: #afa;
-    } 
-    
+    }
+
   }
-  
+
   ul.uploads li {
            min-height: 32px;
     }
-  
-  
+
+
   p.ahUp_upbutton {
      display: block;
      margin: 0;
@@ -196,7 +196,7 @@ ul.asset_sizes {
      text-align: center;
      font-weight: bold;
   }
-  
+
 }
 
 .search_box {
@@ -213,14 +213,14 @@ form.formtastic, div.formtastic {
         margin: 0;
         padding: 0;
     }
-    
+
     .help-inline {
         color: #999;
     }
-  
+
   .input {
         margin-bottom: 4px;
-      
+
       .inline-hints {
         color: #777 !important;
         font-size: 12px;
@@ -232,29 +232,29 @@ form.formtastic, div.formtastic {
   textarea, input {
       width: 96%;
   }
-  
+
   .checkbox input {
       width: inherit;
   }
-    
+
   label {
     font-size: 14px;
   }
-  
+
   ol ol {
       background: inherit;
       padding: inherit;
   }
-  
+
   li fieldset legend {
       font: inherit;
       color: inherit;
   }
-  
+
   .required label {
     font-weight: bold;
   }
-  
+
 }
 
 
@@ -279,7 +279,7 @@ ul.assets, ul.uploads li {
     p {
        margin: 2px 0;
     }
-    
+
     img {
         max-width: 80px;
     }
@@ -293,19 +293,19 @@ ul.assets, ul.uploads li {
     ul {
        margin: 0;
        list-style-type: none;
-       
+
        li {
            clear: both;
            background: #eee;
            border: 1px solid #aaa;
            padding: 2px;
            margin-bottom: 4px;
-           
+
            button {
               display: inline;
               float: right;
            }
-           
+
            img {
                display: inline;
                float: left;
@@ -313,23 +313,23 @@ ul.assets, ul.uploads li {
            }
        }
    }
-       
+
    ul.assets li {
        min-height: 86px;
    }
-       
+
    ul.uploads li {
        min-height: 32px;
    }
-       
+
    ul.uploads li.uploading {
        background: #cfc;
    }
-   
+
    ul.uploads li.pending {
        background: #afc;
    }
-       
+
    ul.uploads li.complete {
        background: #afa;
    }
@@ -343,7 +343,7 @@ span.asset_tip {
 
 .ah_asset_browse {
     margin: 12px;
-    
+
     img {
         display: inline;
         float: right;
@@ -351,20 +351,20 @@ span.asset_tip {
         padding-bottom: 8px;
         max-width: 200px;
     }
-    
+
     h1 {
         font: 18px/24px normal Arial, Helvetica, sans-serif;
     }
-    
+
     h2 {
         font: 14px/18px normal Arial, Helvetica, sans-serif;
         color: #444;
         margin: 0;
     }
-    
+
     h3 {
         color:#84b8d9;
-    } 
+    }
 }
 
 

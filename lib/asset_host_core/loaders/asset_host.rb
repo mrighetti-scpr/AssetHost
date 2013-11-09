@@ -12,14 +12,14 @@ module AssetHostCore
         ]
 
         match = nil
-        
+
         if matches.find { |m| match = url.match(m) }
           self.new(url: url, id: match[:id])
         else
           nil
         end
       end
-      
+
       #--------------
 
       def load

@@ -7,7 +7,7 @@ module AssetHostCore
     module ClassMethods
       def treat_as_image_asset(name)
         include InstanceMethodsOnActivation
-        
+
         attachment_definitions[name][:delayed] = true
 
         define_method "write_exif_data_for_#{name}" do
@@ -26,7 +26,7 @@ module AssetHostCore
 
         # register our event handler
         before_save :"write_exif_data_for_#{name}"
-        
+
         if respond_to?(:after_commit)
           after_commit  :"enqueue_delayed_processing_for_#{name}"
         else
@@ -34,10 +34,10 @@ module AssetHostCore
         end
 
         # -- Style fingerprint interpolation -- #
-        
+
         ::Paperclip.interpolates "sprint" do |attachment, style_name|
           if style_name == :original
-            'original' 
+            'original'
           elsif ao = attachment.instance.output_by_style(style_name)
             ao.fingerprint
           else

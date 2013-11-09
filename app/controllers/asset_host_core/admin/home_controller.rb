@@ -5,7 +5,7 @@ module AssetHostCore
         @assets = AssetHostCore::Asset.order("updated_at desc")
           .page(params[:page])
           .per(24)
-        
+
         render layout: 'asset_host_core/minimal'
       end
     end
