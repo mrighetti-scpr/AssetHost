@@ -171,7 +171,8 @@ module Paperclip
     def write_exif_data
       return unless @queued_for_write[:original]
 
-      p = ::MiniExiftool.new(@queued_for_write[:original].path)
+      p = ::MiniExiftool.new(@queued_for_write[:original].path,
+        :replace_invalid_chars => "")
 
       # -- determine metadata -- #
 
