@@ -6,7 +6,7 @@
 * Added user permissions.
 
 #### Bug Fixes
-* Exif Data now gets invalid UTF-8 characters replaced. This should prevent
+* Exif Data now gets invalid UTF-8 characters removed. This should prevent
   'invalid byte sequence' errors.
 
 #### Changes
