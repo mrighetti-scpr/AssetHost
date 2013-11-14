@@ -6,6 +6,8 @@
 * Added user permissions.
 
 #### Bug Fixes
+* Exif Data now gets its encoding converted to UTF-8. This should prevent
+  'invalid byte sequence' errors.
 
 #### Changes
 * [BREAKING] API - Moved `Utility#as_asset` into Assets endpoint `#create`.
