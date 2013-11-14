@@ -10,8 +10,11 @@ Gem::Specification.new do |s|
   s.authors     = ["Eric Richardson", "Bryan Ricker"]
   s.email       = ["bricker@kpcc.org"]
   s.homepage    = "http://github.com/SCPR/AssetHost"
-  s.summary     = "One-stop-shop for media asset management, designed for a newsroom environment."
-  s.description = "One-stop-shop for media asset management, designed for a newsroom environment."
+  s.license     = 'MIT'
+  s.summary     = "One-stop-shop for media asset management, " \
+                  "designed for a newsroom environment."
+  s.description = "One-stop-shop for media asset management, " \
+                  "designed for a newsroom environment."
 
   s.files = Dir["{app,config,lib,vendor}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
   s.test_files = Dir["spec/**/*"]
