@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "cocaine", "0.3.2"
   s.add_dependency "thinking-sphinx", "~> 2.0.14"
   s.add_dependency "resque", "~> 1.23.0"
-  s.add_dependency "mini_exiftool", "~> 1.6.0"
+  s.add_dependency "mini_exiftool", "~> 2.3.0"
   s.add_dependency 'bcrypt-ruby', '~> 3.0.0'
   s.add_dependency "faraday", "~> 0.8.7"
   s.add_dependency "faraday_middleware", "~> 0.9.0"
