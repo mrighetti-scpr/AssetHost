@@ -12,3 +12,4 @@
 #### Changes
 * [BREAKING] API - Moved `Utility#as_asset` into Assets endpoint `#create`.
 * Updated mini_exiftool to 2.3.0
+* Increased sphinx's MAX_MATCHES for search results.
