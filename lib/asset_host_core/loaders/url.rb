@@ -49,7 +49,8 @@ module AssetHostCore
           response = open(@url)
 
           tempfile = Tempfile.new('ah-brightcove', encoding: "ascii-8bit")
-          tempfile.write response.read
+          tempfile.write(response.read)
+          tempfile.rewind
 
           tempfile
         end

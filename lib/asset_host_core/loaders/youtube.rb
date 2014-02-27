@@ -66,10 +66,11 @@ module AssetHostCore
 
       def image_file(url)
         @image_file ||= begin
-          response = open(url)
+          response = open(url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE)
 
           tempfile = Tempfile.new('ah-youtube', encoding: "ascii-8bit")
-          tempfile.write response.read
+          tempfile.write(response.read)
+          tempfile.rewind
 
           @url.match(/ah-noTrim/) ? tempfile : Paperclip::Trimmer.make(tempfile)
         end

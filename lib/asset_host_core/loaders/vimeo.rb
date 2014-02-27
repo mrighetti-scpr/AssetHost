@@ -57,7 +57,8 @@ module AssetHostCore
           response = open(url)
 
           tempfile = Tempfile.new('ah-vimeo', encoding: "ascii-8bit")
-          tempfile.write response.read
+          tempfile.write(response.read)
+          tempfile.rewind
 
           tempfile
         end

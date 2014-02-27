@@ -8,6 +8,7 @@
 #### Bug Fixes
 * Exif Data now gets invalid UTF-8 characters removed. This should prevent
   'invalid byte sequence' errors.
+* Fixes a problem where trimming imported video stills wasn't working.
 
 #### Changes
 * [BREAKING] API - Moved `Utility#as_asset` into Assets endpoint `#create`.
