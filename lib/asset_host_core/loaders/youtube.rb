@@ -66,7 +66,7 @@ module AssetHostCore
 
       def image_file(url)
         @image_file ||= begin
-          response = open(url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE)
+          response = open(url)
 
           tempfile = Tempfile.new('ah-youtube', encoding: "ascii-8bit")
           tempfile.write(response.read)
