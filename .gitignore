@@ -7,3 +7,4 @@ log/*.log
 tmp/
 public/images/
 spec/internal/public/images
+Gemfile.lock
