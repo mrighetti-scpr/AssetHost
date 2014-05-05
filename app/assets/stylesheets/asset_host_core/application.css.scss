@@ -94,6 +94,7 @@ ul.asset_sizes {
       button {
           padding: 0;
           border: 1px solid #ddd;
+          max-width: 100%; // Firefox needs this
 
           img {
 
