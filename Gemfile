@@ -1,6 +1,9 @@
 source "http://rubygems.org"
 
 group :test do
+  # Bundler complains if this isn't specified,
+  # oauth2 has a specific requirement
+  gem 'jwt', '~> 0.1.4'
   gem "sqlite3"
   gem "combustion"
 
