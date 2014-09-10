@@ -70,7 +70,7 @@ module AssetHostCore
     #----------
 
     def self.redis_pubsub
-      if Rails.application.config.assethost.redis_pubsub && Rails.application.config.assethost.redis_pubsub.is_a?(Hash)
+      if Rails.application.config.assethost.redis_pubsub
         if @@redis_pubsub
           return @@redis_pubsub
         end
