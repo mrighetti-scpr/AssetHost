@@ -25,8 +25,8 @@
         <div class="span6">
             <fieldset>
                 <legend>Basics</legend>
-                <%= f.input :title, hint: @asset.image_title? ? "<small><strong>From Image:</strong> #{@asset.image_title}</small>" : nil %>
-                <%= f.input :caption, as: :text, input_html: { rows: 5 }, hint: @asset.image_description? ? "<small><strong>From Image:</strong> #{@asset.image_description}</small>" : nil %>
+                <%= f.input :title, hint: @asset.image_title? ? "<small><strong>From Image:</strong> #{@asset.image_title}</small>".html_safe : nil %>
+                <%= f.input :caption, as: :text, input_html: { rows: 5 }, hint: @asset.image_description? ? "<small><strong>From Image:</strong> #{@asset.image_description}</small>".html_safe : nil %>
             </fieldset>
         </div>
         <div class="span2 replace-asset">
@@ -40,7 +40,7 @@
         <div class="span8">
             <fieldset>
                 <legend>Rights</legend>
-                <%= f.input :owner, hint: @asset.image_copyright? ? "<small><strong>From Image:</strong> #{@asset.image_copyright}</small>" : nil, input_html: { class: "span5" } %>
+                <%= f.input :owner, hint: @asset.image_copyright? ? "<small><strong>From Image:</strong> #{@asset.image_copyright}</small>".html_safe : nil, input_html: { class: "span5" } %>
                 <%= f.input :url, input_html: { class: "span5" } %>
             </fieldset>
 
