@@ -30,6 +30,7 @@ module AssetHostCore
           :length   => response['length']
         )
 
+        @image_url = response['videoStillURL']
 
         asset = AssetHostCore::Asset.new(
           :title          => response["name"],
@@ -38,12 +39,13 @@ module AssetHostCore
           :image_taken    => DateTime.strptime(response["publishedDate"],"%Q"),
           :url            => nil,
           :notes          => "Imported from Brightcove: #{@id}",
-          :image          => image_file(response['videoStillURL']),
+          :image          => image_file,
           :native         => native
         )
 
 
         asset.save!
+        image_file.close(true)
         asset
       end
 
@@ -52,12 +54,10 @@ module AssetHostCore
 
       private
 
-      def image_file(url)
+      def image_file
         @image_file ||= begin
-          response = open(url)
-
           tempfile = Tempfile.new('ah-brightcove', encoding: "ascii-8bit")
-          tempfile.write(response.read)
+          open(@image_url) { |f| tempfile.write(f.read) }
           tempfile.rewind
 
           tempfile

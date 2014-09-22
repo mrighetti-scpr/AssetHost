@@ -31,8 +31,10 @@ module AssetHostCore
         thumbnail = snippet["thumbnails"]["maxres"] ||
                     snippet["thumbnails"]["high"]
 
+        @image_url = thumbnail["url"]
+
         asset = AssetHostCore::Asset.new(
-          :image          => image_file(thumbnail["url"]),
+          :image          => image_file,
           :title          => snippet["title"],
           :caption        => snippet["description"],
           :url            => @url,
@@ -43,6 +45,12 @@ module AssetHostCore
         )
 
         asset.save!
+
+        # We won't pass an argument to this because it may be a Tempfile
+        # (which takes an optional argument) or a File
+        # (which doesn't take any args)
+        image_file.close
+
         asset
       end
 
@@ -64,12 +72,10 @@ module AssetHostCore
 
       private
 
-      def image_file(url)
+      def image_file
         @image_file ||= begin
-          response = open(url)
-
           tempfile = Tempfile.new('ah-youtube', encoding: "ascii-8bit")
-          tempfile.write(response.read)
+          open(@image_url) { |f| tempfile.write(f.read) }
           tempfile.rewind
 
           @url.match(/ah-noTrim/) ? tempfile : Paperclip::Trimmer.make(tempfile)

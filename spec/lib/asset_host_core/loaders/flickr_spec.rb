@@ -54,8 +54,9 @@ describe AssetHostCore::Loaders::Flickr do
 
       it "uses the last size as the source image" do
         loader  = AssetHostCore::Loaders::Flickr.new(url: "http://staticflickr.com/999/456_abc", id: "456")
-        loader.should_receive(:image_file).with("http://farm7.staticflickr.com/6112/6238340909_234e5623a1_o.jpg")
         loader.load
+        # yuck
+        loader.instance_variable_get(:@image_url).should eq("http://farm7.staticflickr.com/6112/6238340909_234e5623a1_o.jpg")
       end
     end
 

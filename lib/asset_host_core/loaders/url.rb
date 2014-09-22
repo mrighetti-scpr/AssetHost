@@ -37,6 +37,7 @@ module AssetHostCore
         )
 
         asset.save!
+        image_file.close(true)
         asset
       end
 
@@ -46,10 +47,8 @@ module AssetHostCore
 
       def image_file
         @image_file ||= begin
-          response = open(@url)
-
-          tempfile = Tempfile.new('ah-brightcove', encoding: "ascii-8bit")
-          tempfile.write(response.read)
+          tempfile = Tempfile.new('ah-url', encoding: "ascii-8bit")
+          open(@url) { |f| tempfile.write(f.read) }
           tempfile.rewind
 
           tempfile

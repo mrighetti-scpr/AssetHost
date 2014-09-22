@@ -1,7 +1,8 @@
 module AssetHostCore
   module Loaders
     class Base
-      attr_accessor :title,
+      attr_accessor \
+        :title,
         :owner,
         :description,
         :url,

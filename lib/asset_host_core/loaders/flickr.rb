@@ -38,10 +38,12 @@ module AssetHostCore
         sizes     = flickr.call('flickr.photos.getSizes', photo_id: @id)["sizes"]["size"]
         licenses  = flickr.call('flickr.photos.licenses.getInfo')
 
+        @image_url = sizes[-1]["source"]
+
         # Load the image first so that the image EXIF data doesn't
         # override the data from the Flickr API.
         asset = AssetHostCore::Asset.new(
-          :image         => image_file(sizes[-1]["source"]),
+          :image         => image_file,
           :title         => photo["title"]["_content"],
           :caption       => photo["description"]["_content"],
           :owner         => photo['owner']['realname'] || photo['owner']["username"],
@@ -56,6 +58,7 @@ module AssetHostCore
 
         # save Asset
         asset.save!
+        image_file.close(true)
         asset
       end
 
@@ -64,12 +67,10 @@ module AssetHostCore
 
       private
 
-      def image_file(url)
+      def image_file
         @image_file ||= begin
-          response = open(url)
-
           tempfile = Tempfile.new('ah-flickr', encoding: "ascii-8bit")
-          tempfile.write(response.read)
+          open(@image_url) { |f| tempfile.write(f.read) }
           tempfile.rewind
 
           tempfile

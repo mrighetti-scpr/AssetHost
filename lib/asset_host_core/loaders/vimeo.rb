@@ -20,12 +20,11 @@ module AssetHostCore
         video = data[0]
         return nil if !video
 
-        native = AssetHostCore::VimeoVideo.create(
-          :videoid => video["id"]
-        )
+        native = AssetHostCore::VimeoVideo.create(videoid: video["id"])
+        @image_url = video["thumbnail_large"]
 
         asset = AssetHostCore::Asset.new(
-          :image          => image_file(video["thumbnail_large"]),
+          :image          => image_file,
           :title          => video["title"],
           :caption        => video["title"], # Description is too long
           :url            => @url,
@@ -36,6 +35,7 @@ module AssetHostCore
         )
 
         asset.save!
+        image_file.close(true)
         asset
       end
 
@@ -52,12 +52,10 @@ module AssetHostCore
 
       private
 
-      def image_file(url)
+      def image_file
         @image_file ||= begin
-          response = open(url)
-
           tempfile = Tempfile.new('ah-vimeo', encoding: "ascii-8bit")
-          tempfile.write(response.read)
+          open(@image_url) { |f| tempfile.write(f.read) }
           tempfile.rewind
 
           tempfile
