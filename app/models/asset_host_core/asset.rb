@@ -37,7 +37,7 @@ module AssetHostCore
     has_many :outputs, :class_name => "AssetOutput", :order => "created_at desc", :dependent => :destroy
     belongs_to :native, :polymorphic => true
 
-    has_attached_file :image, AssetHostCore.config.paperclip_options.merge({
+    has_attached_file :image, (AssetHostCore.config.paperclip_options||{}).merge({
       :styles       => proc { Output.paperclip_sizes },
       :processors   => [:asset_thumbnail],
       :interpolator => self

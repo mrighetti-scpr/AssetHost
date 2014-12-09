@@ -1,18 +1,4 @@
 Combustion::Application.configure do
-  config.assethost = ActiveSupport::OrderedOptions.new
-  config.assethost.server         = "a.scpr.org"
-
-
-#  config.assethost.redis_pubsub   = { server: { host: "127.0.0.1", port: 6379, db: 0 }, key: "AHSCPR" }
-
-  config.assethost.paperclip_options = {
-    :path           => ':rails_root/public/images/:id_:fingerprint_:sprint.:extension',
-    :url            => "http://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension",
-    :storage        => 'filesystem',
-    :use_timestamp  => false
-  }
-
-  config.assethost.resque_queue   = :ahhost
 end
 
 
@@ -54,4 +40,19 @@ AssetHostCore.configure do |config|
   config.thumb_size   = "thumb"
   config.modal_size   = "lead"
   config.detail_size  = "wide"
+
+  config.server = "a.scpr.org"
+
+  config.paperclip_options = {
+    :path           => ':rails_root/public/images/:id_:fingerprint_:sprint.:extension',
+    :url            => "http://#{config.server}/i/:fingerprint/:id-:style.:extension",
+    :storage        => 'filesystem',
+    :use_timestamp  => false
+  }
+
+  config.resque_queue = "ahhost"
+
+
+  #  config.redis_pubsub   = { server: { host: "127.0.0.1", port: 6379, db: 0 }, key: "AHSCPR" }
+
 end
