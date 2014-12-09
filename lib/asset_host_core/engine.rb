@@ -27,7 +27,7 @@ module AssetHostCore
 
     config.after_initialize do
       # set our resque job's queue
-      #AssetHostCore::ResqueJob.instance_variable_set :@queue, Rails.application.config.assethost.resque_queue
+      AssetHostCore::ResqueJob.instance_variable_set :@queue, AssetHostCore.config.resque_queue || "assethost"
     end
 
     initializer 'asset_host_core.register_processor' do
@@ -67,12 +67,12 @@ module AssetHostCore
     #----------
 
     def self.redis_pubsub
-      if Rails.application.config.assethost.redis_pubsub
+      if AssetHostCore.config.redis_pubsub
         if @@redis_pubsub
           return @@redis_pubsub
         end
 
-        return @@redis_pubsub ||= Redis.new(Rails.application.config.assethost.redis_pubsub[:server])
+        return @@redis_pubsub ||= Redis.new(AssetHostCore.config.redis_pubsub[:server])
       else
         return false
       end
@@ -82,7 +82,7 @@ module AssetHostCore
 
     def self.redis_publish(data)
       if r = self.redis_pubsub
-        return r.publish(Rails.application.config.assethost.redis_pubsub[:key]||"AssetHost",data.to_json)
+        return r.publish(AssetHostCore.config.redis_pubsub[:key]||"AssetHost",data.to_json)
       else
         return false
       end

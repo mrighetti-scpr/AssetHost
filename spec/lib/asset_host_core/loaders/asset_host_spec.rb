@@ -3,7 +3,7 @@ require 'spec_helper'
 describe AssetHostCore::Loaders::AssetHost do
   describe '::build_from_url' do
     it "can load from an api url" do
-      assethost_root = "#{Rails.application.config.assethost.server}#{AssetHostCore::Engine.mounted_path}"
+      assethost_root = "#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}"
 
       asset = create :asset
       loader = AssetHostCore::Loaders::AssetHost.build_from_url("#{assethost_root}/api/assets/#{asset.id}")

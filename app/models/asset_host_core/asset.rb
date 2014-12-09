@@ -37,7 +37,7 @@ module AssetHostCore
     has_many :outputs, :class_name => "AssetOutput", :order => "created_at desc", :dependent => :destroy
     belongs_to :native, :polymorphic => true
 
-    has_attached_file :image, Rails.application.config.assethost.paperclip_options.merge({
+    has_attached_file :image, AssetHostCore.config.paperclip_options.merge({
       :styles       => proc { Output.paperclip_sizes },
       :processors   => [:asset_thumbnail],
       :interpolator => self
@@ -86,7 +86,7 @@ module AssetHostCore
         :native             => self.native.try(:as_json),
         :image_file_size    => self.image_file_size,
 
-        :url        => "http://#{Rails.application.config.assethost.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
+        :url        => "http://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
         :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
         :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image.url(s); h }
       }

@@ -8,7 +8,7 @@ if !window.console
         @log: ->
 
 window.AssetHost ?= {}
-AssetHost.SERVER = "<%= Rails.application.config.assethost.server %>"
+AssetHost.SERVER = "<%= AssetHostCore.config.server %>"
 
 AssetHost.PATH_PREFIX = "<%= AssetHostCore::Engine.mounted_path %>"
 AssetHost.SIZES =

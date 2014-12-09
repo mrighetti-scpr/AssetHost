@@ -35,6 +35,10 @@ module AssetHostCore
       :thumb_size,
       :modal_size,
       :detail_size,
-      :elasticsearch_index
+      :elasticsearch_index,
+      :paperclip_options,
+      :server,
+      :resque_queue,
+      :redis_pubsub
   end
 end
