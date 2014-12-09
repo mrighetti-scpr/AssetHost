@@ -20,6 +20,7 @@ module AssetHostCore
     ]
 
     include Elasticsearch::Model
+    include Elasticsearch::Model::Callbacks
     index_name AssetHostCore.config.elasticsearch_index
 
     #define_index do
