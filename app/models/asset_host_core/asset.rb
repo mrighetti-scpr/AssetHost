@@ -19,17 +19,18 @@ module AssetHostCore
       [ "Bottom Right",     "SouthEast" ]
     ]
 
+    include Elasticsearch::Model
+    index_name AssetHostCore.config.elasticsearch_index
 
-    define_index do
-      indexes title
-      indexes caption
-      indexes notes
-      indexes owner
-      has created_at
-      has updated_at
-      where "is_hidden = 0"
-    end
-
+    #define_index do
+    #  indexes title
+    #  indexes caption
+    #  indexes notes
+    #  indexes owner
+    #  has created_at
+    #  has updated_at
+    #  where "is_hidden = 0"
+    #end
 
     scope :visible, -> { where(is_hidden: false) }
 
@@ -92,6 +93,38 @@ module AssetHostCore
     end
 
     alias :json :as_json
+
+    #----------
+
+    def as_indexed_json(options={})
+      {
+        :id               => self.id,
+        :title            => self.title,
+        :caption          => self.caption,
+        :owner            => self.owner,
+        :notes            => self.notes,
+        :created_at       => self.created_at,
+        :taken_at         => self.image_taken || self.created_at,
+        :image_file_size  => self.image_file_size,
+        :native_type      => self.native_type,
+        :hidden           => self.is_hidden,
+        :shape            => self.shape.to_s
+      }
+    end
+
+    #----------
+
+    def shape
+      if !self.image_width || !self.image_height
+        :unknown
+      elsif self.image_width == self.image_height
+        :square
+      elsif self.image_width > self.image_height
+        :landscape
+      else
+        :portrait
+      end
+    end
 
     #----------
 

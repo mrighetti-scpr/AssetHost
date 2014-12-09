@@ -1,7 +1,7 @@
 require 'rails'
 require 'rake' # I don't know why, please don't ask
 require 'resque'
-require 'thinking_sphinx'
+require 'elasticsearch/model'
 require 'paperclip'
 
 require 'coffee-rails'
@@ -26,11 +26,8 @@ module AssetHostCore
     # -- post-initialization setup -- #
 
     config.after_initialize do
-      # work around an issue where TS isn't seeing model directories if Rails hasn't appended the trailing slash
-      ::ThinkingSphinx::Configuration.instance.model_directories << File.expand_path("../../../app/models",__FILE__) + "/"
-
       # set our resque job's queue
-      AssetHostCore::ResqueJob.instance_variable_set :@queue, Rails.application.config.assethost.resque_queue
+      #AssetHostCore::ResqueJob.instance_variable_set :@queue, Rails.application.config.assethost.resque_queue
     end
 
     initializer 'asset_host_core.register_processor' do

@@ -34,6 +34,7 @@ module AssetHostCore
       :google_api_key,
       :thumb_size,
       :modal_size,
-      :detail_size
+      :detail_size,
+      :elasticsearch_index
   end
 end

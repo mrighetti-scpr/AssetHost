@@ -17,16 +17,18 @@ module AssetHostCore
       def search
         @query = params[:q]
 
-        @assets = Asset.visible.search(@query,
-          :page          => params[:page] ? params[:page].to_i : 1,
-          :per_page      => 24,
-          :order         => "created_at DESC, @relevance DESC",
-          :max_matches   => 3000,
-          :field_weights => {
-            :title   => 10,
-            :caption => 5
-          }
-        )
+        @assets = Asset.search(@query).page(params[:page]||1).per(24).records
+
+        #@assets = Asset.visible.search(@query,
+        #  :page          => params[:page] ? params[:page].to_i : 1,
+        #  :per_page      => 24,
+        #  :order         => "created_at DESC, @relevance DESC",
+        #  :max_matches   => 3000,
+        #  :field_weights => {
+        #    :title   => 10,
+        #    :caption => 5
+        #  }
+        #)
 
         render :index
       end
