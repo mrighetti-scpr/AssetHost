@@ -59,7 +59,7 @@ module AssetHostCore
       # -- in with the new -- #
       path = self.asset.image.path(self)
 
-      if path && File.exists?(path)
+      if path && exists?(path)
         Rails.cache.write("img:"+[self.asset.id,self.image_fingerprint,self.output.code].join(":"),path)
       end
 
