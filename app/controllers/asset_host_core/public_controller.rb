@@ -31,7 +31,6 @@ module AssetHostCore
         _send_file(asset.image.path) and return
       end
 
-
       # valid style?
       output = Output.find_by_code(params[:style])
 
@@ -99,8 +98,8 @@ module AssetHostCore
     private
 
     def _send_file(file)
-      send_data S3_BUCKET.objects[file].read(), type: "image/jpeg", disposition: 'inline'
-      #send_file file, type: "image/jpeg", disposition: 'inline'
+      obj = S3_BUCKET.objects[file]
+      send_data obj.read(), type: obj.content_type, disposition: 'inline'
     end
   end
 end
