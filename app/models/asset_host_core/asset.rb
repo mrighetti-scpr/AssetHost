@@ -89,11 +89,34 @@ module AssetHostCore
 
         :url        => "http://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
         :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
-        :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image.url(s); h }
+        :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
       }
     end
 
     alias :json :as_json
+
+    #----------
+
+    def image_url(style)
+      # "http://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension"
+
+      style = style.to_sym
+
+      ext = nil
+      begin
+        # FIXME: Need to add correct extension
+        ext = case style
+        when :original
+          File.extname(self.image.original_filename).gsub(/^\.+/, "")
+        else
+          Output.paperclip_sizes[style][:format]
+        end
+      rescue => e
+        binding.pry
+      end
+
+      "http://#{AssetHostCore.config.server}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
+    end
 
     #----------
 
@@ -292,7 +315,7 @@ module AssetHostCore
 
       @width    = @asset.image.width(output.code_sym)
       @height   = @asset.image.height(output.code_sym)
-      @url      = @asset.image.url(output.code_sym)
+      @url      = @asset.image_url(output.code_sym)
       @tag      = @asset.image.tag(output.code_sym)
     end
   end

@@ -39,6 +39,8 @@ Gem::Specification.new do |s|
   s.add_dependency "simple_form", "~> 2.1.0"
   s.add_dependency "kaminari", "~> 0.14.1"
 
+  s.add_dependency "aws-sdk", "~> 1.59"
+
   s.add_development_dependency "rspec-rails", '~> 2.13.0'
   s.add_development_dependency "factory_girl", '~> 4.2.0'
   s.add_development_dependency "fakeweb", '~> 1.3.0'

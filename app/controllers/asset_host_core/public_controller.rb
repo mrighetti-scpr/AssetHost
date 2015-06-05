@@ -14,6 +14,7 @@ module AssetHostCore
       # if we have a cache key with aprint and style, assume we're good
       # to just return that value
       if img = Rails.cache.read("img:#{params[:id]}:#{params[:aprint]}:#{params[:style]}")
+
         _send_file(img) and return
       end
 
@@ -29,7 +30,6 @@ module AssetHostCore
       if params[:aprint] == "original"
         _send_file(asset.image.path) and return
       end
-
 
       # valid style?
       output = Output.find_by_code(params[:style])
@@ -70,13 +70,13 @@ module AssetHostCore
           end
 
           # crap.  totally failed.
-          redirect_to asset.image.url(output.code) and return
+          redirect_to asset.image_url(output.code) and return
         else
 
           # we're in the middle of rendering
           # sleep for 500ms to try and let the render complete, then try again
           sleep 0.5
-          redirect_to asset.image.url(output.code) and return
+          redirect_to asset.image_url(output.code) and return
         end
 
       else
@@ -90,7 +90,7 @@ module AssetHostCore
 
         # now, sleep for 500ms to try and let the render complete, then try again
         sleep 0.5
-        redirect_to asset.image.url(output.code) and return
+        redirect_to asset.image_url(output.code) and return
       end
     end
 
@@ -98,7 +98,8 @@ module AssetHostCore
     private
 
     def _send_file(file)
-      send_file file, type: "image/jpeg", disposition: 'inline'
+      obj = S3_BUCKET.objects[file]
+      send_data obj.read(), type: obj.content_type, disposition: 'inline'
     end
   end
 end
