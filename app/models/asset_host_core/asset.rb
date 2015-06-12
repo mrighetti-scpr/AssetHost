@@ -23,16 +23,6 @@ module AssetHostCore
     include Elasticsearch::Model::Callbacks
     index_name AssetHostCore.config.elasticsearch_index
 
-    #define_index do
-    #  indexes title
-    #  indexes caption
-    #  indexes notes
-    #  indexes owner
-    #  has created_at
-    #  has updated_at
-    #  where "is_hidden = 0"
-    #end
-
     scope :visible, -> { where(is_hidden: false) }
 
     has_many :outputs, :class_name => "AssetOutput", :order => "created_at desc", :dependent => :destroy
@@ -51,7 +41,6 @@ module AssetHostCore
     after_commit :publish_asset_update, :if => :persisted?
     after_commit :publish_asset_delete, :on => :destroy
 
-
     attr_accessible :title,
       :caption,
       :owner,
@@ -63,6 +52,43 @@ module AssetHostCore
       :native,
       :image_gravity
 
+    #----------
+
+    def self.es_search(query,options={})
+
+      es_q = {
+        function_score: {
+          query: { query_string: { query:query, default_operator:"AND" } },
+          functions: [
+            {
+              gauss: {
+                taken_at: {
+                  origin: Time.zone.now.iso8601,
+                  scale:  "26w",
+                  offset: "13w",
+                  decay:  0.8
+                }
+              }
+            },
+            {
+              gauss: {
+                long_edge: {
+                  origin: 4200,
+                  scale:  300,
+                  offset: 3000,
+                  decay:  0.7
+                }
+              }
+            }
+          ]
+        }
+      }
+
+      #Rails.logger.info "ES Query is: #{ es_q.to_json() }"
+
+      assets = []
+      Asset.search(query:es_q).page(options[:page]||1).per(options[:per_page]||24).records
+    end
 
     #----------
 
@@ -90,10 +116,39 @@ module AssetHostCore
         :url        => "http://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
         :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
         :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
-      }
+      }.merge(self.image_shape())
     end
 
     alias :json :as_json
+
+    #----------
+
+    def image_shape
+      if !self.image_width || !self.image_height
+        return {}
+      end
+
+      if ( self.image_width > self.image_height )
+        orientation = :landscape
+        long_edge   = self.image_width
+        short_edge  = self.image_height
+      else
+        orientation = :portrait
+        long_edge   = self.image_height
+        short_edge  = self.image_width
+      end
+
+      if ( long_edge - short_edge ) < long_edge * 0.1
+        orientation = :square
+      end
+
+      {
+        orientation:  orientation,
+        long_edge:    long_edge,
+        short_edge:   short_edge,
+        ratio:        (long_edge.to_f / short_edge).round(3)
+      }
+    end
 
     #----------
 
@@ -132,8 +187,7 @@ module AssetHostCore
         :image_file_size  => self.image_file_size,
         :native_type      => self.native_type,
         :hidden           => self.is_hidden,
-        :shape            => self.shape.to_s
-      }
+      }.merge(self.image_shape())
     end
 
     #----------

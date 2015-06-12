@@ -48,7 +48,7 @@ class AssetHost.Models
 
 
     class @PaginatedAssets extends @Assets
-        initialize: ->
+        initialize: (data,opts)->
             _.bindAll(this, 'parse', 'url')
 
             @_page          = 1
@@ -61,6 +61,9 @@ class AssetHost.Models
         parse: (resp, xhr) ->
             @next_page      = xhr.getResponseHeader('X-Next-Page')
             @total_entries  = xhr.getResponseHeader('X-Total-Entries')
+
+            # inject ORDER into our responses
+            a.ORDER = idx for a,idx in resp
 
             resp
 

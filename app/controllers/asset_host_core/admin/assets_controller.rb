@@ -15,9 +15,8 @@ module AssetHostCore
       #----------
 
       def search
-        @query = { query_string: { query:params[:q], default_operator:"AND" } }
-
-        @assets = Asset.search(query:@query).page(params[:page]||1).per(24).records
+        @query = params[:q]
+        @assets = Asset.es_search(@query,page:params[:page]||1)
 
         render :index
       end

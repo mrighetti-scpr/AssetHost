@@ -11,7 +11,7 @@ module AssetHostCore
 
       def index
         if params[:q].present?
-          @assets = Asset.search(params[:q]).page(params[:page]||1).per(24).records
+          @assets = Asset.es_search(params[:q],page:params[:page]||1)
         else
           @assets = Asset.visible.order("updated_at desc")
             .page(params[:page])

@@ -8,6 +8,9 @@ class AssetHost.BrowserUI
     constructor: (options={}) ->
         @options = _.defaults options, @DefaultOptions
 
+        if @options.assets?.length > 0
+            a.ORDER = idx for a,idx in @options.assets
+
         @assets = new AssetHost.Models.PaginatedAssets @options.assets
 
         if @options.page
