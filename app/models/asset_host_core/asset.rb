@@ -113,7 +113,7 @@ module AssetHostCore
         :native             => self.native.try(:as_json),
         :image_file_size    => self.image_file_size,
 
-        :url        => "http://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
+        :url        => "https://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
         :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
         :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
       }.merge(self.image_shape())
@@ -170,7 +170,7 @@ module AssetHostCore
         binding.pry
       end
 
-      "http://#{AssetHostCore.config.server}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
+      "https://#{AssetHostCore.config.server}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
     end
 
     #----------
