@@ -1,0 +1,28 @@
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+
+      <%= link_to "AssetHost", a_assets_path, :class => "brand" %>
+
+      <% if current_user %>
+        <%= form_tag search_a_assets_path, :class => "navbar-search pull-left", method: :get do %>
+          <%= text_field_tag "q", params[:q], placeholder: "Search", class: "search-query" %>
+        <% end %>
+
+        <ul class="nav">
+          <li><%= link_to "Assets", a_assets_path %></li>
+
+          <% if current_user.try(:is_admin?) %>
+            <li><%= link_to "Manage Outputs", a_outputs_path %></li>
+            <li><%= link_to "API Users", a_api_users_path %></li>
+          <% end %>
+        </ul>
+
+        <ul class="nav pull-right">
+          <li><%= link_to "Log Out", logout_path, :method => :delete %></li>
+        </ul>
+      <% end %>
+
+    </div>
+  </div>
+</div>

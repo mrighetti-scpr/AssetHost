@@ -1,0 +1,4 @@
+<button id="uploadAll" class="btn btn-large btn-warning">
+    Upload All
+    <% if @count: %>(<%= @count %> Images)<% end %>
+</button>

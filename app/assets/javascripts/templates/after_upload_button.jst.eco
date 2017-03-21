@@ -1,0 +1,3 @@
+<a id="afterUpload" class="btn btn-success" style="margin-top: 10px;" href="#">
+    <%= @text %>
+</a>

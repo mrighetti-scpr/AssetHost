@@ -1,0 +1,26 @@
+<h2><%= @PAGE_TITLE = "Edit API User: #{@api_user.name}" %></h2>
+
+<%= simple_form_for [:a, @api_user], html: { class: 'form-horizontal' } do |f| %>
+    <%= f.error_notification %>
+
+    <fieldset>
+        <%= render 'form_fields', f: f %>
+
+        <% if f.object.persisted? %>
+            <%= f.input :auth_token, disabled: true %>
+            <%= link_to "Reset Token", reset_token_a_api_user_path(f.object), method: :put, data: { confirm: "WARNING: Resetting the token will immediately cause all API calls for this account to stop working.\nClick OK to reset the API token for #{@api_user.name}.\nClick CANCEL to return to editing."} %>
+        <% end %>
+
+        <div class="form-actions">
+          <%= f.submit "Update", class: "btn btn-primary" %>
+
+          <%= link_to("Delete", a_api_user_path(@api_user),
+                class: "btn btn-danger pull-right",
+                method: :delete,
+                data: { confirm: "Click OK to delete this API User.\n" \
+                                 "Click CANCEL to return to editing."
+                      }
+                ) %>
+        </div>
+    </fieldset>
+<% end %>

@@ -1,0 +1,19 @@
+###
+Welcome to AssetHost
+###
+
+# stub console.log() for IE
+if !window.console
+    class window.console
+        @log: ->
+
+window.AssetHost ?= {}
+AssetHost.SERVER = "<%= AssetHostCore.config.server %>"
+
+# HACK
+# AssetHost.PATH_PREFIX = "/a"
+AssetHost.PATH_PREFIX = ""
+AssetHost.SIZES =
+    thumb:  "<%= AssetHostCore.config.thumb_size || "thumb" %>"
+    modal:  "<%= AssetHostCore.config.modal_size || "modal" %>"
+    detail: "<%= AssetHostCore.config.detail_size || "wide" %>"

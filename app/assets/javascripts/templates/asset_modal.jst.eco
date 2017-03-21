@@ -1,0 +1,13 @@
+<div class="ah_asset_browse modal-body">
+    <%- @asset.tags[ AssetHost.SIZES.modal ] %>
+    <h1><%= @asset.title %></h1>
+    <h2><%= @asset.owner %></h2>
+    <h2><%= @asset.size %></h2>
+    <p><%= @asset.caption %></p>
+    <br style="clear:both;"/>
+</div>
+<div class="modal-footer">
+    <a href="#" class="btn close">Close</a>
+    <% if @admin: %><a class="admin btn">View in Admin</a><% end %>
+    <% if @select:%><a class="select btn btn-primary">Select Asset</a><% end %>
+</div>

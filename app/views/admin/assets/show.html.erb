@@ -1,0 +1,86 @@
+<% @PAGE_TITLE = "Asset: #{@asset.title}" %>
+
+<!-- assets pager -->
+<ul class="pager">
+    <% if @prev %>
+        <li class="previous">
+            <%= link_to "&larr; #{@prev.title.blank? ? "Asset #{@prev.id}" : @prev.title[0..30]}".html_safe, a_asset_path(@prev) %>
+        </li>
+    <% end %>
+
+    <% if @next %>
+        <li class="next">
+            <%= link_to "#{@next.title.blank? ? "Asset #{@next.id}" : @next.title[0..30]} &rarr;".html_safe, a_asset_path(@next) %>
+        </li>
+    <% end %>
+</ul>
+
+<div id="asset"></div>
+
+<br/>
+
+<div id="editform">
+    <%= simple_form_for([:a, @asset], html: { class: "form-horizontal" }) do |f| %>
+    <div class="row">
+        <div class="span6">
+            <fieldset>
+                <legend>Basics</legend>
+                <%= f.input :title, hint: @asset.image_title? ? "<small><strong>From Image:</strong> #{@asset.image_title}</small>".html_safe : nil %>
+                <%= f.input :caption, as: :text, input_html: { rows: 5 }, hint: @asset.image_description? ? "<small><strong>From Image:</strong> #{@asset.image_description}</small>".html_safe : nil %>
+            </fieldset>
+        </div>
+        <div class="span2 replace-asset">
+            <h3>Replace:</h3>
+            <div id="replacedrop" style="height: 180px;margin-top: 16px">
+                <p style="font-size: 18px;line-height: 24px;color: #aaa;text-align: center;margin: 8px">Drop File Here to Replace Asset</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span8">
+            <fieldset>
+                <legend>Rights</legend>
+                <%= f.input :owner, hint: @asset.image_copyright? ? "<small><strong>From Image:</strong> #{@asset.image_copyright}</small>".html_safe : nil, input_html: { class: "span5" } %>
+                <%= f.input :url, input_html: { class: "span5" } %>
+            </fieldset>
+
+            <fieldset>
+                <legend>Metadata</legend>
+                <div class="form-horizontal">
+                    <%= f.input :image_taken, as: :date %>
+                </div>
+                <%= f.input :image_gravity, as: :select, collection: Asset::GRAVITY_OPTIONS %>
+            </fieldset>
+
+            <fieldset>
+                <legend>Internal</legend>
+                <%= f.input :notes, input_html: { rows: 5 } %>
+            </fieldset>
+
+
+            <div class="form-actions">
+                <%= f.submit "Update Asset", class: "btn btn-primary" %>
+                <%= link_to "Destroy Asset",
+                    a_asset_path(@asset),
+                    :method => :delete,
+                    :class  => "btn btn-danger pull-right",
+                    :data   => { confirm: "Are you sure you want to delete this asset? You are responsible for making sure no content is using it before deletion." } %>
+
+            </div>
+        </div>
+    </div>
+    <% end %>
+</div>
+
+<script type="text/javascript">
+    assetAdm = new AssetHost.AssetAdmin(
+        <%= @asset.json.to_json.html_safe %>,
+        {
+            el: "#asset",
+            replace: "#replacedrop",
+            replacePath: "<%= replace_a_asset_path @asset %>"
+        }
+    )
+
+    assetClient = new AssetHost.Client()
+</script>

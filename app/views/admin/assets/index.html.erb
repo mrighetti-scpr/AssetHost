@@ -1,0 +1,19 @@
+<% @PAGE_TITLE = "Asset Management" %>
+
+<div class='assetbox' id='asset_browser'></div>
+
+<script type="text/javascript">
+    var browser = new AssetHost.BrowserUI({
+        root_path: "<%= a_assets_path %>",
+        assets:<%= @assets.to_json.html_safe %>,
+        page: <%= @assets.current_page %>,
+        total: <%= @assets.total_count %>,
+        query: <%= @query.to_json.html_safe %>,
+        modalSelect: true,
+        modalAdmin: false
+    });
+
+    browser.assets.bind('selected',function (a) {
+        window.location = "<%= a_assets_path %>/"+a.get("id")
+    });
+</script>

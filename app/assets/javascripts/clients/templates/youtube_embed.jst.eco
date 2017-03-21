@@ -1,0 +1,1 @@
+<iframe type='text/html' src='http://www.youtube.com/embed/<%=@videoid%>' frameborder='0' allowfullscreen='true' />

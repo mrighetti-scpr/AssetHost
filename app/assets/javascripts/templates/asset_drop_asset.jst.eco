@@ -1,0 +1,4 @@
+<button class="btn btn-danger delete">x</button>
+<%- if @asset.tags then @asset.tags[ AssetHost.SIZES.thumb ] else "INVALID" %>
+<%= @asset.title %>
+<small style="display:block;"><%= @chop %></small>

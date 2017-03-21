@@ -1,0 +1,11 @@
+<% if !@xhr: %>
+    <button class="btn btn-danger remove">x</button>
+    <button class="btn btn-primary upload">Upload</button>
+<% end %>
+
+<% if @STATUS == 'uploading': %>
+    <b>(<%= @PERCENT %>%)</b>
+    <br/>
+<% end %>
+
+<%= @name %>: <%= @size %>

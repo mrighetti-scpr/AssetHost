@@ -1,0 +1,59 @@
+<div id="importHelp" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Import Help</h3>
+  </div>
+  <div class="modal-body">
+    To import an Asset, you can:
+    <ul>
+      <li>Drag an image file into the Drop area.</li>
+      <li>Paste in a URL/Key:
+        <table class="table table-condensed table-striped" style="font-size:12px;">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Type</th>
+              <th>Examples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>YouTube</td>
+              <td>URL</td>
+              <td>http://www.youtube.com/watch?v=a1Y73sPHKxw<br />
+                <strong>Note:</strong> Poster images for YouTube videos are trimmed of any black letterboxing. Add <code>?ah-noTrim</code> to the URL to bypass this.</td>
+            </tr>
+            <tr>
+              <td>Vimeo</td>
+              <td>URL</td>
+              <td>http://vimeo.com/29695463</td>
+            </tr>
+            <tr>
+              <td>Flickr</td>
+              <td>URL</td>
+              <td><ul><li>http://www.flickr.com/photos/scpr/6098495440/</li><li>http://farm7.staticflickr.com/6191/6098495440_aff9c9b793_o.jpg</li></ul></td>
+            </tr>
+            <tr>
+              <td>AssetHost</td>
+              <td>URL</td>
+              <td>http://a.scpr.org/i/b2186724bb63bfd1af85de5354d1ecc0/60623-small.jpg</td>
+            </tr>
+            <tr>
+              <td>Brightcove</td>
+              <td>KEY</td>
+              <td>brightcove:2104029225001<br /><i>Format:</i> brightcove:videoid</td>
+            </tr>
+            <tr>
+              <td>Image File</td>
+              <td>URL</td>
+              <td>http://i.imgur.com/z843Gtu.jpg</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">Close</a>
+  </div>
+</div>

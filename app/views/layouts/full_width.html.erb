@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= @PAGE_TITLE ? @PAGE_TITLE + " | AssetHost" : "AssetHost | Media Dashboard" %></title>
+  <%= stylesheet_link_tag    "application" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+<%= render 'shared/navbar' %>
+
+<div id="content" class="container">
+  <div class="row">
+    <div class='span12' id="content_right">
+      <% if flash[:notice] %>
+        <div class="alert alert-success"><%= flash[:notice] %></div>
+      <% end %>
+
+      <% if flash[:error] %>
+        <div class="alert alert-error"><%= flash[:error] %></div>
+      <% end %>
+
+      <%= yield %>
+    </div>
+  </div>
+  <br class="clear"/>
+  <br/>
+</div>
+
+</body>
+  <%= render "shared/footerjs" %>
+</html>

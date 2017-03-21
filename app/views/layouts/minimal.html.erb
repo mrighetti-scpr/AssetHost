@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AssetHost</title>
+  <%= stylesheet_link_tag    "application" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <%= link_to "AssetHost", a_assets_path, :class => "brand" %>
+
+      <ul class="nav pull-right">
+        <li><%= link_to "Log Out", _sign_out_path, :method => :delete %></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span12">
+    <% if flash[:notice] %>
+      <div class="alert alert-success"><%= flash[:notice] %></div>
+    <% end %>
+
+    <% if flash[:error] %>
+      <div class="alert alert-error"><%= flash[:error] %></div>
+    <% end %>
+    </div> <!-- /span -->
+  </div> <!-- /row -->
+
+
+  <div id="content">
+  <%= yield %>
+  </div>
+</div> <!-- /container -->
+
+</body>
+<%= render "shared/footerjs" %>
+</html>
