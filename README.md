@@ -104,7 +104,7 @@ Simply build the image:
 
 And run the container:
 
-`docker run -i -t -p 3306:3306 -p 6379:6379 -p 9200:9200 -p 9300:9300 assethost-services`
+`docker run -i -d -p 3306:3306 -p 6379:6379 -p 9200:9200 -p 9300:9300 assethost-services`
 
 If you are using *docker-machine*, you can run `echo $DOCKER_HOST` to optain the IP address of the virtual machine and use it to connect to the services running on it at the specified ports.
 
