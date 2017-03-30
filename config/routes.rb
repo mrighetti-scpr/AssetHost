@@ -1,7 +1,7 @@
 # require "resque/server"
 
 Rails.application.routes.draw do
-  match '/i/:aprint/:id-:style.:extension', :to => 'public#image', :constraints => { :id => /\d+/, :style => /[^\.]+/}, via: [:get, :post, :put, :patch, :delete]
+  match '/i/:aprint/:id-:style.:extension', :to => 'public#image', :constraints => { :id => /\d+/, :style => /[^\.]+/}, via: [:get, :post, :put, :patch, :delete], :as => :image
 
   # resque_constraint = ->(request) do
   #   user_id = request.session.to_hash["user_id"]
