@@ -49,7 +49,7 @@ class Asset < ActiveRecord::Base
   after_commit :publish_asset_delete, :on => :destroy
 
 
-  #----------
+
 
   def upload_original
     bucket   = Aws::S3::Resource.new.bucket('assethost-dev')
@@ -94,14 +94,14 @@ class Asset < ActiveRecord::Base
     Asset.search(query:es_q).page(options[:page]||1).per(options[:per_page]||24).records
   end
 
-  #----------
+
 
   def size(code)
     @_sizes ||= {}
     @_sizes[ code ] ||= AssetSize.new(self, Output.where(code: code).first)
   end
 
-  #----------
+
 
   def as_json(options={})
     #:url        => "http://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
@@ -129,7 +129,7 @@ class Asset < ActiveRecord::Base
 
   alias :json :as_json
 
-  #----------
+
 
   def image_shape
     if !self.image_width || !self.image_height
@@ -158,7 +158,7 @@ class Asset < ActiveRecord::Base
     }
   end
 
-  #----------
+
 
   def image_url(style)
     # "http://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension"
@@ -181,7 +181,7 @@ class Asset < ActiveRecord::Base
     "http://localhost:9000/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
 
-  #----------
+
 
   def as_indexed_json(options={})
     {
@@ -198,7 +198,7 @@ class Asset < ActiveRecord::Base
     }.merge(self.image_shape())
   end
 
-  #----------
+
 
   def shape
     if !self.image_width || !self.image_height
@@ -212,19 +212,19 @@ class Asset < ActiveRecord::Base
     end
   end
 
-  #----------
+
 
   def tag(style)
     self.image.tag(style)
   end
 
-  #----------
+
 
   def isPortrait?
     self.image_width < self.image_height
   end
 
-  #----------
+
 
   def url_domain
     return nil if !self.url
@@ -233,7 +233,7 @@ class Asset < ActiveRecord::Base
     domain == 'www.flickr.com' ? 'Flickr' : domain
   end
 
-  #----------
+
 
   def output_by_style(style)
     @s_outputs ||= self.outputs.inject({}) { |h,o| h[o.output.code] = o; h }
@@ -246,7 +246,7 @@ class Asset < ActiveRecord::Base
     end
   end
 
-  #----------
+
 
   def self.interpolate(pattern, attachment, style)
     # we support:
@@ -331,7 +331,7 @@ class Asset < ActiveRecord::Base
     result
   end
 
-  #----------
+
   # syncs the exif to the corresponding Asset attributes
   # We don't want to override anything that was set explicitly.
   def sync_exif_data
@@ -340,7 +340,7 @@ class Asset < ActiveRecord::Base
     self.owner     = self.image_copyright   if self.owner.blank?
   end
 
-  #----------
+
 
   def method_missing(method, *args)
     if output = Output.where(code: method.to_s).first
@@ -351,7 +351,7 @@ class Asset < ActiveRecord::Base
   end
 
 
-  #----------
+
 
   private
 
