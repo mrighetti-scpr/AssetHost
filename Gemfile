@@ -15,7 +15,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'jwt', '~> 0.1.4'
 gem 'responders'
 
-gem "paperclip", "5.1.0"
+gem "paperclip", "5.0.0"
 gem "elasticsearch-model", "~> 0.1.6"
 gem "cocaine", "0.5.8"
 gem "resque", "~> 1.23.0"

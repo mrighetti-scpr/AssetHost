@@ -1,6 +1,8 @@
 class Asset < ActiveRecord::Base
   self.table_name = "asset_host_core_assets"
 
+  attr_accessor :image
+
   @queue = :paperclip
 
   VIA_UNKNOWN   = 0
@@ -29,36 +31,35 @@ class Asset < ActiveRecord::Base
   has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
   belongs_to :native, :polymorphic => true
 
-  has_attached_file :image, (AssetHostCore.config.paperclip_options||{}).merge({
-    :styles       => proc { Output.paperclip_sizes },
-    :processors   => [:asset_thumbnail],
-    :interpolator => self
-  })
+  # has_attached_file :image, (AssetHostCore.config.paperclip_options||{}).merge({
+  #   :styles       => proc { Output.paperclip_sizes },
+  #   :processors   => [:asset_thumbnail],
+  #   :interpolator => self
+  # })
 
-  validates_attachment_content_type :image, content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+  # validates_attachment_content_type :image, content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
-  treat_as_image_asset :image
+  # treat_as_image_asset :image
 
-  before_create :sync_exif_data
+  # before_create :sync_exif_data
+
+  after_create :upload_original
 
   after_commit :publish_asset_update, :if => :persisted?
   after_commit :publish_asset_delete, :on => :destroy
-  #HACK
-  # attr_accessible :title,
-  #   :caption,
-  #   :owner,
-  #   :url,
-  #   :notes,
-  #   :creator_id,
-  #   :image,
-  #   :image_taken,
-  #   :native,
-  #   :image_gravity
+
 
   #----------
 
-  def self.es_search(query,options={})
+  def upload_original
+    bucket   = Aws::S3::Resource.new.bucket('assethost-dev')
+    uploader = PhotographicMemory.new bucket
+    key = uploader.put file: image, id: id, style_name: 'original'
+    self.image_fingerprint = key
+    self.save
+  end
 
+  def self.es_search(query,options={})
     es_q = {
       function_score: {
         query: { query_string: { query:query, default_operator:"AND" } },
@@ -110,16 +111,19 @@ class Asset < ActiveRecord::Base
       :caption            => self.caption,
       :owner              => self.owner,
       :size               => [self.image_width, self.image_height].join('x'),
-      :tags               => self.image.tags,
+      # :tags               => self.image.tags, HACK
+      :tags               => [],
       :notes              => self.notes,
       :created_at         => self.created_at,
       :taken_at           => self.image_taken || self.created_at,
       :native             => self.native.try(:as_json),
       :image_file_size    => self.image_file_size,
-
       :url        => "http://localhost:9000/api/assets/#{self.id}/",
-      :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
-      :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
+      # :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
+      # :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
+      #HACK
+      :sizes => {[:thumb, {:geometry=>"", :size=>"88x88#", :format=>:jpg, :prerender=>false, :output=>1, :rich=>false}]=>{:width=>nil, :height=>nil}, [:lsquare, {:geometry=>"", :size=>"188x188#", :format=>:jpg, :prerender=>true, :output=>2, :rich=>false}]=>{:width=>nil, :height=>nil}, [:lead, {:geometry=>"", :size=>"324x324>", :format=>:jpg, :prerender=>false, :output=>3, :rich=>false}]=>{:width=>nil, :height=>nil}, [:wide, {:geometry=>"", :size=>"620x414>", :format=>:jpg, :prerender=>false, :output=>4, :rich=>true}]=>{:width=>nil, :height=>nil}, [:full, {:geometry=>"", :size=>"1024x1024>", :format=>:jpg, :prerender=>true, :output=>5, :rich=>true}]=>{:width=>nil, :height=>nil}, [:three, {:geometry=>"", :size=>"600x350>", :format=>:jpg, :prerender=>false, :output=>6, :rich=>false}]=>{:width=>nil, :height=>nil}, [:eight, {:geometry=>"", :size=>"730x486>", :format=>:jpg, :prerender=>true, :output=>8, :rich=>true}]=>{:width=>nil, :height=>nil}, [:four, {:geometry=>"", :size=>"600x350>", :format=>:jpg, :prerender=>false, :output=>9, :rich=>false}]=>{:width=>nil, :height=>nil}, [:six, {:geometry=>"", :size=>"600x350>", :format=>:jpg, :prerender=>false, :output=>10, :rich=>false}]=>{:width=>nil, :height=>nil}, [:five, {:geometry=>"", :size=>"600x334>", :format=>:jpg, :prerender=>false, :output=>11, :rich=>false}]=>{:width=>nil, :height=>nil}, [:small, {:geometry=>"", :size=>"450x450>", :format=>:jpg, :prerender=>true, :output=>12, :rich=>false}]=>{:width=>nil, :height=>nil}, [:pixel, {:geometry=>"", :size=>"1x1#", :format=>:jpg, :prerender=>false, :output=>15, :rich=>false}]=>{:width=>nil, :height=>nil}},
+      :urls  => []
     }.merge(self.image_shape())
   end
 

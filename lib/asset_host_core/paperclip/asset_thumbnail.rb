@@ -54,7 +54,7 @@ module Paperclip
           scale = "-scale '#{$~[1]}x#{$~[2]}#{$~[3]}'"
           @convert_options = [scale, @convert_options].flatten
         end
-
+        byebug
         # call thumbnail generator
         dst = super
 

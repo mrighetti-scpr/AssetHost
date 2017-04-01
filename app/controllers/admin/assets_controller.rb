@@ -4,13 +4,6 @@ class Admin::AssetsController < Admin::BaseController
 
   #----------
 
-  class StringIO
-    attr_accessor :original_filename, :content_type
-    def closed?
-      true
-    end
-  end
-
   def index
     @assets = Asset.visible.order("updated_at desc")
       .page(params[:page])
@@ -34,6 +27,7 @@ class Admin::AssetsController < Admin::BaseController
     file.original_filename = request.headers['HTTP_X_FILE_NAME']
     file.content_type      = request.headers['HTTP_CONTENT_TYPE']
 
+    # asset = Asset.new(image: file, image_file_name: request.headers['HTTP_X_FILE_NAME'], image_content_type: request.headers['HTTP_CONTENT_TYPE'])
     asset = Asset.new(image: file, image_file_name: request.headers['HTTP_X_FILE_NAME'], image_content_type: request.headers['HTTP_CONTENT_TYPE'])
 
     if asset.save
@@ -41,6 +35,8 @@ class Admin::AssetsController < Admin::BaseController
     else
       render plain: 'ERROR'
     end
+  rescue => e
+    byebug
   end
 
   #----------
