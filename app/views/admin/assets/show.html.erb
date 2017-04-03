@@ -26,6 +26,7 @@
             <fieldset>
                 <legend>Basics</legend>
                 <%= f.input :title, hint: @asset.image_title? ? "<small><strong>From Image:</strong> #{@asset.image_title}</small>".html_safe : nil %>
+                <%= f.input :keywords, as: :text %>
                 <%= f.input :caption, as: :text, input_html: { rows: 5 }, hint: @asset.image_description? ? "<small><strong>From Image:</strong> #{@asset.image_description}</small>".html_safe : nil %>
             </fieldset>
         </div>
@@ -50,7 +51,6 @@
                     <%= f.input :image_taken, as: :date %>
                 </div>
                 <%= f.input :image_gravity, as: :select, collection: Asset::GRAVITY_OPTIONS %>
-                <%= f.input :keywords %>
             </fieldset>
 
             <fieldset>

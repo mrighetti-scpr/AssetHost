@@ -14,7 +14,7 @@ class Admin::AssetsController < Admin::BaseController
 
   def search
     @query = params[:q]
-    @assets = Asset.es_search(@query,page:params[:page]||1)
+    @assets = Asset.search(@query).page(params[:page]||1).records
 
     render :index
   end

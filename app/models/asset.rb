@@ -22,17 +22,16 @@ class Asset < ActiveRecord::Base
     [ "Bottom Right",     "SouthEast" ]
   ]
 
-  # include Elasticsearch::Model
-  # include Elasticsearch::Model::Callbacks
-  # index_name AssetHostCore.config.elasticsearch_index
+  include Elasticsearch::Model
+  include Elasticsearch::Model::Callbacks
+  index_name AssetHostCore.config.elasticsearch_index
 
   scope :visible, -> { where(is_hidden: false) }
 
   has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
   belongs_to :native, :polymorphic => true  # again, this is just for things like youtube videos
 
-  # before_create :sync_exif_data
-  #NOTE ^^ We will want to re-enable this in the appropriate spot at some point
+  before_create :sync_exif_data
 
 
   after_commit :publish_asset_update, :if => :persisted?
@@ -229,6 +228,7 @@ class Asset < ActiveRecord::Base
       :id               => self.id,
       :title            => self.title,
       :caption          => self.caption,
+      :keywords         => self.keywords,
       :owner            => self.owner,
       :notes            => self.notes,
       :created_at       => self.created_at,
