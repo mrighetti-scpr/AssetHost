@@ -89,16 +89,16 @@ class PhotographicMemory
     stdin, stdout, stderr, wait_thr = Open3.popen3(command)
     pid = wait_thr.pid
 
-    Timeout.timeout(500) do
+    Timeout.timeout(10) do # cancel in 10 seconds
       stdin.write input
       stdin.close
 
       output_buffer = []
       error_buffer  = []
 
-      while (response = [stdout.gets, stderr.gets]) && response.compact.any?
-        output_buffer << response[0]
-        error_buffer  << response[1]
+      while (output_chunk = stdout.gets) || (error_chunk = stderr.gets)
+        output_buffer << output_chunk
+        error_buffer  << error_chunk
       end
 
       output_buffer.compact!
