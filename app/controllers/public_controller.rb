@@ -13,7 +13,6 @@ class PublicController < ApplicationController
     # if we have a cache key with aprint and style, assume we're good
     # to just return that value
     if img = Rails.cache.read("img:#{params[:id]}:#{params[:aprint]}:#{params[:style]}")
-
       _send_file(img) and return
     end
 
@@ -27,7 +26,7 @@ class PublicController < ApplicationController
     # This isn't a "style", just someone has requested
     # the raw image file.
     if params[:aprint] == "original"
-      _send_file(asset.image.path) and return
+      _send_file(asset.file_key) and return
     end
 
     # valid style?
@@ -47,62 +46,37 @@ class PublicController < ApplicationController
     end
 
     # do we have a rendered output for this style?
-    asset_outputs = asset.outputs.where(output_id: output.id)
+    # if not then create a new one.
+    asset_output = asset.outputs.where(output_id: output.id, image_fingerprint: asset.image_fingerprint).first_or_create
 
-    if asset_outputs.present?
-      if asset_outputs.first.fingerprint.present?
-        # Yes, return the image
-        # the file may still not have been written yet. loop a try to return it
+    # if a new asset_output gets created, it should automatically
+    # fire off a new render job that will then give it a fingerprint
 
-        5.times do
-          if asset.image.exists? output.code_sym
-            # got it.  cache and return
-
-            path = asset.image.path(output.code)
-            Rails.cache.write("img:#{asset.id}:#{asset.image_fingerprint}:#{output.code}",path)
-
-            _send_file(path) and return
-          end
-
-          # nope... sleep!
-          sleep 0.5
-        end
-
-        # crap.  totally failed.
-        redirect_to asset.image_url(output.code) and return
+    5.times do
+      asset_output.reload
+      if asset_output.fingerprint.present?
+        path = asset.file_key(output.code)
+        Rails.cache.write("img:#{asset.id}:#{asset.image_fingerprint}:#{output.code}", path)
+        _send_file(path) and return
       else
-
-        # we're in the middle of rendering
-        # sleep for 500ms to try and let the render complete, then try again
+        # nope... sleep!
         sleep 0.5
-        redirect_to asset.image_url(output.code) and return
       end
-
-    else
-      # No, fire a render for the style
-
-      # create an AssetOutput with no fingerprint
-      asset.outputs.create(output_id: output.id, image_fingerprint: asset.image_fingerprint)
-
-      # and fire the queue
-
-      asset.image.enqueue_styles(output.code)
-
-      # now, sleep for 500ms to try and let the render complete, then try again
-      sleep 0.5
-      redirect_to asset.image_url(output.code) and return
     end
+
+    # crap.  totally failed.
+    redirect_to asset.image_url(output.code) and return
+
   end
 
 
   private
 
-  def _send_file(file)
-    # byebug
-    # obj = S3_BUCKET.objects[file]
-    obj = S3_BUCKET.object(file).get
-    # send_data obj.read(), type: obj.content_type, disposition: 'inline'
-    send_data obj.body.read, type: obj.content_type, disposition: 'inline'
+  def _send_file(filename)
+    bucket     = Aws::S3::Resource.new.bucket('assethost-dev')
+    downloader = PhotographicMemory.new bucket
+    file       = downloader.get(filename)
+    send_data file.read, type: 'image/jpeg', disposition: 'inline'
   end
 end
 

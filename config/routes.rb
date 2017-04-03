@@ -1,4 +1,4 @@
-# require "resque/server"
+require "resque/server"
 
 Rails.application.routes.draw do
   match '/i/:aprint/:id-:style.:extension', :to => 'public#image', :constraints => { :id => /\d+/, :style => /[^\.]+/}, via: [:get, :post, :put, :patch, :delete], :as => :image
@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   # constraints resque_constraint do
   #   mount Resque::Server.new, :at => "/resque"
   # end
+
+  mount Resque::Server, at: '/resque'
 
   resources :sessions, only: [:create, :destroy]
   get 'login'  => "sessions#new", as: :login

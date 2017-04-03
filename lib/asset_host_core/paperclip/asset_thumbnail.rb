@@ -25,6 +25,9 @@ module Paperclip
     # this output before. Afterward, update our AssetOutput entry
     def make
       # do we have an AssetOutput already?
+      # this can be the case if a specific style
+      # image has been requested but said style
+      # technically has not been rendered yet
       ao = @asset.outputs.where(output_id: @output).first
 
       dst = nil

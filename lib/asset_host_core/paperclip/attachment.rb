@@ -2,7 +2,9 @@ module Paperclip
   class Attachment
     # Overwrite styles loader to allow caching despite dynamic loading
     def styles
-      styling_option = @options[:styles]
+      #HACK
+      # styling_option = @options[:styles]
+      styling_option = proc { Output.paperclip_sizes } #HACK
 
       if !@normalized_styles
         @normalized_styles = ActiveSupport::OrderedHash.new

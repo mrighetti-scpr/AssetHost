@@ -1,26 +1,43 @@
 require 'timeout'
 require 'open3'
 require 'digest'
+require 'rack/mime'
 
 class PhotographicMemory
 
+  class PhotographicMemoryError < StandardError; end
+
   attr_accessor :bucket
 
-  def initialize bucket
+  def initialize bucket=nil
     @bucket = bucket
   end
 
-  def put file:, id:, style_name:'original', convert_options: []
-    unless style_name == 'original'
+  def put file:, id:, style_name:'original', convert_options: [], content_type:
+    # content_type is required
+    unless (style_name == 'original') || convert_options.empty? # we assume original *means* original
       output = render file, convert_options
     else
       output = file.read
-    end 
+    end
     file.rewind
-    digest   = Digest::MD5.hexdigest(file.read)
-    key      = "#{id}_#{digest}_#{style_name}.jpg"
-    bucket.object(key).put(body: output)
-    digest
+    original_digest   = Digest::MD5.hexdigest(file.read)
+    rendered_digest   = Digest::MD5.hexdigest(output)
+    extension = Rack::Mime::MIME_TYPES.invert[content_type]
+    key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
+    bucket.object(key).put(body: output, content_type: content_type)
+    if style_name == 'original'
+      keywords = classify file
+    else
+      keywords = []
+    end
+    {
+      fingerprint: rendered_digest,
+      metadata: exif(file),
+      key: key,
+      extension: extension,
+      keywords: keywords
+    }
   end
 
   def get key
@@ -31,32 +48,67 @@ class PhotographicMemory
     bucket.object(key).delete
   end
 
+  # def exif file
+  #   file.rewind
+  #   run_command "exiftool -json - ", file.read.force_encoding("UTF-8")
+  # end
+
   private
 
+  def exif file
+    file.rewind
+    MiniExiftool.new(file, :replace_invalid_chars => "")    
+  end
+
   def render file, convert_options=[]
-    stdin, stdout, stderr, wait_thr = Open3.popen3(["convert", "-", convert_options, "jpeg:-"].flatten.join(" "))
+    file.rewind
+    run_command ["convert", "-", convert_options, "jpeg:-"].flatten.join(" "), file.read
+  end
+
+  def classify file
+    file.rewind
+    # get the original image from S3 and classify
+    client = Aws::Rekognition::Client.new region: 'us-west-2'
+
+    resp = client.detect_labels({
+      image: {
+        bytes: file
+      },
+      max_labels: 123, 
+      min_confidence: 70, 
+    })
+
+    resp.labels
+
+  rescue Aws::Rekognition::Errors::ServiceError => e
+    # This also is not worth crashing over
+    []
+  end
+
+  def run_command command, input
+    stdin, stdout, stderr, wait_thr = Open3.popen3(command)
     pid = wait_thr.pid
 
     Timeout.timeout(500) do
-      stdin.puts file.read
+      stdin.write input
       stdin.close
 
-      output = []
-      error  = []
+      output_buffer = []
+      error_buffer  = []
 
       while (response = [stdout.gets, stderr.gets]) && response.compact.any?
-        output << response[0]
-        error  << response[1]
+        output_buffer << response[0]
+        error_buffer  << response[1]
       end
 
-      output.compact!
-      error.compact!
+      output_buffer.compact!
+      error_buffer.compact!
 
-      output = output.any? ? output.join('') : nil
-      error  = error.any? ? error.join('') : nil
+      output = output_buffer.any? ? output_buffer.join('') : nil
+      error  = error_buffer.any? ? error_buffer.join('') : nil
 
       unless error
-        raise PhotographicMemoryError.new("No output received.") if output.empty?
+        raise PhotographicMemoryError.new("No output received.") if !output
         return output
       else
         raise PhotographicMemoryError.new(error)

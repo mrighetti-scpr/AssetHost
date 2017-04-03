@@ -1,4 +1,4 @@
-require "asset_host_core/resque_job"
+# require "asset_host_core/resque_job"
 # require "asset_host_core/engine"
 # require "asset_host_core/processing"
 require "asset_host_core/paperclip"

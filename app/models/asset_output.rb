@@ -11,10 +11,49 @@ class AssetOutput < ActiveRecord::Base
 
   scope :rendered, -> { where("fingerprint != ''") }
 
+  after_save :render
 
   #----------
 
+  def convert_options
+    # arguments that get passed to imagemagick
+    options = [
+      "-gravity #{asset.image_gravity || 'center'}",
+      "-strip",
+      "-quality 95"
+    ]
+
+    if self.output.size =~ /(\d+)?x?(\d+)?([\#>])?$/ && $~[3] == "#"
+      # crop...  scale using dimensions as minimums, then crop to dimensions
+      scale = "-scale #{$~[1]}x#{$~[2]}^"
+      crop  = "-crop #{$~[1]}x#{$~[2]}+0+0"
+
+      options = [
+        options.shift,
+        scale,
+        crop,
+        options
+      ].flatten
+    else
+      # don't crop
+      scale = "-scale '#{$~[1]}x#{$~[2]}#{$~[3]}'"
+      options = [scale, options].flatten
+    end
+
+    options
+  end
+
+  def image_data= data
+    self.fingerprint = data[:fingerprint]
+    self.width       = data[:metadata].ImageWidth
+    self.height      = data[:metadata].ImageHeight
+  end
+
   protected
+
+  def render
+    RenderJob.perform_later(self.id) unless fingerprint.present?
+  end
 
   # on save, check whether we should be creating or deleting caches
   def delete_cache_and_img

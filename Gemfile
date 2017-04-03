@@ -18,8 +18,10 @@ gem 'responders'
 gem "paperclip", "5.0.0"
 gem "elasticsearch-model", "~> 0.1.6"
 gem "cocaine", "0.5.8"
-gem "resque", "~> 1.23.0"
-gem "mini_exiftool", "~> 2.3.0"
+gem "resque", "~> 1.27.2"
+gem 'sinatra', github: 'sinatra/sinatra', branch: 'master', require: false
+gem "mini_exiftool", "~> 2.8.0"
+# gem 'mini_exiftool', github: "Ravenstine/mini_exiftool"
 gem "faraday", "~> 0.8.7"
 gem "faraday_middleware", "~> 0.9.0"
 gem "google-api-client", "~> 0.6.3"

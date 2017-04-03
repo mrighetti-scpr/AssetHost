@@ -29,35 +29,15 @@ class Asset < ActiveRecord::Base
   scope :visible, -> { where(is_hidden: false) }
 
   has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
-  belongs_to :native, :polymorphic => true
-
-  # has_attached_file :image, (AssetHostCore.config.paperclip_options||{}).merge({
-  #   :styles       => proc { Output.paperclip_sizes },
-  #   :processors   => [:asset_thumbnail],
-  #   :interpolator => self
-  # })
-
-  # validates_attachment_content_type :image, content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
-
-  # treat_as_image_asset :image
+  belongs_to :native, :polymorphic => true  # again, this is just for things like youtube videos
 
   # before_create :sync_exif_data
+  #NOTE ^^ We will want to re-enable this in the appropriate spot at some point
 
-  after_create :upload_original
 
   after_commit :publish_asset_update, :if => :persisted?
   after_commit :publish_asset_delete, :on => :destroy
 
-
-
-
-  def upload_original
-    bucket   = Aws::S3::Resource.new.bucket('assethost-dev')
-    uploader = PhotographicMemory.new bucket
-    key = uploader.put file: image, id: id, style_name: 'original'
-    self.image_fingerprint = key
-    self.save
-  end
 
   def self.es_search(query,options={})
     es_q = {
@@ -102,6 +82,16 @@ class Asset < ActiveRecord::Base
   end
 
 
+  def image
+    #HACK
+    # Here, we're shimming the Paperclip attachment so that
+    # important methods for generating #as_json still function.
+    #
+    # We should work to do away with this entirely if Paperclip
+    # is otherwise doing nothing.
+    @_image ||= Paperclip::Attachment.new 'image', self 
+  end
+
 
   def as_json(options={})
     #:url        => "http://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
@@ -111,23 +101,69 @@ class Asset < ActiveRecord::Base
       :caption            => self.caption,
       :owner              => self.owner,
       :size               => [self.image_width, self.image_height].join('x'),
-      # :tags               => self.image.tags, HACK
-      :tags               => [],
+      :tags               => self.image.tags,
       :notes              => self.notes,
       :created_at         => self.created_at,
       :taken_at           => self.image_taken || self.created_at,
       :native             => self.native.try(:as_json),
+      # Native only applies to something like a youtube video
+      # don't worry about it.
       :image_file_size    => self.image_file_size,
       :url        => "http://localhost:9000/api/assets/#{self.id}/",
-      # :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
-      # :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
-      #HACK
-      :sizes => {[:thumb, {:geometry=>"", :size=>"88x88#", :format=>:jpg, :prerender=>false, :output=>1, :rich=>false}]=>{:width=>nil, :height=>nil}, [:lsquare, {:geometry=>"", :size=>"188x188#", :format=>:jpg, :prerender=>true, :output=>2, :rich=>false}]=>{:width=>nil, :height=>nil}, [:lead, {:geometry=>"", :size=>"324x324>", :format=>:jpg, :prerender=>false, :output=>3, :rich=>false}]=>{:width=>nil, :height=>nil}, [:wide, {:geometry=>"", :size=>"620x414>", :format=>:jpg, :prerender=>false, :output=>4, :rich=>true}]=>{:width=>nil, :height=>nil}, [:full, {:geometry=>"", :size=>"1024x1024>", :format=>:jpg, :prerender=>true, :output=>5, :rich=>true}]=>{:width=>nil, :height=>nil}, [:three, {:geometry=>"", :size=>"600x350>", :format=>:jpg, :prerender=>false, :output=>6, :rich=>false}]=>{:width=>nil, :height=>nil}, [:eight, {:geometry=>"", :size=>"730x486>", :format=>:jpg, :prerender=>true, :output=>8, :rich=>true}]=>{:width=>nil, :height=>nil}, [:four, {:geometry=>"", :size=>"600x350>", :format=>:jpg, :prerender=>false, :output=>9, :rich=>false}]=>{:width=>nil, :height=>nil}, [:six, {:geometry=>"", :size=>"600x350>", :format=>:jpg, :prerender=>false, :output=>10, :rich=>false}]=>{:width=>nil, :height=>nil}, [:five, {:geometry=>"", :size=>"600x334>", :format=>:jpg, :prerender=>false, :output=>11, :rich=>false}]=>{:width=>nil, :height=>nil}, [:small, {:geometry=>"", :size=>"450x450>", :format=>:jpg, :prerender=>true, :output=>12, :rich=>false}]=>{:width=>nil, :height=>nil}, [:pixel, {:geometry=>"", :size=>"1x1#", :format=>:jpg, :prerender=>false, :output=>15, :rich=>false}]=>{:width=>nil, :height=>nil}},
-      :urls  => []
+      :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
+      :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
     }.merge(self.image_shape())
   end
 
   alias :json :as_json
+
+  def image_data= data
+
+    if data[:fingerprint]
+      self.image_fingerprint = data[:fingerprint]
+    end
+
+    # -- determine metadata -- #
+    begin
+      if p = data[:metadata]
+        if p.credit =~ /Getty Images/
+          # smart import for Getty Images photos
+          copyright     = [p.by_line,p.credit].join("/")
+          title         = p.headline
+          description   = p.description
+
+        elsif p.credit =~ /AP/
+          # smart import for AP photos
+          copyright     = [p.by_line,p.credit].join("/")
+          title         = p.title
+          description   = p.description
+
+        else
+          copyright     = p.byline || p.credit
+          title         = p.title
+          description   = p.description
+        end
+
+        asset.image_width       = p.image_width
+        asset.image_height      = p.image_height
+        asset.image_title       = title
+        asset.image_description = description
+        asset.image_copyright   = copyright
+        asset.image_taken       = p.datetime_original
+        asset.keywords          = (p.keywords || []).map(&:downcase).join(", ")
+      end
+
+      true
+    rescue => e
+      # a failure to parse metadata
+      # should not crash everything 
+      puts e
+      false
+    end
+
+    self.keywords = (keywords || "").split(/,\s*/).concat(data[:keywords].map{|label| label.name.downcase }).join(", ")
+
+  end
 
 
 
@@ -158,7 +194,12 @@ class Asset < ActiveRecord::Base
     }
   end
 
-
+  def file_key style='original'
+    if id && image_fingerprint && image_content_type
+      extension = Rack::Mime::MIME_TYPES.invert[image_content_type]
+      "#{id}_#{image_fingerprint}_#{style}#{extension}"
+    end
+  end
 
   def image_url(style)
     # "http://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension"
