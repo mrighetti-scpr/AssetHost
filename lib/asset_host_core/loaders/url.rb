@@ -29,7 +29,7 @@ module AssetHostCore
         filename = File.basename(@url)
 
         # build asset
-        asset = AssetHostCore::Asset.new(
+        asset = Asset.new(
           :title    => filename,
           :url      => @url,
           :notes    => "Fetched from URL: #{@url}",

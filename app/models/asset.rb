@@ -1,7 +1,7 @@
 class Asset < ActiveRecord::Base
   self.table_name = "asset_host_core_assets"
 
-  attr_accessor :image
+  attr_accessor :image, :file
 
   @queue = :paperclip
 
@@ -33,6 +33,7 @@ class Asset < ActiveRecord::Base
 
   before_create :sync_exif_data
 
+  after_create :save_image
 
   after_commit :publish_asset_update, :if => :persisted?
   after_commit :publish_asset_delete, :on => :destroy
@@ -142,14 +143,13 @@ class Asset < ActiveRecord::Base
           title         = p.title
           description   = p.description
         end
-
-        asset.image_width       = p.image_width
-        asset.image_height      = p.image_height
-        asset.image_title       = title
-        asset.image_description = description
-        asset.image_copyright   = copyright
-        asset.image_taken       = p.datetime_original
-        asset.keywords          = (p.keywords || []).map(&:downcase).join(", ")
+        self.image_width       = p.image_width
+        self.image_height      = p.image_height
+        self.image_title       = title
+        self.image_description = description
+        self.image_copyright   = copyright
+        self.image_taken       = p.datetime_original
+        self.keywords          = (p.keywords || []).map(&:downcase).join(", ")
       end
 
       true
@@ -168,7 +168,12 @@ class Asset < ActiveRecord::Base
 
   def image_shape
     if !self.image_width || !self.image_height
-      return {}
+      return {
+        orientation: nil,
+        long_edge: 0,
+        short_edge: 0,
+        ratio: 0
+      }
     end
 
     if ( self.image_width > self.image_height )
@@ -194,9 +199,14 @@ class Asset < ActiveRecord::Base
   end
 
   def file_key style='original'
-    if id && image_fingerprint && image_content_type
-      extension = Rack::Mime::MIME_TYPES.invert[image_content_type]
-      "#{id}_#{image_fingerprint}_#{style}#{extension}"
+    # if id && image_fingerprint && image_content_type
+    #   extension = Rack::Mime::MIME_TYPES.invert[image_content_type]
+    #   "#{id}_#{image_fingerprint}_#{style}#{extension}"
+    # end
+    # ^^ I was thinking we might need to retrieve based on
+    # content type, but apparently this is not the case.
+    if id && image_fingerprint
+      "#{id}_#{image_fingerprint}_#{style}.jpg"
     end
   end
 
@@ -224,6 +234,7 @@ class Asset < ActiveRecord::Base
 
 
   def as_indexed_json(options={})
+    # ^^ options?
     {
       :id               => self.id,
       :title            => self.title,
@@ -391,10 +402,14 @@ class Asset < ActiveRecord::Base
     end
   end
 
-
-
-
   private
+
+  def save_image
+    uploader = PhotographicMemory.new Aws::S3::Resource.new.bucket('assethost-dev')
+    self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
+    self.save
+    # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
+  end
 
   def publish_asset_update
     AssetHost::Application.redis_publish(action: "UPDATE", id: self.id)

@@ -25,21 +25,21 @@ module AssetHostCore
         # get our video info
         response = brightcove.get("find_video_by_id", { video_id: @id }).parsed_response
 
-        native = AssetHostCore::BrightcoveVideo.create(
+        native = BrightcoveVideo.create(
           :videoid  => response['id'],
           :length   => response['length']
         )
 
         @image_url = response['videoStillURL']
 
-        asset = AssetHostCore::Asset.new(
+        asset = Asset.new(
           :title          => response["name"],
           :caption        => response["shortDescription"],
           :owner          => "KPCC",
           :image_taken    => DateTime.strptime(response["publishedDate"],"%Q"),
           :url            => nil,
           :notes          => "Imported from Brightcove: #{@id}",
-          :image          => image_file,
+          :file           => image_file,
           :native         => native
         )
 
@@ -55,13 +55,14 @@ module AssetHostCore
       private
 
       def image_file
-        @image_file ||= begin
-          tempfile = Tempfile.new('ah-brightcove', encoding: "ascii-8bit")
-          open(@image_url) { |f| tempfile.write(f.read) }
-          tempfile.rewind
+        # @image_file ||= begin
+        #   tempfile = Tempfile.new('ah-brightcove', encoding: "ascii-8bit")
+        #   open(@image_url) { |f| tempfile.write(f.read) }
+        #   tempfile.rewind
 
-          tempfile
-        end
+        #   tempfile
+        # end
+        @image_file ||= open(@image_url)
       end
     end
   end

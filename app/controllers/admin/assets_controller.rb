@@ -14,8 +14,8 @@ class Admin::AssetsController < Admin::BaseController
 
   def search
     @query = params[:q]
-    @assets = Asset.search(@query).page(params[:page]||1).records
-
+    # @assets = Asset.search(@query).page(params[:page]||1).records
+    @assets = Asset.es_search(@query, page: params[:page]||1)
     render :index
   end
 
@@ -27,20 +27,12 @@ class Admin::AssetsController < Admin::BaseController
     file.original_filename = request.headers['HTTP_X_FILE_NAME']
     file.content_type      = request.headers['HTTP_CONTENT_TYPE']
 
-    ActiveRecord::Base.transaction do
-      asset    = Asset.create(image_file_name: request.headers['HTTP_X_FILE_NAME'], image_content_type: request.headers['HTTP_CONTENT_TYPE'])
-      ## ^ unfortunately, we need an ID before we can even save an image to the bucket
-      ## oh weh
-      bucket   = Aws::S3::Resource.new.bucket('assethost-dev')
-      uploader = PhotographicMemory.new bucket
-      analysis = uploader.put file: file, id: asset.id, style_name: 'original', content_type: request.headers['HTTP_CONTENT_TYPE']
-      asset.image_data = analysis
-      # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
-      if asset.save
-        render json: asset.as_json
-      else
-        render plain: 'ERROR'
-      end
+    asset    = Asset.new(file: file, image_file_name: request.headers['HTTP_X_FILE_NAME'], image_content_type: request.headers['HTTP_CONTENT_TYPE'])
+
+    if asset.save
+      render json: asset.as_json
+    else
+      render plain: 'ERROR'
     end
 
   rescue => e

@@ -24,7 +24,7 @@ module AssetHostCore
         snippet = video["snippet"]
         return nil if !snippet
 
-        native = AssetHostCore::YoutubeVideo.create(
+        native = YoutubeVideo.create(
           :videoid => video["id"]
         )
 
@@ -36,13 +36,14 @@ module AssetHostCore
         byebug
 
         asset = Asset.new(
-          :image          => image_file.to_io,
+          :file           => image_file,
           :title          => snippet["title"],
           :caption        => snippet["description"],
           :url            => @url,
           :owner          => "#{snippet["channelTitle"]} (via YouTube)",
           :notes          => "Imported from YouTube: #{@url}",
           :image_taken    => snippet["publishedAt"],
+          :image_content_type => image_file.content_type,
           :native         => native
         )
 
@@ -75,14 +76,18 @@ module AssetHostCore
       private
 
       def image_file
-        @image_file ||= begin
-          tempfile = Tempfile.new('ah-youtube', encoding: "ascii-8bit")
-          open(@image_url) { |f| tempfile.write(f.read) }
-          tempfile.rewind
-
-          @url.match(/ah-noTrim/) ? tempfile : Paperclip::Trimmer.make(tempfile)
-        end
+        @image_file ||= open(@image_url)
       end
+
+      # def image_file
+      #   @image_file ||= begin
+      #     tempfile = Tempfile.new('ah-youtube', encoding: "ascii-8bit")
+      #     open(@image_url) { |f| tempfile.write(f.read) }
+      #     tempfile.rewind
+
+      #     @url.match(/ah-noTrim/) ? tempfile : Paperclip::Trimmer.make(tempfile)
+      #   end
+      # end
 
       def client
         @client ||= Google::APIClient.new(

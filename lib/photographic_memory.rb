@@ -24,7 +24,9 @@ class PhotographicMemory
     original_digest   = Digest::MD5.hexdigest(file.read)
     rendered_digest   = Digest::MD5.hexdigest(output)
     extension = Rack::Mime::MIME_TYPES.invert[content_type]
-    key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
+    # key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
+    key       = "#{id}_#{original_digest}_#{style_name}.jpg" 
+    # ^^ Apparently, we always convert to jpg.  Maybe we won't always do this in the future?
     bucket.object(key).put(body: output, content_type: content_type)
     if style_name == 'original'
       keywords = classify file
@@ -47,11 +49,6 @@ class PhotographicMemory
   def delete key
     bucket.object(key).delete
   end
-
-  # def exif file
-  #   file.rewind
-  #   run_command "exiftool -json - ", file.read.force_encoding("UTF-8")
-  # end
 
   private
 
