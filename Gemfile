@@ -17,6 +17,7 @@ gem 'responders'
 
 gem "paperclip", "5.0.0"
 gem "elasticsearch-model", "~> 0.1.9"
+gem "searchkick"
 gem "cocaine", "0.5.8"
 gem "resque", "~> 1.27.2"
 gem 'sinatra', github: 'sinatra/sinatra', branch: 'master', require: false
