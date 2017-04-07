@@ -35,7 +35,7 @@ class Asset < ActiveRecord::Base
 
   before_create :sync_exif_data
 
-  after_create :save_image
+  after_save :save_image
 
   after_commit :publish_asset_update, :if => :persisted?
   after_commit :publish_asset_delete, :on => :destroy
@@ -407,10 +407,14 @@ class Asset < ActiveRecord::Base
   private
 
   def save_image
-    uploader = PhotographicMemory.new Aws::S3::Resource.new.bucket('assethost-dev')
-    self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
-    self.save
-    # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
+    if file
+      uploader = PhotographicMemory.new Aws::S3::Resource.new.bucket('assethost-dev')
+      self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
+      self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
+      self.file = nil
+      self.save
+      # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
+    end
   end
 
   def publish_asset_update

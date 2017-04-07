@@ -1,5 +1,6 @@
 class Admin::AssetsController < Admin::BaseController
   before_action :get_asset, only: [:show, :update, :replace, :destroy]
+  before_action :get_uploaded_file, only: [:upload, :replace]
   skip_before_action :verify_authenticity_token, only: [:upload, :replace]
 
   #----------
@@ -24,12 +25,7 @@ class Admin::AssetsController < Admin::BaseController
   #----------
 
   def upload
-    file = request.env['rack.input']
-    file.class.class_eval { attr_accessor :original_filename, :content_type }
-    file.original_filename = request.headers['HTTP_X_FILE_NAME']
-    file.content_type      = request.headers['HTTP_CONTENT_TYPE']
-
-    asset    = Asset.new(file: file, image_file_name: request.headers['HTTP_X_FILE_NAME'], image_content_type: request.headers['HTTP_CONTENT_TYPE'])
+    asset = Asset.new(file: @file, image_file_name: request.headers['HTTP_X_FILE_NAME'], image_content_type: request.headers['HTTP_CONTENT_TYPE'])
 
     if asset.save
       render json: asset.as_json
@@ -85,19 +81,11 @@ class Admin::AssetsController < Admin::BaseController
   #----------
 
   def replace
-    file = params[:file]
-
-    if !file
+    if !@file
       render :text => 'ERROR' and return
     end
 
-    # FIXME: Put in place to keep Firefox 7 happy
-    if !file.original_filename
-      file.original_filename = "upload.jpg"
-    end
-
-    # tell paperclip to replace our image
-    @asset.image = file
+    @asset.file = @file
 
     if @asset.save
       render json: @asset.as_json
@@ -126,6 +114,15 @@ class Admin::AssetsController < Admin::BaseController
 
   def asset_params
     params.require(:asset).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
+  end
+
+  def get_uploaded_file
+    @file = request.env['rack.input']
+    if @file
+      @file.class.class_eval { attr_accessor :original_filename, :content_type }
+      @file.original_filename = request.headers['HTTP_X_FILE_NAME']
+      @file.content_type      = request.headers['HTTP_CONTENT_TYPE']
+    end
   end
 
   def get_asset
