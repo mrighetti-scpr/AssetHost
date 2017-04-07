@@ -5,6 +5,8 @@ class Output < ActiveRecord::Base
 
   after_save :delete_asset_outputs, if: -> { self.size_changed? || self.extension_changed? }
 
+  scope :prerenders, ->(){ where(prerender: true) }
+
   #----------
 
   def self.paperclip_sizes

@@ -49,10 +49,20 @@ class AssetOutput < ActiveRecord::Base
     self.height      = data[:metadata].ImageHeight
   end
 
+  def prerender?
+    output.try(:prerender) || false
+  end
+
   protected
 
   def render
-    RenderJob.perform_later(self.id) unless fingerprint.present?
+    unless fingerprint.present?
+      if prerender?
+        RenderJob.perform_now(self.id)
+      else
+        RenderJob.perform_later(self.id)
+      end
+    end
   end
 
   # on save, check whether we should be creating or deleting caches

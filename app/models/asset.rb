@@ -200,6 +200,8 @@ class Asset < ActiveRecord::Base
     }
   end
 
+
+
   def file_key style='original'
     # if id && image_fingerprint && image_content_type
     #   extension = Rack::Mime::MIME_TYPES.invert[image_content_type]
@@ -211,6 +213,8 @@ class Asset < ActiveRecord::Base
       "#{id}_#{image_fingerprint}_#{style}.jpg"
     end
   end
+
+
 
   def image_url(style)
     # "http://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension"
@@ -410,10 +414,19 @@ class Asset < ActiveRecord::Base
     if file
       uploader = PhotographicMemory.new Aws::S3::Resource.new.bucket('assethost-dev')
       self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
+      # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
       self.file = nil
       self.save
-      # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
+      prerender
+    end
+  end
+
+  def prerender
+    if image_fingerprint
+      Output.prerenders.map do |output|
+        self.outputs.where(output_id: output.id, image_fingerprint: self.image_fingerprint).first_or_create
+      end
     end
   end
 
