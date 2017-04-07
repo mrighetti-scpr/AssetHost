@@ -19,7 +19,7 @@ class Api::AssetsController < Api::BaseController
     response.headers['X-Next-Page']       = (@assets.last_page? ? nil : @assets.current_page + 1).to_s
     response.headers['X-Total-Entries']   = @assets.total_count.to_s
 
-    respond_with @assets
+    respond_with @assets.to_json
   end
 
 

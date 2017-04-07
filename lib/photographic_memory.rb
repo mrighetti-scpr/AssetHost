@@ -23,7 +23,7 @@ class PhotographicMemory
     file.rewind
     original_digest   = Digest::MD5.hexdigest(file.read)
     rendered_digest   = Digest::MD5.hexdigest(output)
-    extension = Rack::Mime::MIME_TYPES.invert[content_type]
+    extension         = Rack::Mime::MIME_TYPES.invert[content_type]
     # key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
     key       = "#{id}_#{original_digest}_#{style_name}.jpg" 
     # ^^ Apparently, we always convert to jpg.  Maybe we won't always do this in the future?
@@ -60,6 +60,11 @@ class PhotographicMemory
   def render file, convert_options=[]
     file.rewind
     run_command ["convert", "-", convert_options, "jpeg:-"].flatten.join(" "), file.read
+  end
+
+  def pixels file
+    results = run_command "convert - -depth 8  txt:-", file.read
+    results.split("\n").map{|line| (line.split(" ")[1] || "0,0,0,1").split(",").map(&:to_i) }
   end
 
   def classify file
@@ -124,5 +129,5 @@ class PhotographicMemory
     stderr = nil
     wait_thr.value if wait_thr # Process::Status object returned.
   end
-
 end
+

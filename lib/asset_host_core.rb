@@ -3,7 +3,7 @@
 # require "asset_host_core/processing"
 require "asset_host_core/paperclip"
 require "asset_host_core/config"
-require "asset_host_core/model_methods"
+# require "asset_host_core/model_methods"
 require 'google/api_client'
 require 'open-uri'
 require 'faraday_middleware'
@@ -36,4 +36,4 @@ module AssetHostCore
   end
 end
 
-ActiveRecord::Base.send(:include, AssetHostCore::ModelMethods)
+# ActiveRecord::Base.send(:include, AssetHostCore::ModelMethods)
