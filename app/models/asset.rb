@@ -22,11 +22,7 @@ class Asset < ActiveRecord::Base
     [ "Bottom Right",     "SouthEast" ]
   ]
 
-  # include Elasticsearch::Model
-  # include Elasticsearch::Model::Callbacks
   searchkick index_name: AssetHostCore.config.elasticsearch_index
-  # index_name AssetHostCore.config.elasticsearch_index
-
 
   scope :visible, -> { where(is_hidden: false) }
 
