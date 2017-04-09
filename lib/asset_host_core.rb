@@ -1,12 +1,8 @@
-# require "asset_host_core/resque_job"
-# require "asset_host_core/engine"
-# require "asset_host_core/processing"
-require "asset_host_core/paperclip"
-require "asset_host_core/config"
-# require "asset_host_core/model_methods"
 require 'google/api_client'
 require 'open-uri'
 require 'faraday_middleware'
+require "asset_host_core/paperclip"
+require "asset_host_core/config"
 require "asset_host_core/loaders"
 
 module AssetHostCore

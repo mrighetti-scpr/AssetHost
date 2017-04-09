@@ -21,8 +21,8 @@ gem "searchkick"
 gem "cocaine", "0.5.8"
 gem "resque", "~> 1.27.2"
 gem 'sinatra', github: 'sinatra/sinatra', branch: 'master', require: false
+# ^^ we need this for the resque interface to work, sadly
 gem "mini_exiftool", "~> 2.8.0"
-# gem 'mini_exiftool', github: "Ravenstine/mini_exiftool"
 gem "faraday", "~> 0.8.7"
 gem "faraday_middleware", "~> 0.9.0"
 gem "google-api-client", "~> 0.6.3"
@@ -50,3 +50,16 @@ group :development do
   gem 'web-console', '>= 3.3.0'
   gem 'spring'
 end
+
+group :test do 
+  gem "capybara"
+  gem "combustion"
+  gem "factory_girl"
+  gem "fakeweb"
+  gem "launchy"
+  gem "rspec", ">= 3.6.0.beta2"
+  gem "rspec-rails", ">= 3.6.0.beta2"
+  gem "rails-controller-testing"
+  gem "rspec-its"
+end
+

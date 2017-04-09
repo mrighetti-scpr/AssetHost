@@ -6,9 +6,7 @@ class Admin::AssetsController < Admin::BaseController
   #----------
 
   def index
-    @assets = Asset.visible.order("updated_at desc")
-      .page(params[:page])
-      .per(24)
+    @assets = Asset.visible.order("updated_at desc").page(params[:page]).per(24)
   end
 
   #----------
@@ -48,7 +46,7 @@ class Admin::AssetsController < Admin::BaseController
   def update_metadata
     params[:assets].each do |id, attributes|
       asset = Asset.find(id)
-      asset.update_attributes(attributes)
+      asset.update_attributes(asset_params(attributes))
     end
 
     redirect_to a_assets_path
@@ -112,8 +110,8 @@ class Admin::AssetsController < Admin::BaseController
 
   protected
 
-  def asset_params
-    params.require(:asset).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
+  def asset_params asset_param
+    (asset_param || params.require(:asset)).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
   end
 
   def get_uploaded_file
@@ -129,3 +127,4 @@ class Admin::AssetsController < Admin::BaseController
     @asset = Asset.find(params[:id])
   end
 end
+

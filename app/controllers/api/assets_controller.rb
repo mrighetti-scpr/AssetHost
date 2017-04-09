@@ -29,7 +29,7 @@ class Api::AssetsController < Api::BaseController
 
 
   def update
-    if @asset.update_attributes(params[:asset])
+    if @asset.update_attributes(asset_params)
       respond_with @asset
     else
       respond_with @asset.errors.full_messages, :status => :error
@@ -44,7 +44,8 @@ class Api::AssetsController < Api::BaseController
     end
 
     # see if we have a loader for this URL
-    if asset = AssetHostCore.as_asset(params[:url])
+    if asset = AssetHostCore.as_asset(params[:url]) #HACK
+    # if asset = Loaders.load(params[:url])
       if params[:note].present?
         asset.notes += "\n#{params[:note]}"
       end
@@ -84,8 +85,12 @@ class Api::AssetsController < Api::BaseController
 
   private
 
+  def asset_params
+    params.require(:asset).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
+  end
+
   def authorize(ability)
-    super ability, "AssetHostCore::Asset"
+    super ability, "Asset"
   end
 
   def get_asset

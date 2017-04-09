@@ -162,7 +162,7 @@ class Asset < ActiveRecord::Base
       false
     end
 
-    self.keywords = (keywords || "").split(/,\s*/).concat(data[:keywords].map{|label| label.name.downcase }).join(", ")
+    self.keywords = (keywords || "").split(/,\s*/).concat((data[:keywords] || []).map{|label| label.name.downcase }).join(", ")
 
   end
 

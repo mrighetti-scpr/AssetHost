@@ -68,6 +68,7 @@ class PhotographicMemory
   end
 
   def classify file
+    return if Rails.env.test?
     file.rewind
     # get the original image from S3 and classify
     client = Aws::Rekognition::Client.new region: 'us-west-2'

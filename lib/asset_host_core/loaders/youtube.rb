@@ -33,8 +33,6 @@ module AssetHostCore
 
         @image_url = thumbnail["url"]
 
-        byebug
-
         asset = Asset.new(
           :file           => image_file,
           :title          => snippet["title"],
