@@ -15,18 +15,18 @@ describe Api::AssetsController, type: :controller do
 
     it 'returns the asset as json' do
       asset = create :asset
-      get :show, api_request_params(id: asset.id)
+      get :show, params: api_request_params(id: asset.id)
       JSON.parse(response.body)["id"].should eq asset.id
     end
 
     it 'renders an unauthorized error if there is no auth token provided' do
-      get :show, api_request_params(id: 1).except(:auth_token)
+      get :show, params: api_request_params(id: 1).except(:auth_token)
       response.status.should eq 401
     end
 
     it 'renders a forbidden error if user does not have read permission for assets' do
       @api_user.permissions.clear
-      get :show, api_request_params(id: 1)
+      get :show, params: api_request_params(id: 1)
       response.status.should eq 403
     end
   end
@@ -43,29 +43,29 @@ describe Api::AssetsController, type: :controller do
     end
 
     it 'returns a bad request if URL is not present' do
-      post :create, api_request_params
+      post :create, params: api_request_params
       response.status.should eq 400
     end
 
     it 'returns a 401 if no auth token is provided' do
-      post :create, api_request_params(url: "http://imgur.com/someimg.png").except(:auth_token)
+      post :create, params: api_request_params(url: "http://imgur.com/someimg.png").except(:auth_token)
       response.status.should eq 401
     end
 
     it 'returns a 403 if user does not have asset write permission' do
       @api_user.permissions.clear
-      post :create, api_request_params(url: "http://url.com/img.png")
+      post :create, params: api_request_params(url: "http://url.com/img.png")
       response.status.should eq 403
     end
 
     it 'responds with a 404 and returns asset if no asset is found' do
-      post :create, api_request_params(url: "nogoodbro")
+      post :create, params: api_request_params(url: "nogoodbro")
       response.status.should eq 404
       response.body["error"].should be_present
     end
 
     it 'creates an asset if the URL is valid' do
-      post :create, api_request_params(url: "http://imgur.com/someimg.png")
+      post :create, params: api_request_params(url: "http://imgur.com/someimg.png")
       json = JSON.parse(response.body)
       asset = Asset.find(json["id"])
 
@@ -73,7 +73,7 @@ describe Api::AssetsController, type: :controller do
     end
 
     it 'appends to the notes if present' do
-      post :create, api_request_params(url: "http://imgur.com/someimg.png", note: "Imported via Tests")
+      post :create, params: api_request_params(url: "http://imgur.com/someimg.png", note: "Imported via Tests")
       json = JSON.parse(response.body)
       asset = Asset.find(json["id"])
 
@@ -81,7 +81,7 @@ describe Api::AssetsController, type: :controller do
     end
 
     it 'hides the asset if is_hidden is present' do
-      post :create, api_request_params(url: "http://imgur.com/someimg.png", hidden: 1)
+      post :create, params: api_request_params(url: "http://imgur.com/someimg.png", hidden: 1)
       json = JSON.parse(response.body)
       asset = Asset.find(json["id"])
 
@@ -89,7 +89,7 @@ describe Api::AssetsController, type: :controller do
     end
 
     it 'sets attributes that are present' do
-      post :create, api_request_params(
+      post :create, params: api_request_params(
         :url        => "http://imgur.com/someimg.png",
         :caption    => "Test Image",
         :owner      => "Test Owner",
@@ -115,18 +115,18 @@ describe Api::AssetsController, type: :controller do
 
     it 'updates the asset' do
       asset = create :asset
-      put :update, api_request_params(id: asset.id, asset: { title: "New Title" })
+      put :update, params: api_request_params(id: asset.id, asset: { title: "New Title" })
       asset.reload.title.should eq "New Title"
     end
 
     it 'returns a 401 if no auth token is provided' do
-      put :update, api_request_params(id: 0).except(:auth_token)
+      put :update, params: api_request_params(id: 0).except(:auth_token)
       response.status.should eq 401
     end
 
     it 'returns a 403 if user does not have asset write permission' do
       @api_user.permissions.clear
-      put :update, api_request_params(id: 0)
+      put :update, params: api_request_params(id: 0)
       response.status.should eq 403
     end
   end

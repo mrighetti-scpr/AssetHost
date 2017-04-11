@@ -47,7 +47,7 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  config.assethost.server = "localhost:9000"
+  # config.assethost.server = "localhost:9000"
 
   # config.assethost.paperclip_options = {
   #   :path           => ":id_:fingerprint_:sprint.:extension",

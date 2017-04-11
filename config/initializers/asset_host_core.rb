@@ -29,15 +29,15 @@ end
 
 
 AssetHostCore.configure do |config|
-  config.flickr_api_key       = Rails.application.secrets['flickr_api_key']
-  config.brightcove_api_key   = Rails.application.secrets['brightcove_api_key']
-  config.google_api_key       = Rails.application.secrets['google_api_key']
+  # config.flickr_api_key       = Rails.application.secrets['flickr_api_key']
+  # config.brightcove_api_key   = Rails.application.secrets['brightcove_api_key']
+  # config.google_api_key       = Rails.application.secrets['google_api_key']
 
   config.thumb_size           = "lsquare"
   config.modal_size           = "small"
   config.detail_size          = "eight"
 
-  config.elasticsearch_index  = "#{Rails.application.secrets.elasticsearch_prefix}-assets"
+  # config.elasticsearch_index  = "assethost-assets"
 
   config.paperclip_options    = Rails.application.config.assethost.paperclip_options
   # config.server               = Rails.application.config.assethost.server

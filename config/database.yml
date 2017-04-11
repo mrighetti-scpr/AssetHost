@@ -51,6 +51,7 @@ test:
 #
 production:
   <<: *default
+  url:      <%= ENV['ASSETHOST_DATABASE_URL'] %>
   database: AssetHost_production
   username: AssetHost
   password: <%= ENV['ASSETHOST_DATABASE_PASSWORD'] %>

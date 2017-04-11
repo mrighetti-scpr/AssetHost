@@ -1,1 +1,0 @@
-S3_BUCKET = Aws::S3::Bucket.new Rails.application.secrets.s3['bucket']

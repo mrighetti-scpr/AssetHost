@@ -31,8 +31,6 @@ serving assets. It also provides an API endpoint that can be accessed either
 by the local application (this is how much of the admin works) or by other 
 applications or plugins.
 
-A sample host application can be found at <http://github.com/SCPR/AssetHostApp>
-
 
 ### Plugins for Other Applications
 
@@ -46,8 +44,6 @@ _TODO: More documentation on CMS interaction. External Rails example. Django exa
 
 To integrate with a locally-installed AssetHostCore engine, simply make your 
 mapping data model belong to AssetHostCore::Asset.
-
-_TODO: More documentation on creating content/asset models._
 
 
 ### Workflow
@@ -131,11 +127,9 @@ processing of images.  Configure for your Redis setup in config/resque.yml.
 AssetHost, via Paperclip, does image processing using ImageMagick.  If 
 needed, make sure to specify Paperclip.options[:command_path] in your config.
 
-### Text Search via Sphinx
+### Text Search via Elasticsearch
 
-Searches are done via Sphinx, using the Thinking Sphinx gem.  Set up your 
-configuration in config/sphinx.yml, and make sure you have an external trigger
-for indexing (cron, etc).
+Searches are done via Elasticsearch using the Searchkick gem.
 
 
 # Credits
@@ -146,3 +140,4 @@ serves Los Angeles and Orange County on 89.3, the Inland Empire on 89.1, and the
 Coachella Valley on 90.3.
 
 AssetHost development is led by Eric Richardson (erichardson@kpcc.org).
+

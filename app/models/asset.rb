@@ -22,7 +22,7 @@ class Asset < ActiveRecord::Base
     [ "Bottom Right",     "SouthEast" ]
   ]
 
-  searchkick index_name: AssetHostCore.config.elasticsearch_index
+  searchkick index_name: Rails.application.config.elasticsearch_index
 
   scope :visible, -> { where(is_hidden: false) }
 
@@ -92,7 +92,7 @@ class Asset < ActiveRecord::Base
 
 
   def as_json(options={})
-    #:url        => "http://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
+    #:url        => "#{Rails.application.config.host_protocol}://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
     {
       :id                 => self.id,
       :title              => self.title,
@@ -107,7 +107,7 @@ class Asset < ActiveRecord::Base
       # Native only applies to something like a youtube video
       # don't worry about it.
       :image_file_size    => self.image_file_size,
-      :url        => "http://localhost:9000/api/assets/#{self.id}/",
+      :url        => "#{Rails.application.config.host_protocol}://#{Rails.application.config.host}/api/assets/#{self.id}/",
       :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
       :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
     }.merge(self.image_shape())
@@ -213,7 +213,7 @@ class Asset < ActiveRecord::Base
 
 
   def image_url(style)
-    # "http://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension"
+    # "#{Rails.application.config.host_protocol}://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension"
 
     style = style.to_sym
 
@@ -230,7 +230,7 @@ class Asset < ActiveRecord::Base
       binding.pry
     end
 
-    "http://localhost:9000/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
+    "#{Rails.application.config.host_protocol}://#{Rails.application.config.host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
 
 
@@ -408,7 +408,7 @@ class Asset < ActiveRecord::Base
 
   def save_image
     if file
-      uploader = PhotographicMemory.new Aws::S3::Resource.new.bucket('assethost-dev')
+      uploader = PhotographicMemory.new
       self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
       # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 

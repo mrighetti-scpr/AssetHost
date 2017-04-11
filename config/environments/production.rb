@@ -86,23 +86,23 @@ Rails.application.configure do
   config.assets.precompile += %w( client.js )
 
   # -- AssetHost configuration -- #
-  config.assethost.server = "a.scpr.org"
+  # config.assethost.server = "a.scpr.org"
 
-  config.assethost.paperclip_options = {
-    :path           => ":id_:fingerprint_:sprint.:extension",
-    :default_url    => '/assets/asset_host_core/fallback-img-rect.png',
-    :storage        => :s3,
-    :use_timestamp  => false,
-    :s3_credentials => {
-      access_key_id:      config.secrets.s3.access_key,
-      secret_access_key:  config.secrets.s3.secret_key,
-      s3_host_name:       "s3.i.scprdev.org",
-      bucket:             config.secrets.s3.bucket,
-    },
-    :s3_options     => {
-      use_ssl:            false,
-    }
-  }
+  # config.assethost.paperclip_options = {
+  #   :path           => ":id_:fingerprint_:sprint.:extension",
+  #   :default_url    => '/assets/asset_host_core/fallback-img-rect.png',
+  #   :storage        => :s3,
+  #   :use_timestamp  => false,
+  #   :s3_credentials => {
+  #     access_key_id:      config.secrets.s3.access_key,
+  #     secret_access_key:  config.secrets.s3.secret_key,
+  #     s3_host_name:       "s3.i.scprdev.org",
+  #     bucket:             config.secrets.s3.bucket,
+  #   },
+  #   :s3_options     => {
+  #     use_ssl:            false,
+  #   }
+  # }
 
 end
 

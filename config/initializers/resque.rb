@@ -1,6 +1,7 @@
-# Resque.redis = "#{Rails.application.secrets["resque"]}/assethost-#{Rails.env}"
-
-Resque.redis = "#{Rails.application.secrets["resque"]}/assethost-#{Rails.env}"
+unless Rails.env.test?
+  # might be better to spin up a short-lived Redis instance
+  Resque.redis = "#{Rails.application.secrets["resque"]}/assethost-#{Rails.env}"
+end
 
 # Every time a job is started, make sure the connection
 # to MySQL is okay. This avoids the "MySQL server has gone away"

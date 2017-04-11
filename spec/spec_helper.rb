@@ -8,7 +8,7 @@ require 'factory_girl'
 require 'fakeweb'
 load 'factories.rb'
 
-FakeWeb.allow_net_connect = true
+FakeWeb.allow_net_connect = false
 
 
 Dir["#{SPEC_ROOT}/support/**/*.rb"].each { |f|require f }
@@ -20,6 +20,8 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
   config.infer_base_class_for_anonymous_controllers = false
   config.order = "random"
+
+  Searchkick.disable_callbacks
 
   config.include FactoryGirl::Syntax::Methods
   config.include FixtureLoader

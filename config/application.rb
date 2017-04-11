@@ -33,6 +33,8 @@ module AssetHost
     # initialize our config hash
     config.assethost = ActiveSupport::OrderedOptions.new
 
+    config.elasticsearch_index = "assethost-assets"
+
     # -- post-initialization setup -- #
 
     # config.after_initialize do
@@ -40,16 +42,13 @@ module AssetHost
     #   AssetHostCore::ResqueJob.instance_variable_set :@queue, AssetHostCore.config.resque_queue || "assethost"
     # end
 
-    # initializer 'asset_host_core.register_processor' do
-    #   Paperclip.configure do |c|
-    #     # Since this isn't in the standard location that Paperclip
-    #     # looks for it (lib/paperclip_processors), we should just
-    #     # register is manually to be safe.
-    #     c.register_processor :asset_thumbnail, Paperclip::AssetThumbnail
-    #   end
-    # end
-
     config.active_job.queue_adapter = :resque
+
+    config.host_name     = ENV['ASSETHOST_HOST_NAME']     || 'localhost'
+    config.host_port     = ENV['ASSETHOST_HOST_PORT']     || '3000'
+    config.host_protocol = ENV['ASSETHOST_HOST_PROTOCOL'] || 'https'
+    config.host          = "#{config.host_name}" + ((config.host_port == '80') ? "" : ":#{config.host_port}")
+    ## ^^ This is necessary for URL generation.
 
     def self.redis_pubsub
       # if AssetHostCore.config.redis_pubsub

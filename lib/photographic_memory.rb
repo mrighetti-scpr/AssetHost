@@ -7,10 +7,16 @@ class PhotographicMemory
 
   class PhotographicMemoryError < StandardError; end
 
-  attr_accessor :bucket
-
-  def initialize bucket=nil
-    @bucket = bucket
+  def initialize s3_secrets:nil
+    creds = (s3_secrets || Rails.application.secrets.s3).dup
+    @s3_client = Aws::S3::Client.new({
+      region: Rails.application.secrets.s3['region'],
+      credentials: Aws::Credentials.new(
+        Rails.application.secrets.s3['access_key_id'], 
+        Rails.application.secrets.s3['secret_access_key']
+      ),
+      stub_responses: Rails.env.test?
+    })
   end
 
   def put file:, id:, style_name:'original', convert_options: [], content_type:
@@ -27,7 +33,13 @@ class PhotographicMemory
     # key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
     key       = "#{id}_#{original_digest}_#{style_name}.jpg" 
     # ^^ Apparently, we always convert to jpg.  Maybe we won't always do this in the future?
-    bucket.object(key).put(body: output, content_type: content_type)
+    # bucket.object(key).put(body: output, content_type: content_type)
+    @s3_client.put_object({
+      bucket: Rails.application.secrets.s3['bucket'], 
+      key: key, 
+      body: output,
+      content_type: content_type
+    })
     if style_name == 'original'
       keywords = classify file
     else
@@ -43,11 +55,19 @@ class PhotographicMemory
   end
 
   def get key
-    bucket.object(key).get.body
+    @s3_client.get_object({
+      bucket: Rails.application.secrets.s3['bucket'],
+      key: key
+    }).body
+    # bucket.object(key).get.body
   end
 
   def delete key
-    bucket.object(key).delete
+    # bucket.object(key).delete
+    @s3_client.delete_object({
+      bucket: Rails.application.secrets.s3['bucket'],
+      key: key
+    })
   end
 
   private
@@ -68,10 +88,16 @@ class PhotographicMemory
   end
 
   def classify file
-    return if Rails.env.test?
+    return [] if Rails.env.test? # should work on stubbing responses instead of this
     file.rewind
     # get the original image from S3 and classify
-    client = Aws::Rekognition::Client.new region: 'us-west-2'
+    client = Aws::Rekognition::Client.new({
+      region: Rails.application.secrets.rekognition['region'],
+      credentials: Aws::Credentials.new(
+        Rails.application.secrets.rekognition['access_key_id'],
+        Rails.application.secrets.rekognition['secret_access_key']
+      )
+    })
 
     resp = client.detect_labels({
       image: {

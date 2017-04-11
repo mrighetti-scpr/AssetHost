@@ -110,7 +110,7 @@ class Admin::AssetsController < Admin::BaseController
 
   protected
 
-  def asset_params asset_param
+  def asset_params asset_param=nil
     (asset_param || params.require(:asset)).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
   end
 

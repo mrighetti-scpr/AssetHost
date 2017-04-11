@@ -5,7 +5,7 @@ describe Admin::ApiUsersController, type: :controller do
     user = create :user, is_admin: true
     controller.stub(:current_user) { user }
 
-    get :index, admin_request_params
+    get :index, params: admin_request_params
 
     response.should be_success
   end
@@ -14,7 +14,7 @@ describe Admin::ApiUsersController, type: :controller do
     user = create :user, is_admin: false
     controller.stub(:current_user) { user }
 
-    get :index, admin_request_params
+    get :index, params: admin_request_params
 
     response.should be_redirect
   end

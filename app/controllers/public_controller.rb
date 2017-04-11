@@ -73,8 +73,7 @@ class PublicController < ApplicationController
   private
 
   def _send_file(filename)
-    bucket     = Aws::S3::Resource.new.bucket('assethost-dev')
-    downloader = PhotographicMemory.new bucket
+    downloader = PhotographicMemory.new
     file       = downloader.get(filename)
     send_data file.read, type: 'image/jpeg', disposition: 'inline'
   end

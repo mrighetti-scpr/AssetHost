@@ -6,7 +6,7 @@ module AssetHostCore
       #----------------
 
       def self.build_from_url(url)
-        return nil if AssetHostCore.config.google_api_key.blank?
+        return nil if Rails.application.secrets.google_api_key.blank?
 
         url.match(/youtube\.com\/watch\?.*v=(?<id>[\w-]+)/i) do |m|
           self.new(url: url, id: m[:id])
@@ -89,7 +89,7 @@ module AssetHostCore
 
       def client
         @client ||= Google::APIClient.new(
-          :key              => AssetHostCore.config.google_api_key,
+          :key              => Rails.application.secrets.google_api_key,
           :authorization    => nil
         )
       end
