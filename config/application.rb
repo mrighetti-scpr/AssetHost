@@ -50,13 +50,20 @@ module AssetHost
     config.host          = "#{config.host_name}" + ((config.host_port == '80') ? "" : ":#{config.host_port}")
     ## ^^ This is necessary for URL generation.
 
+    config.thumb_size           = "lsquare"
+    config.modal_size           = "small"
+    config.detail_size          = "eight"
+
+    config.redis_pubsub         = Rails.application.secrets['pubsub'].symbolize_keys
+    config.resque_queue         = :assets
+
     def self.redis_pubsub
-      # if AssetHostCore.config.redis_pubsub
+      # if Rails.application.config.redis_pubsub
       #   if @@redis_pubsub
       #     return @@redis_pubsub
       #   end
 
-      #   return @@redis_pubsub ||= Redis.new(AssetHostCore.config.redis_pubsub[:server])
+      #   return @@redis_pubsub ||= Redis.new(Rails.application.config.redis_pubsub[:server])
       # else
       #   return false
       # end
@@ -64,7 +71,7 @@ module AssetHost
 
     def self.redis_publish(data)
       # if r = self.redis_pubsub
-      #   return r.publish(AssetHostCore.config.redis_pubsub[:key]||"AssetHost",data.to_json)
+      #   return r.publish(Rails.application.config.redis_pubsub[:key]||"AssetHost",data.to_json)
       # else
       #   return false
       # end

@@ -8,14 +8,14 @@ if !window.console
         @log: ->
 
 window.AssetHost ?= {}
-AssetHost.SERVER = "<%= AssetHostCore.config.server %>"
+AssetHost.SERVER = "<%= Rails.application.config.host %>"
 
 # HACK
 # AssetHost.PATH_PREFIX = "/a"
 AssetHost.PATH_PREFIX = ""
 AssetHost.SIZES =
-    thumb:  "<%= AssetHostCore.config.thumb_size || "thumb" %>"
-    modal:  "<%= AssetHostCore.config.modal_size || "modal" %>"
-    detail: "<%= AssetHostCore.config.detail_size || "wide" %>"
+    thumb:  "<%= Rails.application.config.thumb_size || "thumb" %>"
+    modal:  "<%= Rails.application.config.modal_size || "modal" %>"
+    detail: "<%= Rails.application.config.detail_size || "wide" %>"
 
     

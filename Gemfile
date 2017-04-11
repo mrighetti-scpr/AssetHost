@@ -54,7 +54,7 @@ end
 
 group :test do 
   gem "capybara"
-  gem "combustion"
+  # gem "combustion"
   gem "factory_girl"
   gem "fakeweb"
   gem "launchy"

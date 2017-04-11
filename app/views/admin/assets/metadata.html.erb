@@ -6,7 +6,7 @@
         <%= f.simple_fields_for asset.id.to_s, asset do |af| %>
             <hr/>
             <div class="span3">
-                <%= asset.image.tag(AssetHostCore.config.modal_size) %>
+                <%= asset.image.tag(Rails.application.config.modal_size) %>
             </div>
             <div class="span5">
                 <h3>Asset #<%=asset.id%></h3>

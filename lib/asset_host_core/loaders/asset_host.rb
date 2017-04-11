@@ -5,7 +5,8 @@ module AssetHostCore
 
       def self.build_from_url(url)
         # assethost_root = "#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}"
-        assethost_root = "#{AssetHostCore.config.server}"
+        # assethost_root = "#{AssetHostCore.config.server}"
+        assethost_root = "#{Rails.application.config.host}"
         #HACK
 
         matches = [
