@@ -19,6 +19,7 @@ script:
 
 services:
   - mysql
+  - redis-server
 
 cache: bundler
 

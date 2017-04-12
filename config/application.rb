@@ -43,6 +43,7 @@ module AssetHost
     # end
 
     config.active_job.queue_adapter = :resque
+    config.resque_queue             = :assets
 
     config.host_name     = ENV['ASSETHOST_HOST_NAME']     || 'localhost'
     config.host_port     = ENV['ASSETHOST_HOST_PORT']     || '3000'
@@ -54,27 +55,26 @@ module AssetHost
     config.modal_size           = "small"
     config.detail_size          = "eight"
 
-    config.redis_pubsub         = (Rails.application.secrets['pubsub'] || {}).symbolize_keys
-    config.resque_queue         = :assets
+    config.redis_pubsub         = Rails.application.secrets.pubsub
 
     def self.redis_pubsub
-      # if Rails.application.config.redis_pubsub
-      #   if @@redis_pubsub
-      #     return @@redis_pubsub
-      #   end
+      if Rails.application.config.redis_pubsub
+        if @@redis_pubsub
+          return @@redis_pubsub
+        end
 
-      #   return @@redis_pubsub ||= Redis.new(Rails.application.config.redis_pubsub[:server])
-      # else
-      #   return false
-      # end
+        return @@redis_pubsub ||= Redis.new(Rails.application.config.redis_pubsub['server'])
+      else
+        return false
+      end
     end
 
     def self.redis_publish(data)
-      # if r = self.redis_pubsub
-      #   return r.publish(Rails.application.config.redis_pubsub[:key]||"AssetHost",data.to_json)
-      # else
-      #   return false
-      # end
+      if r = self.redis_pubsub
+        return r.publish(Rails.application.config.redis_pubsub['key']||"AssetHost", data.to_json)
+      else
+        return false
+      end
     end
 
 
