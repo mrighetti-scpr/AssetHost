@@ -28,7 +28,7 @@ development:
 test:
   <<: *default
   database: AssetHost_test
-  host: <%= DOCKER_HOST %>
+  host: <%= DOCKER_HOST %> # remember, this constant defaults to localhost when there is no Docker host
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

@@ -8,6 +8,9 @@ before_install:
 install:
   - bundle install --path vendor/bundle
 
+services:
+  - mysql
+
 rvm:
   - 2.3
 
