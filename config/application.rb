@@ -54,7 +54,7 @@ module AssetHost
     config.modal_size           = "small"
     config.detail_size          = "eight"
 
-    config.redis_pubsub         = Rails.application.secrets['pubsub'].symbolize_keys
+    config.redis_pubsub         = (Rails.application.secrets['pubsub'] || {}).symbolize_keys
     config.resque_queue         = :assets
 
     def self.redis_pubsub

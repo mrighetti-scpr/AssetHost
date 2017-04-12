@@ -10,11 +10,11 @@ install:
 
 before_script:
   - mysql -e 'create database AssetHost_test'
+  - cp config/templates/secrets.yml.template config/secrets.yml
 
 script: 
   - RAILS_ENV=test bundle exec rake db:schema:load --trace
   - bundle exec rake db:test:prepare
-  - cp config/templates/secrets.yml.template config/secrets.yml
   - bundle exec rspec spec/
 
 services:

@@ -20,7 +20,7 @@ default: &default
 development:
   <<: *default
   database: AssetHost_development
-  host: <%= DOCKER_HOST %>
+  host: <%= ENV['DOCKER_HOST_NAME'] %>
   
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -28,7 +28,7 @@ development:
 test:
   <<: *default
   database: AssetHost_test
-  host: <%= DOCKER_HOST %> # remember, this constant defaults to localhost when there is no Docker host
+  host: <%= ENV['DOCKER_HOST_NAME'] %> # remember, this constant defaults to localhost when there is no Docker host
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
