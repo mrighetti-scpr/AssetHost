@@ -1,7 +1,7 @@
 class Api::BaseController < ApplicationController
   layout false
 
-  before_filter :authenticate_api_user
+  before_action :authenticate_api_user
   respond_to :json
 
 

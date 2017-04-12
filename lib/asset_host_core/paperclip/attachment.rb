@@ -50,14 +50,6 @@ module Paperclip
     end
 
     def enqueue_styles(*styles)
-      # Resque.enqueue(
-      #   AssetHostCore::ResqueJob,
-      #   self.instance.class.name,
-      #   self.instance.id,
-      #   self.name,
-      #   styles
-      # )
-      #HACK
       AssetHostCore::ResqueJob.perform(
         self.instance.class.name,
         self.instance.id,

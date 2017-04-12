@@ -44,8 +44,7 @@ class Api::AssetsController < Api::BaseController
     end
 
     # see if we have a loader for this URL
-    if asset = AssetHostCore.as_asset(params[:url]) #HACK
-    # if asset = Loaders.load(params[:url])
+    if asset = AssetHostCore.as_asset(params[:url])
       if params[:note].present?
         asset.notes += "\n#{params[:note]}"
       end

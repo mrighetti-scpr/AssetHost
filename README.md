@@ -103,6 +103,21 @@ the S3 API and can be used in the same way.
 
 Local filesystem storage may be implemented in the future.
 
+## Feature Recognition
+
+For the purpose of improving ease of searchability, AssetHost can tie into
+Amazon's Rekognition service which uses computer-vision to classify features
+inside a given image.  When enabled, photos are automatically populated with
+keywords without any user intervention.  For example, a photo of people 
+mountain biking will be immediately searchable with queries like "bicycle"
+or "outdoors" upon upload even when no metadata is provided.  This optional
+feature can be enabled when AWS credentials are set in the following
+environment variables:
+
+- ASSETHOST_REKOGNITION_REGION
+- ASSETHOST_REKOGNITION_ACCESS_KEY_ID
+- ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY
+
 
 # External Requirements
 

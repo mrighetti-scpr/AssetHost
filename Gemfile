@@ -39,9 +39,6 @@ gem "aws-sdk", "~> 2"
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
-
 group :development, :test do
   gem 'byebug', platform: :mri
   gem 'dotenv-rails', groups: [:development, :test]
@@ -54,7 +51,6 @@ end
 
 group :test do 
   gem "capybara"
-  # gem "combustion"
   gem "factory_girl"
   gem "fakeweb"
   gem "launchy"

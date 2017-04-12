@@ -3,8 +3,6 @@ class User < ActiveRecord::Base
   # self.table_name = "auth_user"
 
   has_secure_password
-  #hack
-  # attr_accessible :username, :password
 
   class << self
     def authenticate(username, password)
@@ -12,12 +10,4 @@ class User < ActiveRecord::Base
     end
   end
 
-  # AssetHost requires an `is_admin?` field, but our database uses
-  # `is_superuser?`.
-
-  #HACK
-  #^^ in this case, we do have the is_admin field
-  # def is_admin?
-  #   self.is_superuser?
-  # end
 end

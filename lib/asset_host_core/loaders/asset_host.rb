@@ -4,10 +4,7 @@ module AssetHostCore
       SOURCE = "AssetHost"
 
       def self.build_from_url(url)
-        # assethost_root = "#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}"
-        # assethost_root = "#{AssetHostCore.config.server}"
         assethost_root = "#{Rails.application.config.host}"
-        #HACK
 
         matches = [
           %r{#{assethost_root}\/i\/[^\/]+\/(?<id>\d+)-},
@@ -26,8 +23,6 @@ module AssetHostCore
       #--------------
 
       def load
-        #HACK
-        # AssetHostCore::Asset.find_by_id(@id)
         Asset.where(id: @id).first!
       end
     end
