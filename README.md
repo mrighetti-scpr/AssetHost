@@ -2,11 +2,10 @@
 
 [![Build Status](https://travis-ci.org/SCPR/AssetHost.png)](https://travis-ci.org/SCPR/AssetHost)
 
-AssetHost is an attempt to create a one-stop-shop for hosting and linking 
-to media assets that are intended for inclusion in news stories.  The goal is 
-to create a hub that multiple frontend CMS systems can hook into, querying 
-images, videos and documents from one source and enabling the easier 
-interchange of data.
+AssetHost is a one-stop-shop for hosting and linking to media assets that are 
+intended for inclusion in news stories.  The goal is to create a hub that 
+multiple frontend CMS systems can hook into, querying images, videos and documents
+from one source and enabling the easier interchange of data.
 
 # Philosophy
 
@@ -20,13 +19,9 @@ lightweight frontend plugins that attach to the CMS system.  The pieces
 should speak to each other using a secure API.
 
 
-### Backend Engine
+### Application
 
-This repository provides the AssetHostCore engine, which can be run either 
-on the root of a standalone application (perhaps powering multiple frontend 
-applications) or at a namespace in an existing application.
-
-The backend server provides the primary UI for uploading, managing, and  
+The server application provides the primary UI for uploading, managing, and  
 serving assets. It also provides an API endpoint that can be accessed either 
 by the local application (this is how much of the admin works) or by other 
 applications or plugins.
@@ -39,11 +34,6 @@ your application, allowing you to integrate the system in a minimal amount
 of code.
 
 _TODO: More documentation on CMS interaction. External Rails example. Django example._
-
-### Integrating with the AssetHost engine
-
-To integrate with a locally-installed AssetHostCore engine, simply make your 
-mapping data model belong to AssetHostCore::Asset.
 
 
 ### Workflow
@@ -107,12 +97,11 @@ If you are using *docker-machine*, you can run `echo $DOCKER_HOST` to optain the
 
 # Image Storage
 
-AssetHost intends to support any image storage supported by 
-[Paperclip](https://github.com/thoughtbot/paperclip), the underlying gem 
-responsible for adding image file functionality to our Asset model.
+AssetHost supports Amazon S3 as a storage backend.  For in-house storage,
+you can use [Riak CS](https://github.com/basho/riak_cs), which implements
+the S3 API and can be used in the same way.
 
-Currently, Paperclip supports local filesystem storage and storage on 
-Amazon's S3.
+Local filesystem storage may be implemented in the future.
 
 
 # External Requirements
@@ -124,8 +113,7 @@ processing of images.  Configure for your Redis setup in config/resque.yml.
 
 ### Image Processing via ImageMagick
 
-AssetHost, via Paperclip, does image processing using ImageMagick.  If 
-needed, make sure to specify Paperclip.options[:command_path] in your config.
+AssetHost does image processing using ImageMagick.
 
 ### Text Search via Elasticsearch
 
@@ -134,10 +122,11 @@ Searches are done via Elasticsearch using the Searchkick gem.
 
 # Credits
 
-AssetHost is being developed to serve the media asset needs of [KPCC](http://kpcc.org) 
+AssetHost is being developed to serve the media asset needs of [KPCC](https://scpr.org) 
 and Southern California Public Radio, a member-supported public radio network that 
 serves Los Angeles and Orange County on 89.3, the Inland Empire on 89.1, and the 
 Coachella Valley on 90.3.
 
-AssetHost development is led by Eric Richardson (erichardson@kpcc.org).
+AssetHost development is currently led by Ben Titcomb and was originally written by
+Eric Richardson & Bryan Ricker.
 
