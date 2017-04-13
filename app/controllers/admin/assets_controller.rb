@@ -13,10 +13,8 @@ class Admin::AssetsController < Admin::BaseController
 
   def search
     @query = params[:q]
-    # @assets = Asset.search(@query).page(params[:page]||1).records
-    # @assets = Asset.es_search(@query, page: params[:page]||1)
-    @assets = Asset.search(@query, page: params[:page], per_page: 25)
-    # @assets = @results.results
+    @assets = Asset.es_search(@query, page: params[:page])
+    
     render :index
   end
 

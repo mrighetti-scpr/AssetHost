@@ -39,41 +39,22 @@ class Asset < ActiveRecord::Base
   after_commit :publish_asset_delete, :on => :destroy
 
 
-  def self.es_search(query,options={})
-    es_q = {
-      function_score: {
-        query: { query_string: { query:query, default_operator:"AND" } },
-        functions: [
-          {
-            gauss: {
-              taken_at: {
-                origin: Time.zone.now.iso8601,
-                scale:  "26w",
-                offset: "13w",
-                decay:  0.8
-              }
-            }
-          },
-          {
-            gauss: {
-              long_edge: {
-                origin: 4200,
-                scale:  300,
-                offset: 3000,
-                decay:  0.7
-              }
-            }
-          }
-        ]
+  def self.es_search(query, page: 1, per_page: 24)
+    Asset.search(query, boost_by_distance: {
+      taken_at: {
+        origin: Time.zone.now.iso8601,
+        scale: '26w',
+        offset: '13w',
+        decay: 0.8
+      },
+      long_edge: {
+        origin: 4200,
+        scale: 300,
+        offset: 3000,
+        decay: 0.7
       }
-    }
-
-    #Rails.logger.info "ES Query is: #{ es_q.to_json() }"
-
-    assets = []
-    Asset.search(query:es_q).page(options[:page]||1).per(options[:per_page]||24).records
+    }, page: page, per_page: per_page)
   end
-
 
 
   def size(code)
@@ -83,7 +64,6 @@ class Asset < ActiveRecord::Base
 
 
   def image
-    #HACK
     # Here, we're shimming the Paperclip attachment so that
     # important methods for generating #as_json still function.
     #
@@ -94,7 +74,6 @@ class Asset < ActiveRecord::Base
 
 
   def as_json(options={})
-    #:url        => "#{Rails.application.config.host_protocol}://#{AssetHostCore.config.server}#{AssetHostCore::Engine.mounted_path}/api/assets/#{self.id}/",
     {
       :id                 => self.id,
       :title              => self.title,
@@ -237,8 +216,7 @@ class Asset < ActiveRecord::Base
 
 
 
-  def as_indexed_json(options={})
-    # ^^ options?
+  def as_indexed_json
     {
       :id               => self.id,
       :title            => self.title,
@@ -254,7 +232,7 @@ class Asset < ActiveRecord::Base
     }.merge(self.image_shape())
   end
 
-
+  alias_method :search_data, :as_indexed_json
 
   def shape
     if !self.image_width || !self.image_height
@@ -268,19 +246,13 @@ class Asset < ActiveRecord::Base
     end
   end
 
-
-
   def tag(style)
     self.image.tag(style)
   end
 
-
-
   def isPortrait?
     self.image_width < self.image_height
   end
-
-
 
   def url_domain
     return nil if !self.url
