@@ -30,14 +30,13 @@ module AssetHostCore
 
         # build asset
         asset = Asset.new(
+          :file     => image_file,
           :title    => filename,
           :url      => @url,
-          :notes    => "Fetched from URL: #{@url}",
-          :image    => image_file
+          :notes    => "Fetched from URL: #{@url}"
         )
 
         asset.save!
-        image_file.close(true)
         asset
       end
 
@@ -46,13 +45,7 @@ module AssetHostCore
       private
 
       def image_file
-        @image_file ||= begin
-          tempfile = Tempfile.new('ah-url', encoding: "ascii-8bit")
-          open(@url) { |f| tempfile.write(f.read) }
-          tempfile.rewind
-
-          tempfile
-        end
+        @image_file ||= open(@url)
       end
     end
   end

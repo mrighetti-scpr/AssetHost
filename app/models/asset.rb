@@ -30,7 +30,7 @@ class Asset < ActiveRecord::Base
   before_create :sync_exif_data
 
   before_save :reload_image, if: -> {
-    image_gravity_changed?
+    image_gravity_changed? && !@reloading
   }
 
   after_save :save_image
@@ -39,7 +39,7 @@ class Asset < ActiveRecord::Base
   after_commit :publish_asset_delete, :on => :destroy
 
 
-  def self.es_search(query, page: 1, per_page: 24)
+  def self.es_search(query=nil, page: 1, per_page: 24)
     Asset.search(query, boost_by_distance: {
       taken_at: {
         origin: Time.zone.now.iso8601,
@@ -388,9 +388,9 @@ class Asset < ActiveRecord::Base
       self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
       # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
-      self.file = nil
-      self.reload # prevents recursion with #changed? methods in callbacks
+      self.file = nil # prevents recursive saving/rendering
       self.save
+      @reloading = false
       prerender
     end
   end
@@ -404,6 +404,7 @@ class Asset < ActiveRecord::Base
   end
 
   def reload_image
+    @reloading = true
     # pulls the original image from storage
     downloader = PhotographicMemory.new
     self.file = downloader.get file_key

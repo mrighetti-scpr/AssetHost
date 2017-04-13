@@ -14,7 +14,7 @@ describe 'Managing API Users', type: :feature do
       it "creates a user" do
         ApiUser.count.should eq 0
 
-        visit new_a_api_user_path
+        visit new_api_user_path
         fill_in 'api_user_name', with: "KPCC"
         fill_in 'api_user_email', with: 'scprweb@scpr.org'
         #check 'api_user_is_active'
@@ -27,7 +27,7 @@ describe 'Managing API Users', type: :feature do
 
     context 'with invalid attributes' do
       it "rerenders the form and shows error messages" do
-        visit new_a_api_user_path
+        visit new_api_user_path
         click_button 'Save'
 
         page.should have_css '.alert.alert-error'
@@ -39,7 +39,7 @@ describe 'Managing API Users', type: :feature do
   describe "updating" do
     before do
       @api_user = create :api_user
-      visit edit_a_api_user_path(@api_user)
+      visit edit_api_user_path(@api_user)
     end
 
     context 'with valid attributes' do
@@ -66,7 +66,7 @@ describe 'Managing API Users', type: :feature do
   describe 'deleting' do
     before do
       @api_user = create :api_user
-      visit edit_a_api_user_path(@api_user)
+      visit edit_api_user_path(@api_user)
     end
 
     it "deletes the record" do

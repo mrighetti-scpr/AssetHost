@@ -77,16 +77,6 @@ module AssetHostCore
         @image_file ||= open(@image_url)
       end
 
-      # def image_file
-      #   @image_file ||= begin
-      #     tempfile = Tempfile.new('ah-youtube', encoding: "ascii-8bit")
-      #     open(@image_url) { |f| tempfile.write(f.read) }
-      #     tempfile.rewind
-
-      #     @url.match(/ah-noTrim/) ? tempfile : Paperclip::Trimmer.make(tempfile)
-      #   end
-      # end
-
       def client
         @client ||= Google::APIClient.new(
           :key              => Rails.application.secrets.google_api_key,

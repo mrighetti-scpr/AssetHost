@@ -29,7 +29,7 @@ class Admin::ApiUsersController < Admin::BaseController
 
     if @api_user.save
       flash[:notice] = "Created API User"
-      redirect_to [:a, :api_users]
+      redirect_to [:api_users]
     else
       render :new
     end
@@ -39,7 +39,7 @@ class Admin::ApiUsersController < Admin::BaseController
   def update
     if @api_user.update_attributes(api_user_params)
       flash[:notice] = "Updated API User"
-      redirect_to [:a, :api_users]
+      redirect_to [:api_users]
     else
       render :edit
     end
@@ -48,13 +48,13 @@ class Admin::ApiUsersController < Admin::BaseController
   def reset_token
     @api_user.generate_auth_token!
     flash[:notice] = "Reset API Token for #{@api_user.name}"
-    redirect_to [:a, :api_users]
+    redirect_to [:api_users]
   end
 
   def destroy
     @api_user.destroy
     flash[:notice] = "Destroyed API User"
-    redirect_to [:a, :api_users]
+    redirect_to [:api_users]
   end
 
 

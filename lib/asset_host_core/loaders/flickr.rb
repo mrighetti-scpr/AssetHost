@@ -43,7 +43,6 @@ module AssetHostCore
         # Load the image first so that the image EXIF data doesn't
         # override the data from the Flickr API.
         asset = Asset.new(
-          # :image         => image_file,
           :file          => image_file,
           :title         => photo["title"]["_content"],
           :caption       => photo["description"]["_content"],
@@ -69,13 +68,6 @@ module AssetHostCore
       private
 
       def image_file
-        # @image_file ||= begin
-        #   tempfile = Tempfile.new('ah-flickr', encoding: "ascii-8bit")
-        #   open(@image_url) { |f| tempfile.write(f.read) }
-        #   tempfile.rewind
-
-        #   tempfile
-        # end
         @image_file ||= open(@image_url)
       end
     end

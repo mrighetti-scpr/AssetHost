@@ -16,6 +16,7 @@ module AssetHostCore
       def initialize(attributes={})
         @id       = attributes[:id]
         @url      = attributes[:url]
+        @file     = attributes[:file]
         @source   = self.class::SOURCE
       end
     end

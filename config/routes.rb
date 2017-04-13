@@ -3,21 +3,21 @@ require "resque/server"
 Rails.application.routes.draw do
   match '/i/:aprint/:id-:style.:extension', :to => 'public#image', :constraints => { :id => /\d+/, :style => /[^\.]+/}, via: [:get, :post, :put, :patch, :delete], :as => :image
 
-  # resque_constraint = ->(request) do
-  #   user_id = request.session.to_hash["user_id"]
+  match '/a/:path', to: redirect('/'), via: :all, status: 302
 
-  #   if user_id && u = User.where(:id => user_id).first
-  #     u.is_superuser?
-  #   else
-  #     false
-  #   end
-  # end
+  resque_constraint = ->(request) do
+    user_id = request.session.to_hash["user_id"]
 
-  # constraints resque_constraint do
-  #   mount Resque::Server.new, :at => "/resque"
-  # end
+    if user_id && u = User.where(id: user_id).first
+      u.is_superuser?
+    else
+      false
+    end
+  end
 
-  mount Resque::Server, at: '/resque'
+  constraints resque_constraint do
+    mount Resque::Server, at: '/resque'
+  end
 
   resources :sessions, only: [:create, :destroy]
   get 'login'  => "sessions#new", as: :login
@@ -34,7 +34,7 @@ Rails.application.routes.draw do
     resources :outputs, defaults: { format: :json }
   end
 
-  namespace :a, :module => "admin" do
+  scope module: "admin" do
     resources :assets, :id => /\d+/ do
       collection do
         get '/search(/:q)', action: 'search', as: "search"

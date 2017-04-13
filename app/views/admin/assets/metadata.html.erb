@@ -1,6 +1,6 @@
 <h2><%= @PAGE_TITLE = "Add Metadata" %></h2>
 
-<%= simple_form_for :assets, url: metadata_a_assets_path, method: :put do |f| %>
+<%= simple_form_for :assets, url: metadata_assets_path, method: :put do |f| %>
     <% @assets.each do |asset| %>
         <div class="row">
         <%= f.simple_fields_for asset.id.to_s, asset do |af| %>

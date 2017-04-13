@@ -54,12 +54,6 @@ module AssetHostCore
       private
 
       def image_file
-        # @image_file ||= begin
-        #   tempfile = Tempfile.new('ah-vimeo', encoding: "ascii-8bit")
-        #   open(@image_url) { |f| tempfile.write(f.read) }
-        #   tempfile.rewind
-        #   tempfile
-        # end
         @image_file ||= open(@image_url)
       end
 

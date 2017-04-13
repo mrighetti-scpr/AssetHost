@@ -55,7 +55,7 @@ class Api::AssetsController < Api::BaseController
       asset.title       = params[:title] if params[:title].present?
 
       asset.save
-      respond_with asset, location: a_asset_path(asset)
+      respond_with asset, location: asset_path(asset)
 
     else
       render_not_found(message: "Unable to find or load an asset at " \

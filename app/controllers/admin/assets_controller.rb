@@ -47,7 +47,7 @@ class Admin::AssetsController < Admin::BaseController
       asset.update_attributes(asset_params(attributes))
     end
 
-    redirect_to a_assets_path
+    redirect_to assets_path
   end
 
   #----------
@@ -67,7 +67,7 @@ class Admin::AssetsController < Admin::BaseController
   def update
     if @asset.update_attributes(asset_params)
       flash[:notice] = "Successfully updated asset."
-      redirect_to a_asset_path(@asset)
+      redirect_to asset_path(@asset)
     else
       flash[:notice] = @asset.errors.full_messages.join("<br/>")
       render :action => :edit
@@ -96,10 +96,10 @@ class Admin::AssetsController < Admin::BaseController
   def destroy
     if @asset.destroy
       flash[:notice] = "Deleted asset #{@asset.title}."
-      redirect_to a_assets_path
+      redirect_to assets_path
     else
       flash[:error] = "Unable to delete asset."
-      redirect_to a_asset_path(@asset)
+      redirect_to asset_path(@asset)
     end
   end
 

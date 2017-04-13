@@ -1,5 +1,5 @@
 <h2><%= @PAGE_TITLE = "API Users" %></h2>
-<p><%= link_to "Add an API User", new_a_api_user_path, class: "btn btn-success" %></p>
+<p><%= link_to "Add an API User", new_api_user_path, class: "btn btn-success" %></p>
 
 <%= paginate @api_users %>
 
@@ -17,7 +17,7 @@
   <tbody>
     <% @api_users.each do |api_user| %>
       <tr>
-        <td><%= link_to "Edit", edit_a_api_user_path(api_user), class: "btn" %></td>
+        <td><%= link_to "Edit", edit_api_user_path(api_user), class: "btn" %></td>
         <td><%= api_user.name %></td>
         <td><%= api_user.email %></td>
         <td><%= api_user.auth_token %></td>

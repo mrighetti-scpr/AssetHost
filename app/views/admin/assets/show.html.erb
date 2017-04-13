@@ -4,13 +4,13 @@
 <ul class="pager">
     <% if @prev %>
         <li class="previous">
-            <%= link_to "&larr; #{@prev.title.blank? ? "Asset #{@prev.id}" : @prev.title[0..30]}".html_safe, a_asset_path(@prev) %>
+            <%= link_to "&larr; #{@prev.title.blank? ? "Asset #{@prev.id}" : @prev.title[0..30]}".html_safe, asset_path(@prev) %>
         </li>
     <% end %>
 
     <% if @next %>
         <li class="next">
-            <%= link_to "#{@next.title.blank? ? "Asset #{@next.id}" : @next.title[0..30]} &rarr;".html_safe, a_asset_path(@next) %>
+            <%= link_to "#{@next.title.blank? ? "Asset #{@next.id}" : @next.title[0..30]} &rarr;".html_safe, asset_path(@next) %>
         </li>
     <% end %>
 </ul>
@@ -20,7 +20,7 @@
 <br/>
 
 <div id="editform">
-    <%= simple_form_for([:a, @asset], html: { class: "form-horizontal" }) do |f| %>
+    <%= simple_form_for([@asset], html: { class: "form-horizontal" }) do |f| %>
     <div class="row">
         <div class="span6">
             <fieldset>
@@ -62,7 +62,7 @@
             <div class="form-actions">
                 <%= f.submit "Update Asset", class: "btn btn-primary" %>
                 <%= link_to "Destroy Asset",
-                    a_asset_path(@asset),
+                    asset_path(@asset),
                     :method => :delete,
                     :class  => "btn btn-danger pull-right",
                     :data   => { confirm: "Are you sure you want to delete this asset? You are responsible for making sure no content is using it before deletion." } %>
@@ -79,7 +79,7 @@
         {
             el: "#asset",
             replace: "#replacedrop",
-            replacePath: "<%= replace_a_asset_path @asset %>"
+            replacePath: "<%= replace_asset_path @asset %>"
         }
     )
 

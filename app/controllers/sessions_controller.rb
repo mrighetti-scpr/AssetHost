@@ -2,13 +2,13 @@ class SessionsController < ApplicationController
   # respond_to :html
 
   def new
-    redirect_to a_assets_path if current_user
+    redirect_to assets_path if current_user
   end
 
   def create
     if user = User.authenticate(params[:username], params[:password])
       session[:user_id] = user.id
-      redirect_to session[:return_to] || a_assets_path, notice: "Logged in."
+      redirect_to session[:return_to] || assets_path, notice: "Logged in."
       session[:return_to] = nil
     else
       flash.now[:error] = "Invalid login information."

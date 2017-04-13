@@ -5,7 +5,7 @@
   will be re-rendered on first request.
 </div>
 
-<%= simple_form_for [:a, @output], html: { class: "form-horizontal" } do |f| %>
+<%= simple_form_for [@output], html: { class: "form-horizontal" } do |f| %>
   <%= f.error_notification %>
 
   <fieldset>
@@ -14,7 +14,7 @@
     <div class="form-actions">
       <%= f.submit "Update Output", class: "btn btn-primary" %>
 
-      <%= link_to("Delete", a_output_path(@output),
+      <%= link_to("Delete", output_path(@output),
             class: "btn btn-danger pull-right",
             method: :delete,
             data: { confirm: "Click OK to delete this Output.\n" \
