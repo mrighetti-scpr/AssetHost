@@ -3,8 +3,6 @@ class Asset < ActiveRecord::Base
 
   attr_accessor :image, :file
 
-  @queue = :paperclip
-
   VIA_UNKNOWN   = 0
   VIA_FLICKR    = 1
   VIA_LOCAL     = 2
@@ -30,6 +28,10 @@ class Asset < ActiveRecord::Base
   belongs_to :native, :polymorphic => true  # again, this is just for things like youtube videos
 
   before_create :sync_exif_data
+
+  before_save :reload_image, if: -> {
+    image_gravity_changed?
+  }
 
   after_save :save_image
 
@@ -407,12 +409,15 @@ class Asset < ActiveRecord::Base
   private
 
   def save_image
+    # If you want the asset to render or re-render, all you have to do
+    # is place a File or StringIO object in the file attribute
     if file
       uploader = PhotographicMemory.new
       self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
       # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
       self.file = nil
+      self.reload # prevents recursion with #changed? methods in callbacks
       self.save
       prerender
     end
@@ -424,6 +429,12 @@ class Asset < ActiveRecord::Base
         self.outputs.where(output_id: output.id, image_fingerprint: self.image_fingerprint).first_or_create
       end
     end
+  end
+
+  def reload_image
+    # pulls the original image from storage
+    downloader = PhotographicMemory.new
+    self.file = downloader.get file_key
   end
 
   def publish_asset_update
