@@ -19,7 +19,7 @@ Rails.application.configure do
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :uglifier
+  # config.assets.js_compressor = :uglifier
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
@@ -77,32 +77,15 @@ Rails.application.configure do
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
-  config.cache_store = :dalli_store, config.secrets.cache.servers, config.secrets.cache.options||{}
+  # config.cache_store = :dalli_store, config.secrets.cache.servers, config.secrets.cache.options||{}
+  config.cache_store = :memory_store
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-  config.assets.precompile += %w( client.js )
+  # config.assets.precompile += %w( client.js )
 
-  # -- AssetHost configuration -- #
-  # config.assethost.server = "a.scpr.org"
-
-  # config.assethost.paperclip_options = {
-  #   :path           => ":id_:fingerprint_:sprint.:extension",
-  #   :default_url    => '/assets/asset_host_core/fallback-img-rect.png',
-  #   :storage        => :s3,
-  #   :use_timestamp  => false,
-  #   :s3_credentials => {
-  #     access_key_id:      config.secrets.s3.access_key,
-  #     secret_access_key:  config.secrets.s3.secret_key,
-  #     s3_host_name:       "s3.i.scprdev.org",
-  #     bucket:             config.secrets.s3.bucket,
-  #   },
-  #   :s3_options     => {
-  #     use_ssl:            false,
-  #   }
-  # }
 
 end
 

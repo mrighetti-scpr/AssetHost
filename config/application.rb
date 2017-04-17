@@ -24,9 +24,6 @@ module AssetHost
     # -- all .rb files in that directory are automatically loaded.
     config.filter_parameters += [:password]
 
-
-    # config.api = Hashie::Mash.new(YAML.load_file("#{Rails.root}/config/api_config.yml")[Rails.env])
-
     @@mpath = nil
     @@redis_pubsub = nil
 
@@ -34,13 +31,6 @@ module AssetHost
     config.assethost = ActiveSupport::OrderedOptions.new
 
     config.elasticsearch_index = "assethost-assets"
-
-    # -- post-initialization setup -- #
-
-    # config.after_initialize do
-    #   # set our resque job's queue
-    #   AssetHostCore::ResqueJob.instance_variable_set :@queue, AssetHostCore.config.resque_queue || "assethost"
-    # end
 
     config.active_job.queue_adapter = :resque
     config.resque_queue             = :assets
@@ -55,28 +45,28 @@ module AssetHost
     config.modal_size           = "small"
     config.detail_size          = "eight"
 
-    config.redis_pubsub         = Rails.application.secrets.pubsub
+    ENV["ELASTICSEARCH_URL"]  ||= Rails.application.secrets.elasticsearch['host']
 
     def self.redis_pubsub
-      if Rails.application.config.redis_pubsub
+      if Rails.application.secrets.redis_pubsub
         if @@redis_pubsub
           return @@redis_pubsub
         end
 
-        return @@redis_pubsub ||= Redis.new(Rails.application.config.redis_pubsub['server'])
+        return @@redis_pubsub ||= Redis.new(Rails.application.secrets.redis_pubsub['server'])
       else
         return false
       end
     end
 
     def self.redis_publish(data)
+      return false if Rails.env.test?
       if r = self.redis_pubsub
-        return r.publish(Rails.application.config.redis_pubsub['key']||"AssetHost", data.to_json)
+        return r.publish(Rails.application.secrets.redis_pubsub['key']||"AssetHost", data.to_json)
       else
         return false
       end
     end
-
 
   end
 end

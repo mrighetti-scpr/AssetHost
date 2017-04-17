@@ -47,22 +47,7 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  # config.assethost.server = "localhost:9000"
-
-  # config.assethost.paperclip_options = {
-  #   :path           => ":id_:fingerprint_:sprint.:extension",
-  #   :default_url    => '/assets/asset_host_core/fallback-img-rect.png',
-  #   :storage        => :s3,
-  #   :use_timestamp  => false,
-  #   :s3_region      => 'us-west-1',
-  #   :s3_credentials => {
-  #     access_key_id:      Rails.application.secrets.s3['access_key'],
-  #     secret_access_key:  Rails.application.secrets.s3['secret_key'],
-  #     bucket:             Rails.application.secrets.s3['bucket']
-  #   },
-  #   :s3_options     => {
-  #   }
-  # }
-
+  # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
+  config.assets.precompile += %w( client.js )
 
 end

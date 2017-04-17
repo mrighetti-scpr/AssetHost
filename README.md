@@ -80,6 +80,17 @@ Importing Help for more.
 
 `rake db:schema:load`
 
+## Configuration & Secrets
+
+API keys and configuration are managed with environment variables.  In development & test environments, these can be bundled in a `.env` file in the project directory.  An example .env file is located under `config/templates/.env.template`.
+
+Alternatively, secrets in development can be managed via `config/secrets.yml`.  By default, it is that file through which environment variables are pulled in, but you can manipulate that file directly in development if that is easier.
+
+## Host Name & Port
+
+When links for assets are generated, the application assumes that the host is `localhost` and the port is `3000` by default.  This is good for a quick start in development mode.  When running on a dedicated server with a domain name or publicly available IP address, the host name should be set with the environment variable `ASSETHOST_HOST_NAME` and the port with `ASSETHOST_HOST_PORT`(which should probably be set to 80).  We may attempt to eliminate this step in the future.
+
+
 # Development
 
 A Dockerfile is included to make it easy to quickly spin up services required by AssetHost(MySQL, Redis, Elasticsearch) for development on a local machine.

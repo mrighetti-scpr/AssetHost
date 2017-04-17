@@ -18,3 +18,11 @@
 
 config/secrets.yml
 .env
+.env.production
+
+# compiled assets don't need to be committed
+#
+# they should only be built before deploying
+# or building a Docker container
+public/assets
+public/assets/*
