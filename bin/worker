@@ -1,0 +1,4 @@
+#!/bin/sh
+
+QUEUE=$ASSETHOST_RESQUE_QUEUE rake resque:work
+
