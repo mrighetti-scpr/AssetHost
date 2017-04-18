@@ -1,42 +1,133 @@
-# AssetHost
+AssetHost
+=========
+
+📸 AssetHost is a one-stop-shop for hosting and linking to media assets that are intended for inclusion in news stories.
 
 [![Build Status](https://travis-ci.org/SCPR/AssetHost.png)](https://travis-ci.org/SCPR/AssetHost)
 
-AssetHost is a one-stop-shop for hosting and linking to media assets that are 
-intended for inclusion in news stories.  The goal is to create a hub that 
-multiple frontend CMS systems can hook into, querying images, videos and documents
-from one source and enabling the easier interchange of data.
+The goal is to create a hub that multiple frontend CMS systems can hook into, querying images, videos and documents from one source and enabling the easier interchange of data.
 
-# Philosophy
+AssetHost includes:
 
-AssetHost is built around the idea that all web media assets need to 
-have a static visual fallback, either to support limited-functionality 
-devices or to support rendering of rich media assets in contexts where 
-a rich implementation isn't desired.
+- 💽 A server application provides the primary UI for uploading, managing, and  
+serving assets.
+- 🔌 An API endpoint that can be accessed by other applications or plugins.
+- 🖥️ A Chooser UI that can be integrated into your application with a minimal amount of code.
 
-AssetHost is intended to run as two pieces: a backend asset server and 
-lightweight frontend plugins that attach to the CMS system.  The pieces 
-should speak to each other using a secure API.
+Plus:
+
+- A powerful search function built on [Elasticsearch](https://www.elastic.co/products/elasticsearch) & [Searchkick](https://github.com/ankane/searchkick).
+- Automatic tagging of image features using deep-learning through [Amazon Rekognition](https://aws.amazon.com/rekognition/), allowing for images to become searchable upon upload with no user intervention.
 
 
-### Application
+## Getting Started
 
-The server application provides the primary UI for uploading, managing, and  
-serving assets. It also provides an API endpoint that can be accessed either 
-by the local application (this is how much of the admin works) or by other 
-applications or plugins.
+### Prerequisites
+
+The application requires the following prerequisites:
+
+- Ruby >= 2.3
+- Rails >= 5.0.0
+- Imagemagick
+- Exiftool
+- MySQL
+- Redis
+- Elasticsearch >= 1.6.0
+- Memcached
+
+### Setup
+
+Once the necessary prerequisites are installed, you will need to clone this repository and add a **.env** file to the project root with configuration values.  This file will automatically supply the environment variables the application will use to connect to services and APIs.  You can find a sample **.env** file in `config/templates/.env.template`.
+
+#### Image Storage
+
+AssetHost supports Amazon S3 as a storage backend.  For in-house storage,
+you can use [Riak CS](https://github.com/basho/riak_cs), which implements
+the S3 API and can be used in the same way.  For AssetHost to work properly, AWS credentials for S3 need to be set as these environment variables:
+```sh
+ASSETHOST_S3_BUCKET=<insert value here>
+ASSETHOST_S3_REGION=<insert value here>
+ASSETHOST_S3_ACCESS_KEY_ID=<insert value here>
+ASSETHOST_S3_SECRET_ACCESS_KEY=<insert value here>
+```
+
+Local filesystem storage may be implemented in the future.
 
 
-### Plugins for Other Applications
+Once your **.env** file is in order, run `bin/setup`.  This will install Ruby dependencies, initialize the database, and start the AssetHost application.  Those steps can be executed separately in the following way:
 
-AssetHost provides an API and a Chooser UI that can be integrated into 
-your application, allowing you to integrate the system in a minimal amount 
-of code.
+* Install Ruby dependencies
+```sh
+bundle install
+```
 
-_TODO: More documentation on CMS interaction. External Rails example. Django example._
+* Initialize the database
+```sh
+rake db:create
+rake db:schema:load
+rake db:seed
+```
+
+* Run the Rails server
+```sh
+rails s
+```
+
+The application will be accessible at `http://localhost:3000`.
+
+On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
 
 
-### Workflow
+
+
+## Using Docker
+
+AssetHost can be built into a [Docker](https://www.docker.com/) image using the provided Dockerfile.  It is recommended that you use a Docker image to deploy AssetHost, though building one may be an easy way to get the application up and running on a local machine.
+
+```sh
+docker build -t assethost .
+```
+
+Once the image has been created, you can run it in a container.  Here is an example of creating a container for the image long with a *.env* file to provide the necessary environment variables:
+
+```sh
+docker run -i -d -p 80:80 --name assethost --env-file .env.production assethost
+```
+
+Note that the `--name` parameter specifies the name of the container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
+
+When running the container locally, if you have other containers running services such as MySQL, you can link them to your AssetHost container like this:
+
+```sh
+docker run -i -d -p 80:80 --name assethost --env-file .env.production --link mysql --link redis --link elasticsearch assethost
+```
+
+In your environment variables, you would set the host names for these services to the names of their respective containers:
+
+```sh
+ASSETHOST_DATABASE_HOST_NAME=mysql
+ASSETHOST_RESQUE_HOST=redis
+ASSETHOST_PUBSUB_HOST=redis
+ASSETHOST_ELASTICSEARCH_HOST=elasticsearch
+```
+
+Once the container is running, you can run the application like this:
+
+```sh
+docker exec assethost server
+```
+
+Essentially, you are telling it to run the `server` script inside the assethost container.
+
+To run a worker for asynchronous image encoding:
+
+```sh
+docker exec assethost worker
+```
+
+
+
+## Workflow
 
 1. Photographer / Author / Editor goes to AssetHost and uploads or imports 
 a media asset.
@@ -58,11 +149,13 @@ appropriate handling.
 5. AssetHost will return a 302 Found to the rendered image asset if it 
 exists, or render it on-the-fly if it does not yet exist.
 
-# Rich Media Support
+
+
+
+## Rich Media Support
 
 Rich media assets are delivered as specially-tagged img tags, and are 
 replaced on the client-side via an AssetHost.Client plugin.
-
 
 ### Brightcove Video
 
@@ -75,44 +168,6 @@ the video.
 Brightcove assets can be imported via a key in the URL Input field. See
 Importing Help for more.
 
-
-# Setup
-
-`rake db:schema:load`
-
-## Configuration & Secrets
-
-API keys and configuration are managed with environment variables.  In development & test environments, these can be bundled in a `.env` file in the project directory.  An example .env file is located under `config/templates/.env.template`.
-
-Alternatively, secrets in development can be managed via `config/secrets.yml`.  By default, it is that file through which environment variables are pulled in, but you can manipulate that file directly in development if that is easier.
-
-## Host Name & Port
-
-When links for assets are generated, the application assumes that the host is `localhost` and the port is `3000` by default.  This is good for a quick start in development mode.  When running on a dedicated server with a domain name or publicly available IP address, the host name should be set with the environment variable `ASSETHOST_HOST_NAME` and the port with `ASSETHOST_HOST_PORT`(which should probably be set to 80).  We may attempt to eliminate this step in the future.
-
-
-# Development
-
-A Dockerfile is included to make it easy to quickly spin up services required by AssetHost(MySQL, Redis, Elasticsearch) for development on a local machine.
-
-Simply build the image:
-
-`docker build -t assethost-services .`
-
-And run the container:
-
-`docker run -i -d -p 3306:3306 -p 6379:6379 -p 9200:9200 -p 9300:9300 assethost-services`
-
-If you are using *docker-machine*, you can run `echo $DOCKER_HOST` to optain the IP address of the virtual machine and use it to connect to the services running on it at the specified ports.
-
-
-# Image Storage
-
-AssetHost supports Amazon S3 as a storage backend.  For in-house storage,
-you can use [Riak CS](https://github.com/basho/riak_cs), which implements
-the S3 API and can be used in the same way.
-
-Local filesystem storage may be implemented in the future.
 
 ## Feature Recognition
 
@@ -130,23 +185,12 @@ environment variables:
 - ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY
 
 
-# External Requirements
+### Async Workers
 
-### Async Workers via Redis
-
-The AssetHost server uses Redis (via the Resque gem) to coordinate async 
-processing of images.  Configure for your Redis setup in config/resque.yml.
-
-### Image Processing via ImageMagick
-
-AssetHost does image processing using ImageMagick.
-
-### Text Search via Elasticsearch
-
-Searches are done via Elasticsearch using the Searchkick gem.
+The AssetHost server uses Redis (via the Resque gem) to coordinate asynchronous processing of images.  Configure your Resque settings in **.env**.
 
 
-# Credits
+## Credits
 
 AssetHost is being developed to serve the media asset needs of [KPCC](https://scpr.org) 
 and Southern California Public Radio, a member-supported public radio network that 
