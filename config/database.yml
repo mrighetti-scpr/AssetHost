@@ -13,14 +13,19 @@ default: &default
   adapter: mysql2
   encoding: utf8
   pool: 5
-  username: root
-  password:
   port: 3306
+  host: <%= ENV['ASSETHOST_DATABASE_HOST_NAME'] %>
+  database: <%= ENV['ASSETHOST_DATABASE_NAME'] %>
+  username: <%= ENV['ASSETHOST_DATABASE_USERNAME'] || "root" %>
+  password: <%= ENV['ASSETHOST_DATABASE_PASSWORD'] %>
 
 development:
   <<: *default
   database: AssetHost_development
-  host: <%= ENV['ASSETHOST_DATABASE_HOST_NAME'] %>
+  users:
+    <<: *default
+    database: AssetHost_development
+    table_name: users
   
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -28,7 +33,10 @@ development:
 test:
   <<: *default
   database: AssetHost_test
-  host: <%= ENV['ASSETHOST_DATABASE_HOST_NAME'] %>
+  users:
+    <<: *default
+    database: AssetHost_test
+    table_name: users
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -51,8 +59,15 @@ test:
 #
 production:
   <<: *default
-  host: <%= ENV['ASSETHOST_DATABASE_HOST_NAME'] %>
   database: <%= ENV['ASSETHOST_DATABASE_NAME'] || "AssetHost_production" %>
   username: <%= ENV['ASSETHOST_DATABASE_USERNAME'] || "AssetHost" %>
   password: <%= ENV['ASSETHOST_DATABASE_PASSWORD'] %>
+  users:
+    <<: *default
+    host: <%= ENV['ASSETHOST_USER_DATABASE_HOST_NAME'] %>
+    database: <%= ENV['ASSETHOST_USER_DATABASE_NAME'] %>
+    username: <%= ENV['ASSETHOST_USER_DATABASE_USERNAME'] %>
+    password: <%= ENV['ASSETHOST_USER_DATABASE_PASSWORD'] %>
+    table_name: <%= ENV['ASSETHOST_USER_DATABASE_TABLE_NAME'] %>
+
 

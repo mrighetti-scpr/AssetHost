@@ -1,6 +1,8 @@
 class User < ActiveRecord::Base
-  # establish_connection "scpr"
-  # self.table_name = "auth_user"
+  if config = Rails.configuration.database_configuration[Rails.env]["users"]
+    establish_connection(config) if config["host"]
+    self.table_name = config["table_name"] || config[:table_name]
+  end
 
   has_secure_password
 

@@ -27,13 +27,19 @@ module AssetHost
     @@mpath = nil
     @@redis_pubsub = nil
 
+    # This is not referring to assets as in the asset model, but the
+    # frontend resources like scripts, stylesheets, and other goodies.
+    # Because we want a route called "assets" for our asset model, we
+    # have to name this route prefix to something else.
+    config.assets.prefix = "/resources"
+
     # initialize our config hash
     config.assethost = ActiveSupport::OrderedOptions.new
 
     config.elasticsearch_index = "assethost-assets"
 
     config.active_job.queue_adapter = :resque
-    config.resque_queue             = :assets
+    config.resque_queue             = ENV['ASSETHOST_RESQUE_QUEUE'] || :assets
 
     config.host_name     = ENV['ASSETHOST_HOST_NAME']     || 'localhost'
     config.host_port     = ENV['ASSETHOST_HOST_PORT']     || '3000'

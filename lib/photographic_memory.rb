@@ -7,16 +7,17 @@ class PhotographicMemory
 
   class PhotographicMemoryError < StandardError; end
 
-  def initialize s3_secrets:nil
-    creds = (s3_secrets || Rails.application.secrets.s3).dup
-    @s3_client = Aws::S3::Client.new({
+  def initialize
+    options = {
       region: Rails.application.secrets.s3['region'],
+      endpoint: Rails.application.secrets.s3['endpoint'],
       credentials: Aws::Credentials.new(
         Rails.application.secrets.s3['access_key_id'], 
         Rails.application.secrets.s3['secret_access_key']
       ),
       stub_responses: Rails.env.test?
-    })
+    }.select{|k,v| !v.nil?}
+    @s3_client = Aws::S3::Client.new(options)
   end
 
   def put file:, id:, style_name:'original', convert_options: [], content_type:
