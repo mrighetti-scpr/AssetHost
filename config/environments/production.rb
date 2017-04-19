@@ -45,9 +45,6 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
 
-  # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
-
   # Use a real queuing backend for Active Job (and separate queues per environment)
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "AssetHost_#{Rails.env}"
@@ -76,7 +73,10 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Use a different cache store in production
-  config.cache_store = :mem_cache_store, *Rails.application.secrets.memcached['servers'].split(",")
+  memcached_servers = ((Rails.application.secrets.memcached || {})['servers'] || "").split(",")
+  if memcached_servers.any?
+    config.cache_store = :mem_cache_store, *memcached_servers
+  end
   # NOTE: In your .env file, these servers should be in the variable ASSETHOST_MEMCACHED_SERVERS
   # as a comma-delimited list of hostnames & ports.  e.x. 123.345.6.789:11212,234.567.8.90:11212
 

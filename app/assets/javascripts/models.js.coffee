@@ -490,7 +490,7 @@ class AssetHost.Models
 
     class @QueuedFiles extends Backbone.Collection
         model: Models.QueuedFile
-        urlRoot: "#{AssetHost.PATH_PREFIX}/a/assets/upload"
+        urlRoot: "#{AssetHost.PATH_PREFIX}/assets/upload"
 
         initialize: (models,options) ->
             @urlRoot = options.urlRoot

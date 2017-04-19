@@ -51,7 +51,7 @@ group :development, :test do
   gem "eco", '~> 1.0.0'
   ## 
   gem 'byebug', platform: :mri
-  gem 'dotenv-rails', groups: [:development, :test]
+  gem 'dotenv-rails'
 end
 
 group :development do

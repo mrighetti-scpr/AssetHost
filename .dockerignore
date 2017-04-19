@@ -13,3 +13,9 @@
 config/secrets.yml
 .env
 .env.production
+.production-env
+.DS_Store
+
+# We don't need the git repo to be
+# a part of the image.
+.git

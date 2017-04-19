@@ -19,6 +19,7 @@
 config/secrets.yml
 .env
 .env.production
+.production-env
 
 # compiled assets don't need to be committed
 #
@@ -26,3 +27,7 @@ config/secrets.yml
 # or building a Docker container
 public/assets
 public/assets/*
+public/resources
+public/resources/*
+
+.DS_Store

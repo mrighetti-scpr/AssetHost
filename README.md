@@ -24,65 +24,17 @@ Plus:
 
 ### Prerequisites
 
-The application requires the following prerequisites:
+AssetHost can be built into a [Docker](https://www.docker.com/) image using the provided Dockerfile.  It is recommended that you use a Docker image to deploy AssetHost, though building one is also an easy way to get the application up and running on a local machine.
 
-- Ruby >= 2.3
-- Rails >= 5.0.0
-- Imagemagick
-- Exiftool
-- MySQL
-- Redis
-- Elasticsearch >= 1.6.0
-- Memcached
+If you are working on macOS, you may need to install [Docker-Machine](https://docs.docker.com/machine/).
 
 ### Setup
 
-Once the necessary prerequisites are installed, you will need to clone this repository and add a **.env** file to the project root with configuration values.  This file will automatically supply the environment variables the application will use to connect to services and APIs.  You can find a sample **.env** file in `config/templates/.env.template`.
+To build the image, you will need to clone this repository and add a **.env** file to the project root with configuration values.  This file will be used to supply the environment variables the application will use to connect to services and APIs.  You can find a sample **.env** file in `config/templates/.env.template`.
 
-#### Image Storage
+The sample file includes all the required variables as well as ones that are optional.  The optional variables are commented out.
 
-AssetHost supports Amazon S3 as a storage backend.  For in-house storage,
-you can use [Riak CS](https://github.com/basho/riak_cs), which implements
-the S3 API and can be used in the same way.  For AssetHost to work properly, AWS credentials for S3 need to be set as these environment variables:
-```sh
-ASSETHOST_S3_BUCKET=<insert value here>
-ASSETHOST_S3_REGION=<insert value here>
-ASSETHOST_S3_ACCESS_KEY_ID=<insert value here>
-ASSETHOST_S3_SECRET_ACCESS_KEY=<insert value here>
-```
-
-Local filesystem storage may be implemented in the future.
-
-
-Once your **.env** file is in order, run `bin/setup`.  This will install Ruby dependencies, initialize the database, and start the AssetHost application.  Those steps can be executed separately in the following way:
-
-* Install Ruby dependencies
-```sh
-bundle install
-```
-
-* Initialize the database
-```sh
-rake db:create
-rake db:schema:load
-rake db:seed
-```
-
-* Run the Rails server
-```sh
-rails s
-```
-
-The application will be accessible at `http://localhost:3000`.
-
-On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
-
-
-
-
-## Using Docker
-
-AssetHost can be built into a [Docker](https://www.docker.com/) image using the provided Dockerfile.  It is recommended that you use a Docker image to deploy AssetHost, though building one may be an easy way to get the application up and running on a local machine.
+To build the Docker image:
 
 ```sh
 docker build -t assethost .
@@ -91,25 +43,10 @@ docker build -t assethost .
 Once the image has been created, you can run it in a container.  Here is an example of creating a container for the image long with a *.env* file to provide the necessary environment variables:
 
 ```sh
-docker run -i -d -p 80:80 --name assethost --env-file .env.production assethost
+docker run -i -d -p 80:80 --name assethost --env-file .env assethost
 ```
 
-Note that the `--name` parameter specifies the name of the container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
-
-When running the container locally, if you have other containers running services such as MySQL, you can link them to your AssetHost container like this:
-
-```sh
-docker run -i -d -p 80:80 --name assethost --env-file .env.production --link mysql --link redis --link elasticsearch assethost
-```
-
-In your environment variables, you would set the host names for these services to the names of their respective containers:
-
-```sh
-ASSETHOST_DATABASE_HOST_NAME=mysql
-ASSETHOST_RESQUE_HOST=redis
-ASSETHOST_PUBSUB_HOST=redis
-ASSETHOST_ELASTICSEARCH_HOST=elasticsearch
-```
+Note that the `--name` parameter specifies the name of the new container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
 
 Once the container is running, you can run the application like this:
 
@@ -117,7 +54,7 @@ Once the container is running, you can run the application like this:
 docker exec assethost server
 ```
 
-Essentially, you are telling it to run the `server` script inside the assethost container.
+Essentially, you are telling it to run the `server` script located inside the assethost container.
 
 To run a worker for asynchronous image encoding:
 
@@ -125,6 +62,13 @@ To run a worker for asynchronous image encoding:
 docker exec assethost worker
 ```
 
+On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
+
+When running the container locally, if you have other containers running services such as MySQL, you can link them to your AssetHost container like this:
+
+```sh
+docker run -i -d -p 80:80 --name assethost --env-file .env.production --link mysql --link redis --link elasticsearch assethost
+```
 
 
 ## Workflow
@@ -150,6 +94,19 @@ appropriate handling.
 exists, or render it on-the-fly if it does not yet exist.
 
 
+## Image Storage
+
+AssetHost supports Amazon S3 as a storage backend.  For in-house storage,
+you can use [Riak CS](https://github.com/basho/riak_cs), which implements
+the S3 API and can be used in the same way.  For AssetHost to work properly, AWS credentials for S3 need to be set as these environment variables:
+```sh
+ASSETHOST_S3_BUCKET=<insert value here>
+ASSETHOST_S3_REGION=<insert value here>
+ASSETHOST_S3_ACCESS_KEY_ID=<insert value here>
+ASSETHOST_S3_SECRET_ACCESS_KEY=<insert value here>
+```
+
+Local filesystem storage may be implemented in the future.
 
 
 ## Rich Media Support
@@ -185,9 +142,51 @@ environment variables:
 - ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY
 
 
-### Async Workers
+## Async Workers
 
 The AssetHost server uses Redis (via the Resque gem) to coordinate asynchronous processing of images.  Configure your Resque settings in **.env**.
+
+
+## Development
+
+AssetHost is a [Rails](http://rubyonrails.org/)-based application.  
+
+### Prerequisites
+
+The application requires the following prerequisites:
+
+- Ruby >= 2.3
+- Rails >= 5.0.0
+- Imagemagick
+- Exiftool
+- MySQL
+- Redis
+- Elasticsearch >= 1.6.0
+- Memcached
+
+### Installation
+
+Like when running the Docker container, you will be using a **.env** file for configuration.  Outside a Docker container, AssetHost will look for a **.env** in the project root directory and use those variables.  As mentioned above, there's a sample **.env** file in `config/templates/.env.template`.
+
+Once the required variables have been populated, you can install dependencies by running the setup script:
+
+```sh
+bin/setup
+```
+
+To start the server:
+
+```sh
+rails s
+```
+
+*The application will be accessible at http://localhost:3000.*
+
+To start a worker:
+
+```sh
+QUEUE=assets rake resque:work
+```
 
 
 ## Credits
