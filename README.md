@@ -24,31 +24,50 @@ Plus:
 
 ### Prerequisites
 
-AssetHost can be built into a [Docker](https://www.docker.com/) image using the provided Dockerfile.  It is recommended that you use a Docker image to deploy AssetHost, though building one is also an easy way to get the application up and running on a local machine.
+Minimum Requirements:
 
-If you are working on macOS, you may need to install [Docker-Machine](https://docs.docker.com/machine/).
+- Docker
+- MySQL
+
+*The minimum requirements will get the application up and running, but many features will not work.  For production functionality, you will need the following:*
+
+- Redis
+- Elasticsearch
+- Memcached
 
 ### Setup
 
-To build the image, you will need to clone this repository and add a **.env** file to the project root with configuration values.  This file will be used to supply the environment variables the application will use to connect to services and APIs.  You can find a sample **.env** file in `config/templates/.env.template`.
-
-The sample file includes all the required variables as well as ones that are optional.  The optional variables are commented out.
-
-To build the Docker image:
+AssetHost can be run from a [Docker](https://www.docker.com/) image.  Once you have Docker set up on a machine, pull the AssetHost image from Docker Hub:
 
 ```sh
-docker build -t assethost .
+docker pull ravenstine/assethost
 ```
 
-Once the image has been created, you can run it in a container.  Here is an example of creating a container for the image long with a *.env* file to provide the necessary environment variables:
+Alternatively, you can build the image from the provided [Dockerfile](https://github.com/SCPR/AssetHost/blob/v3.0.0/Dockerfile), although it will take a while to finish:
 
 ```sh
-docker run -i -d -p 80:80 --name assethost --env-file .env assethost
+docker build -t ravenstine/assethost .
+```
+
+AssetHost expects MySQL and various other storage engines such as Redis & Elasticsearch to be available.  The connection settings and credentials should be provided through environment variables.  It is best to store these variables in a **.env** file.  A sample .env file is provided in `config/templates/.env.template`; the variables that are uncommented are required, and the ones commented out are optional for minimal operation.  It is suggested you use a **.env** file because it is already excluded from version tracking and it automatically gets loaded by the application if you need to run it outside of a Docker environment during development.
+
+Once you have obtained an image and filled out your **.env** file, you can then run the image in a new Docker container.
+
+```sh
+docker run -i -d -p 80:80 --name assethost --env-file .env ravenstine/assethost
 ```
 
 Note that the `--name` parameter specifies the name of the new container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
 
-Once the container is running, you can run the application like this:
+Now that the container is running, you will need to initialize your database.  To do this, run:
+
+```sh
+docker exec assethost setup
+```
+
+This will double-check if all Ruby dependencies are met and will then create a MySQL database with the required tables.  If you already have a database created for AssetHost, you will not need to perform this step again when creating a new container.
+
+Finally, you can run the application like this:
 
 ```sh
 docker exec assethost server
@@ -56,19 +75,15 @@ docker exec assethost server
 
 Essentially, you are telling it to run the `server` script located inside the assethost container.
 
+On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
+
 To run a worker for asynchronous image encoding:
 
 ```sh
 docker exec assethost worker
 ```
 
-On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
-
-When running the container locally, if you have other containers running services such as MySQL, you can link them to your AssetHost container like this:
-
-```sh
-docker run -i -d -p 80:80 --name assethost --env-file .env.production --link mysql --link redis --link elasticsearch assethost
-```
+The worker is responsible for resizing & saving assets in the background.  This saves on storage space as we are only creating different thumbnail sizes as needed.  An asset might only ever be needed in one size, so it doesn't make sense to render it in every output size.
 
 
 ## Workflow
@@ -99,12 +114,13 @@ exists, or render it on-the-fly if it does not yet exist.
 AssetHost supports Amazon S3 as a storage backend.  For in-house storage,
 you can use [Riak CS](https://github.com/basho/riak_cs), which implements
 the S3 API and can be used in the same way.  For AssetHost to work properly, AWS credentials for S3 need to be set as these environment variables:
-```sh
-ASSETHOST_S3_BUCKET=<insert value here>
-ASSETHOST_S3_REGION=<insert value here>
-ASSETHOST_S3_ACCESS_KEY_ID=<insert value here>
-ASSETHOST_S3_SECRET_ACCESS_KEY=<insert value here>
-```
+
+- ASSETHOST_S3_BUCKET
+- ASSETHOST_S3_REGION
+- ASSETHOST_S3_ACCESS_KEY_ID
+- ASSETHOST_S3_SECRET_ACCESS_KEY
+
+When using Riak, you can provide the host under the `ASSETHOST_S3_ENDPOINT` and comment out the `ASSETHOST_S3_REGION` variable.
 
 Local filesystem storage may be implemented in the future.
 
@@ -116,35 +132,18 @@ replaced on the client-side via an AssetHost.Client plugin.
 
 ### Brightcove Video
 
-Brightcove videos can be imported as assets and used to place videos into 
-image display contexts. The video is delivered as an img tag, and the 
-AssetHost.Client library will see the tag and call the 
-AssetHost.Client.Brightcove plugin. The plugin will replace the asset with
-the video.
+Brightcove videos can be imported as assets and used to place videos into image display contexts. The video is delivered as an img tag, and the AssetHost.Client library will see the tag and call the AssetHost.Client.Brightcove plugin. The plugin will replace the asset with the video.
 
-Brightcove assets can be imported via a key in the URL Input field. See
-Importing Help for more.
-
+Brightcove assets can be imported via a key in the URL Input field.
 
 ## Feature Recognition
 
-For the purpose of improving ease of searchability, AssetHost can tie into
-Amazon's Rekognition service which uses computer-vision to classify features
-inside a given image.  When enabled, photos are automatically populated with
-keywords without any user intervention.  For example, a photo of people 
-mountain biking will be immediately searchable with queries like "bicycle"
-or "outdoors" upon upload even when no metadata is provided.  This optional
-feature can be enabled when AWS credentials are set in the following
-environment variables:
+For the purpose of improving ease of searchability, AssetHost can tie into Amazon's Rekognition service which uses computer-vision to classify features inside a given image.  When enabled, photos are automatically populated with
+keywords without any user intervention.  For example, a photo of people mountain biking will be immediately searchable with queries like "bicycle" or "outdoors" upon upload even when no metadata is provided.  This optional feature can be enabled when AWS credentials are set in the following environment variables:
 
 - ASSETHOST_REKOGNITION_REGION
 - ASSETHOST_REKOGNITION_ACCESS_KEY_ID
 - ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY
-
-
-## Async Workers
-
-The AssetHost server uses Redis (via the Resque gem) to coordinate asynchronous processing of images.  Configure your Resque settings in **.env**.
 
 
 ## Development

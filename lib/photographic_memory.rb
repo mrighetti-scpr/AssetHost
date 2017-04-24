@@ -110,7 +110,7 @@ class PhotographicMemory
 
     resp.labels
 
-  rescue Aws::Rekognition::Errors::ServiceError => e
+  rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError => e
     # This also is not worth crashing over
     []
   end
