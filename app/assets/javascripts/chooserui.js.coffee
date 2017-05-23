@@ -7,7 +7,7 @@ class AssetHost.ChooserUI
         uploads: true
         limit: 0
         uploadPath: "/assets/upload"
-        # uploadPath: "http://#{AssetHost.SERVER}#{AssetHost.PATH_PREFIX}/assets/upload"
+        # uploadPath: "http://#{AssetHost.SERVER}/assets/upload"
 
     #----------
 
@@ -44,7 +44,7 @@ class AssetHost.ChooserUI
                 new ChooserUI.EditModal model:asset
 
             @browser.assets.bind "admin", (asset) =>
-                window.open("#{AssetHost.PATH_PREFIX}/assets/#{asset.get('id')}")
+                window.open("/assets/#{asset.get('id')}")
 
         # set up collection to manage uploads and convert to assets
         @uploads = new AssetHost.Models.QueuedFiles null, urlRoot:@options.uploadPath
@@ -314,7 +314,7 @@ class AssetHost.ChooserUI
         #----------
 
         _admin: ->
-            window.open("#{AssetHost.PATH_PREFIX}/assets/#{@model.get('id')}")
+            window.open("/assets/#{@model.get('id')}")
 
         #----------
 

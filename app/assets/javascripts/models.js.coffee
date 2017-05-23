@@ -2,7 +2,7 @@ class AssetHost.Models
     constructor: ->
 
     class @Asset extends Backbone.Model
-        urlRoot: "http://#{AssetHost.SERVER}#{AssetHost.PATH_PREFIX}/api/assets/"
+        urlRoot: "http://#{AssetHost.SERVER}/api/assets/"
 
         modal: ->
             @_modal ?= new AssetHost.Models.AssetModalView(model: @)
@@ -36,7 +36,7 @@ class AssetHost.Models
     #----------
 
     class @Assets extends Backbone.Collection
-        baseUrl: "#{AssetHost.PATH_PREFIX}/api/assets",
+        baseUrl: "/api/assets",
         model: Models.Asset
 
         # If we have an ORDER attribute, sort by that.  Otherwise, sort by just
@@ -490,7 +490,7 @@ class AssetHost.Models
 
     class @QueuedFiles extends Backbone.Collection
         model: Models.QueuedFile
-        urlRoot: "#{AssetHost.PATH_PREFIX}/assets/upload"
+        urlRoot: "/assets/upload"
 
         initialize: (models,options) ->
             @urlRoot = options.urlRoot
