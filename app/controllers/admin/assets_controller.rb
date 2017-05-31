@@ -7,6 +7,7 @@ class Admin::AssetsController < Admin::BaseController
 
   def index
     @assets = Asset.visible.order("updated_at desc").page(params[:page]).per(24)
+    @assets.map{|a| a.request = request}
   end
 
   #----------
@@ -14,7 +15,7 @@ class Admin::AssetsController < Admin::BaseController
   def search
     @query = params[:q]
     @assets = Asset.es_search(@query, page: params[:page])
-    
+    @assets.map{|a| a.request = request}
     render :index
   end
 
@@ -28,6 +29,7 @@ class Admin::AssetsController < Admin::BaseController
     })
 
     if asset.save
+      asset.request = request
       render json: asset.as_json
     else
       render plain: 'ERROR'
@@ -41,6 +43,7 @@ class Admin::AssetsController < Admin::BaseController
 
   def metadata
     @assets = Asset.where(id: params[:ids].split(','))
+    @assets.map{|a| a.request = request}
   end
 
   #----------
@@ -64,6 +67,9 @@ class Admin::AssetsController < Admin::BaseController
     @assets   = Asset.visible.order('id desc')
     @prev     = @assets.where('id > ?', @asset.id).last
     @next     = @assets.where('id < ?', @asset.id).first
+    @assets.map{|a| a.request = request}
+    @prev.try(:request=, request)
+    @next.try(:request=, request)
   end
 
   #----------
@@ -127,6 +133,7 @@ class Admin::AssetsController < Admin::BaseController
 
   def get_asset
     @asset = Asset.find(params[:id])
+    @asset.request = request
   end
 end
 

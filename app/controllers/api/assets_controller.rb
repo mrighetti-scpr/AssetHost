@@ -16,6 +16,8 @@ class Api::AssetsController < Api::BaseController
         .per(24)
     end
 
+    @assets.map {|a| a.request = request}
+
     response.headers['X-Next-Page']       = (@assets.last_page? ? nil : @assets.current_page + 1).to_s
     response.headers['X-Total-Entries']   = @assets.total_count.to_s
 
@@ -49,6 +51,7 @@ class Api::AssetsController < Api::BaseController
         asset.notes += "\n#{params[:note]}"
       end
 
+      asset.request     = request
       asset.is_hidden   = params[:hidden].present?
       asset.caption     = params[:caption] if params[:caption].present?
       asset.owner       = params[:owner] if params[:owner].present?
@@ -93,8 +96,8 @@ class Api::AssetsController < Api::BaseController
   end
 
   def get_asset
-    @asset = Asset.find_by_id(params[:id])
-
+    @asset         = Asset.find_by_id(params[:id])
+    @asset.request = request
     if !@asset
       render_not_found and return false
     end

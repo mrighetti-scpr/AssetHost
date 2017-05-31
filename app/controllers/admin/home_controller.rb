@@ -4,6 +4,8 @@ class Admin::HomeController < Admin::BaseController
       .page(params[:page])
       .per(24)
 
+    @assets.map {|a| a.request = request}
+
     render layout: 'minimal'
   end
 end

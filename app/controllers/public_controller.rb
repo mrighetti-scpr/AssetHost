@@ -22,6 +22,8 @@ class PublicController < ApplicationController
       render_not_found and return
     end
 
+    asset.request = request
+
     # Special case for "original"
     # This isn't a "style", just someone has requested
     # the raw image file.

@@ -1,7 +1,7 @@
 class Asset < ActiveRecord::Base
   self.table_name = "asset_host_core_assets"
 
-  attr_accessor :image, :file
+  attr_accessor :image, :file, :request
 
   VIA_UNKNOWN   = 0
   VIA_FLICKR    = 1
@@ -59,7 +59,7 @@ class Asset < ActiveRecord::Base
 
   def size(code)
     @_sizes ||= {}
-    @_sizes[ code ] ||= AssetSize.new(self, Output.where(code: code).first)
+    @_sizes[ code ] ||= AssetSize.new(self, Output.where(code: code).first, @request)
   end
 
 
@@ -88,7 +88,7 @@ class Asset < ActiveRecord::Base
       # Native only applies to something like a youtube video
       # don't worry about it.
       :image_file_size    => self.image_file_size,
-      :url        => "#{Rails.application.config.host_protocol}://#{Rails.application.config.host}/api/assets/#{self.id}/",
+      :url        => "#{host}/api/assets/#{self.id}/",
       :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
       :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
     }.merge(self.image_shape())
@@ -193,9 +193,7 @@ class Asset < ActiveRecord::Base
 
 
 
-  def image_url(style)
-    # "#{Rails.application.config.host_protocol}://#{config.assethost.server}/i/:fingerprint/:id-:style.:extension"
-
+  def image_url(request=nil, style)
     style = style.to_sym
 
     ext = nil
@@ -211,7 +209,7 @@ class Asset < ActiveRecord::Base
       binding.pry
     end
 
-    "#{Rails.application.config.host_protocol}://#{Rails.application.config.host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
+    "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
 
 
@@ -380,6 +378,15 @@ class Asset < ActiveRecord::Base
 
   private
 
+  def host
+    if @request
+      port   = (@request.port === 80) ? "" : ":#{@request.port}"
+      domain = "#{@request.protocol}#{@request.host}#{port}"
+    else
+      domain = ""
+    end
+  end
+
   def save_image
     # If you want the asset to render or re-render, all you have to do
     # is place a File or StringIO object in the file attribute
@@ -426,9 +433,10 @@ end
 class AssetSize
   attr_accessor  :width, :height, :tag, :url, :asset, :output
 
-  def initialize(asset,output)
-    @asset  = asset
-    @output = output
+  def initialize(asset,output,request=nil)
+    @asset         = asset
+    @asset.request = request
+    @output        = output
 
     @width    = @asset.image.width(output.code_sym)
     @height   = @asset.image.height(output.code_sym)
