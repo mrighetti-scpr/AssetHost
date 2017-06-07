@@ -25,7 +25,7 @@ class PhotographicMemory
     unless (style_name == 'original') || convert_options.empty? # we assume original *means* original
       output = render file, convert_options
     else
-      output = file.read
+      output    = file.read
     end
     file.rewind
     original_digest   = Digest::MD5.hexdigest(file.read)
@@ -42,16 +42,24 @@ class PhotographicMemory
       content_type: content_type
     })
     if style_name == 'original'
-      keywords = classify file
+      reference = StringIO.new render(file, ["-quality 10"])
+      # 👆 this is a low quality reference image we generate
+      # which is sufficient for classification purposes but
+      # saves bandwidth and overcomes the file size limit
+      # for Rekognition
+      keywords = classify reference
+      gravity  = detect_gravity reference
     else
       keywords = []
+      gravity  = nil
     end
     {
       fingerprint: rendered_digest,
       metadata: exif(file),
       key: key,
       extension: extension,
-      keywords: keywords
+      keywords: keywords,
+      gravity: gravity
     }
   end
 
@@ -80,7 +88,7 @@ class PhotographicMemory
 
   def render file, convert_options=[]
     file.rewind
-    run_command ["convert", "-", convert_options, "jpeg:-"].flatten.join(" "), file.read
+    run_command ["convert", "-", convert_options, "jpeg:-"].flatten.join(" "), file.read.force_encoding("UTF-8")
   end
 
   def pixels file
@@ -91,6 +99,65 @@ class PhotographicMemory
   def classify file
     return [] if Rails.env.test? # should work on stubbing responses instead of this
     file.rewind
+
+    @labels ||= detect_labels file
+    @faces  ||= detect_faces file
+
+    # byebug
+
+    @labels
+  rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError => e
+    # This also is not worth crashing over
+    []
+  end
+
+  def detect_gravity file
+    file.rewind
+
+    boxes = detect_faces(file).map(&:bounding_box)
+    avg_x = nil
+    avg_y = nil
+
+    boxes.each do |box|
+      x = (box.width / 2)   + ((box.left >= 0) ? box.left : 0)
+      y = (box.height / 2)  + ((box.top  >= 0) ? box.top  : 0)
+      avg_x = ((avg_x || x) + x) / 2
+      avg_y = ((avg_y || y) + y) / 2
+    end
+
+    avg_x ||= 0.5
+    avg_y ||= 0.5
+
+    gravity_table = {
+      0.0 => {
+        0.0 => "NorthWest",
+        0.5 => "West",
+        1.0 => "SouthWest"
+      },
+      0.5 => {
+        0.0 => "North",
+        0.5 => "Center",
+        1 => "South"
+      },
+      1.0 => {
+        0.0 => "NorthEast",
+        0.5 => "East",
+        1.0 => "SouthEast"
+      }
+    }
+    
+    x = nearest_fifth(avg_x)
+    y = nearest_fifth(avg_y)
+
+    gravity_table[x][y]
+  end
+
+  def nearest_fifth num
+    (num * 2).round / 2.0
+  end
+
+  def detect_labels file
+    file.rewind
     # get the original image from S3 and classify
     client = Aws::Rekognition::Client.new({
       region: Rails.application.secrets.rekognition['region'],
@@ -100,19 +167,31 @@ class PhotographicMemory
       )
     })
 
-    resp = client.detect_labels({
+    @labels ||= client.detect_labels({
       image: {
         bytes: file
       },
       max_labels: 123, 
-      min_confidence: 70, 
+      min_confidence: 80, 
+    }).labels
+  end
+
+  def detect_faces file
+    file.rewind
+    # get the original image from S3 and classify
+    client = Aws::Rekognition::Client.new({
+      region: Rails.application.secrets.rekognition['region'],
+      credentials: Aws::Credentials.new(
+        Rails.application.secrets.rekognition['access_key_id'],
+        Rails.application.secrets.rekognition['secret_access_key']
+      )
     })
-
-    resp.labels
-
-  rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError => e
-    # This also is not worth crashing over
-    []
+    @faces ||= client.detect_faces({
+      image: {
+        bytes: file
+      },
+      attributes: ["ALL"]
+    }).face_details
   end
 
   def run_command command, input

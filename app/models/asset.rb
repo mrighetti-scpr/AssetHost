@@ -139,8 +139,8 @@ class Asset < ActiveRecord::Base
       false
     end
 
-    self.keywords = (keywords || "").split(/,\s*/).concat((data[:keywords] || []).map{|label| label.name.downcase }).join(", ")
-
+    self.keywords       = (keywords || "").split(/,\s*/).concat((data[:keywords] || []).map{|label| label.name.downcase }).join(", ")
+    self.image_gravity  = data[:gravity] ? data[:gravity] : self.image_gravity
   end
 
 

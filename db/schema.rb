@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170402182433) do
+ActiveRecord::Schema.define(version: 20170607233234) do
 
   create_table "asset_host_core_api_user_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "api_user_id"
@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(version: 20170402182433) do
     t.string   "image_copyright"
     t.string   "image_fingerprint"
     t.string   "image_title"
-    t.string   "image_description"
+    t.text     "image_description",  limit: 65535
     t.datetime "image_updated_at"
     t.string   "image_gravity",                    default: "Center", null: false
     t.integer  "image_width"
