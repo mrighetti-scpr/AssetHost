@@ -23,7 +23,11 @@ class PhotographicMemory
   def put file:, id:, style_name:'original', convert_options: [], content_type:
     # content_type is required
     unless (style_name == 'original') || convert_options.empty? # we assume original *means* original
-      output = render file, convert_options
+      if content_type.match "image/gif"
+        output = render_gif file, convert_options
+      else
+        output = render file, convert_options
+      end
     else
       output = file.read
     end
@@ -31,8 +35,8 @@ class PhotographicMemory
     original_digest   = Digest::MD5.hexdigest(file.read)
     rendered_digest   = Digest::MD5.hexdigest(output)
     extension         = Rack::Mime::MIME_TYPES.invert[content_type]
-    # key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
-    key       = "#{id}_#{original_digest}_#{style_name}.jpg"
+    key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
+    # key       = "#{id}_#{original_digest}_#{style_name}.jpg"
     # ^^ Apparently, we always convert to jpg.  Maybe we won't always do this in the future?
     # bucket.object(key).put(body: output, content_type: content_type)
     @s3_client.put_object({
@@ -53,6 +57,7 @@ class PhotographicMemory
       keywords = []
       gravity  = nil
     end
+
     {
       fingerprint: rendered_digest,
       metadata: exif(file),
@@ -89,10 +94,17 @@ class PhotographicMemory
     run_command ["convert", "-", convert_options, "jpeg:-"].flatten.join(" "), file.read.force_encoding("UTF-8")
   end
 
-  # def render_gif file, convert_options=[]
-  #   file.rewind
-  #   run_command ["convert", "-", ["-coalesce", "-repage 0x0", "+repage"], "gif:-"].flatten.join(" "), file.read.force_encoding("UTF-8")
-  # end
+  def render_gif file, convert_options=[]
+    convert_options.reject!{|o| o.match("-quality")}
+    convert_options.concat(["-coalesce", "-repage 0x0", "+repage"])
+    convert_options.each do |option|
+      if option.match("-crop")
+        option.concat " +repage"
+      end
+    end
+    file.rewind
+    run_command ["convert", "-", convert_options, "gif:-"].flatten.join(" "), file.read.force_encoding("UTF-8")
+  end
 
   def pixels file
     results = run_command "convert - -depth 8  txt:-", file.read

@@ -180,15 +180,15 @@ class Asset < ActiveRecord::Base
 
 
   def file_key style='original'
-    # if id && image_fingerprint && image_content_type
-    #   extension = Rack::Mime::MIME_TYPES.invert[image_content_type]
-    #   "#{id}_#{image_fingerprint}_#{style}#{extension}"
-    # end
+    if id && image_fingerprint && image_content_type
+      extension = Rack::Mime::MIME_TYPES.invert[image_content_type]
+      "#{id}_#{image_fingerprint}_#{style}#{extension}"
+    end
     # ^^ I was thinking we might need to retrieve based on
     # content type, but apparently this is not the case.
-    if id && image_fingerprint
-      "#{id}_#{image_fingerprint}_#{style}.jpg"
-    end
+    # if id && image_fingerprint
+    #   "#{id}_#{image_fingerprint}_#{style}.jpg"
+    # end
   end
 
 
@@ -199,16 +199,21 @@ class Asset < ActiveRecord::Base
     ext = nil
     begin
       # FIXME: Need to add correct extension
+      original_file_extension = File.extname(self.image.original_filename).gsub(/^\.+/, "")
       ext = case style
       when :original
-        File.extname(self.image.original_filename).gsub(/^\.+/, "")
+        original_file_extension
       else
-        Output.paperclip_sizes[style][:format]
+        # Right now, we have a special exemption for 
+        if original_file_extension.match("gif")
+          original_file_extension
+        else
+          Output.paperclip_sizes[style][:format]
+        end
       end
     rescue => e
       binding.pry
     end
-
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
 
@@ -392,7 +397,7 @@ class Asset < ActiveRecord::Base
     # is place a File or StringIO object in the file attribute
     if file
       uploader = PhotographicMemory.new
-      self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: "image/jpeg"
+      self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: image_content_type
       # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
       self.file = nil # prevents recursive saving/rendering
