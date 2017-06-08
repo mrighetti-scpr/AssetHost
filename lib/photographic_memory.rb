@@ -25,14 +25,14 @@ class PhotographicMemory
     unless (style_name == 'original') || convert_options.empty? # we assume original *means* original
       output = render file, convert_options
     else
-      output    = file.read
+      output = file.read
     end
     file.rewind
     original_digest   = Digest::MD5.hexdigest(file.read)
     rendered_digest   = Digest::MD5.hexdigest(output)
     extension         = Rack::Mime::MIME_TYPES.invert[content_type]
     # key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
-    key       = "#{id}_#{original_digest}_#{style_name}.jpg" 
+    key       = "#{id}_#{original_digest}_#{style_name}.jpg"
     # ^^ Apparently, we always convert to jpg.  Maybe we won't always do this in the future?
     # bucket.object(key).put(body: output, content_type: content_type)
     @s3_client.put_object({
@@ -68,11 +68,9 @@ class PhotographicMemory
       bucket: Rails.application.secrets.s3['bucket'],
       key: key
     }).body
-    # bucket.object(key).get.body
   end
 
   def delete key
-    # bucket.object(key).delete
     @s3_client.delete_object({
       bucket: Rails.application.secrets.s3['bucket'],
       key: key
@@ -90,6 +88,11 @@ class PhotographicMemory
     file.rewind
     run_command ["convert", "-", convert_options, "jpeg:-"].flatten.join(" "), file.read.force_encoding("UTF-8")
   end
+
+  # def render_gif file, convert_options=[]
+  #   file.rewind
+  #   run_command ["convert", "-", ["-coalesce", "-repage 0x0", "+repage"], "gif:-"].flatten.join(" "), file.read.force_encoding("UTF-8")
+  # end
 
   def pixels file
     results = run_command "convert - -depth 8  txt:-", file.read
@@ -115,18 +118,13 @@ class PhotographicMemory
     file.rewind
 
     boxes = detect_faces(file).map(&:bounding_box)
-    avg_x = nil
-    avg_y = nil
 
-    boxes.each do |box|
-      x = (box.width / 2)   + ((box.left >= 0) ? box.left : 0)
-      y = (box.height / 2)  + ((box.top  >= 0) ? box.top  : 0)
-      avg_x = ((avg_x || x) + x) / 2
-      avg_y = ((avg_y || y) + y) / 2
-    end
+    box = boxes.max_by{|b| b.width * b.height } # use the largest face in the photo
 
-    avg_x ||= 0.5
-    avg_y ||= 0.5
+    return "Center" if !box
+
+    x = nearest_fifth((box.width / 2)   + ((box.left >= 0) ? box.left : 0))
+    y = nearest_fifth((box.height / 2)  + ((box.top  >= 0) ? box.top  : 0))
 
     gravity_table = {
       0.0 => {
@@ -145,9 +143,6 @@ class PhotographicMemory
         1.0 => "SouthEast"
       }
     }
-    
-    x = nearest_fifth(avg_x)
-    y = nearest_fifth(avg_y)
 
     gravity_table[x][y]
   end
