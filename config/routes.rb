@@ -9,7 +9,7 @@ Rails.application.routes.draw do
     user_id = request.session.to_hash["user_id"]
 
     if user_id && u = User.where(id: user_id).first
-      u.is_superuser?
+      u.is_admin?
     else
       false
     end

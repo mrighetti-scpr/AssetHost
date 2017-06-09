@@ -5,6 +5,7 @@
 //= require underscore.min
 //= require backbone
 //= require exif
+//= require taggle
 
 //= require backbone.modelbinding
 

@@ -14,4 +14,8 @@ class User < ActiveRecord::Base
     end
   end
 
+  if self.column_names.include?("is_superuser") && !self.column_names.include?("is_admin")
+    alias_attribute :is_admin, :is_superuser
+  end
+
 end
