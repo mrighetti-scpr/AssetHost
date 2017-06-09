@@ -177,21 +177,15 @@ class Asset < ActiveRecord::Base
     }
   end
 
-
-
   def file_key style='original'
     if id && image_fingerprint && image_content_type
-      extension = Rack::Mime::MIME_TYPES.invert[image_content_type]
-      "#{id}_#{image_fingerprint}_#{style}#{extension}"
+      "#{id}_#{image_fingerprint}_#{style}#{file_extension}"
     end
-    # ^^ I was thinking we might need to retrieve based on
-    # content type, but apparently this is not the case.
-    # if id && image_fingerprint
-    #   "#{id}_#{image_fingerprint}_#{style}.jpg"
-    # end
   end
 
-
+  def file_extension
+    Rack::Mime::MIME_TYPES.invert[image_content_type]
+  end
 
   def image_url(request=nil, style)
     style = style.to_sym
@@ -199,7 +193,7 @@ class Asset < ActiveRecord::Base
     ext = nil
     begin
       # FIXME: Need to add correct extension
-      original_file_extension = File.extname(self.image.original_filename).gsub(/^\.+/, "")
+      original_file_extension = File.extname(self.image.original_filename || "jpg").gsub(/^\.+/, "")
       ext = case style
       when :original
         original_file_extension
@@ -212,7 +206,7 @@ class Asset < ActiveRecord::Base
         end
       end
     rescue => e
-      binding.pry
+      byebug
     end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end

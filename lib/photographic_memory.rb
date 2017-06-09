@@ -36,16 +36,13 @@ class PhotographicMemory
     rendered_digest   = Digest::MD5.hexdigest(output)
     extension         = Rack::Mime::MIME_TYPES.invert[content_type]
     key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
-    # key       = "#{id}_#{original_digest}_#{style_name}.jpg"
-    # ^^ Apparently, we always convert to jpg.  Maybe we won't always do this in the future?
-    # bucket.object(key).put(body: output, content_type: content_type)
     @s3_client.put_object({
       bucket: Rails.application.secrets.s3['bucket'], 
       key: key, 
       body: output,
       content_type: content_type
     })
-    if style_name == 'original'
+    if style_name == 'original' && !Rails.env.test?
       reference = StringIO.new render(file, ["-quality 10"])
       # 👆 this is a low quality reference image we generate
       # which is sufficient for classification purposes but
@@ -55,7 +52,7 @@ class PhotographicMemory
       gravity  = detect_gravity reference
     else
       keywords = []
-      gravity  = nil
+      gravity  = "Center"
     end
 
     {
@@ -112,7 +109,6 @@ class PhotographicMemory
   end
 
   def classify file
-    return [] if Rails.env.test? # should work on stubbing responses instead of this
     file.rewind
 
     @labels ||= detect_labels file
