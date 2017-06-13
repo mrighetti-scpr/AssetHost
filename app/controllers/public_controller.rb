@@ -57,7 +57,8 @@ class PublicController < ApplicationController
     5.times do
       asset_output.reload
       if asset_output.fingerprint.present?
-        path = asset.file_key(output.code)
+        # path = asset.file_key(output.code)
+        path = asset.file_key(asset_output)
         Rails.cache.write("img:#{asset.id}:#{asset.image_fingerprint}:#{output.code}", path)
         _send_file(path) and return
       else

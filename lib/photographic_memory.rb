@@ -5,6 +5,8 @@ require 'rack/mime'
 
 class PhotographicMemory
 
+  attr_accessor :s3_client
+
   class PhotographicMemoryError < StandardError; end
 
   def initialize
@@ -32,10 +34,11 @@ class PhotographicMemory
       output = file.read
     end
     file.rewind
-    original_digest   = Digest::MD5.hexdigest(file.read)
-    rendered_digest   = Digest::MD5.hexdigest(output)
-    extension         = Rack::Mime::MIME_TYPES.invert[content_type]
-    key       = "#{id}_#{original_digest}_#{style_name}#{extension}"
+    original_digest    = Digest::MD5.hexdigest(file.read)
+    rendered_digest    = Digest::MD5.hexdigest(output)
+    output_fingerprint = (style_name == "original") ? "original" : rendered_digest
+    extension          = Rack::Mime::MIME_TYPES.invert[content_type]
+    key = "#{id}_#{original_digest}_#{output_fingerprint}#{extension}"
     @s3_client.put_object({
       bucket: Rails.application.secrets.s3['bucket'], 
       key: key, 
@@ -54,7 +57,6 @@ class PhotographicMemory
       keywords = []
       gravity  = "Center"
     end
-
     {
       fingerprint: rendered_digest,
       metadata: exif(file),
@@ -175,7 +177,7 @@ class PhotographicMemory
         bytes: file
       },
       max_labels: 123, 
-      min_confidence: 80, 
+      min_confidence: 65, 
     }).labels
   end
 

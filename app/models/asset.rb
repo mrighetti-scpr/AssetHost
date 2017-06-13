@@ -177,9 +177,10 @@ class Asset < ActiveRecord::Base
     }
   end
 
-  def file_key style='original'
+  def file_key asset_output=nil
+    output_fingerprint = asset_output ? asset_output.fingerprint : 'original'
     if id && image_fingerprint && image_content_type
-      "#{id}_#{image_fingerprint}_#{style}#{file_extension}"
+      "#{id}_#{image_fingerprint}_#{output_fingerprint}#{file_extension}"
     end
   end
 
