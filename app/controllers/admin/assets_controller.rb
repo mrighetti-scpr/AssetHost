@@ -35,8 +35,8 @@ class Admin::AssetsController < Admin::BaseController
       render plain: 'ERROR'
     end
 
-  rescue => e
-    byebug
+  # rescue => e
+  #   byebug
   end
 
   #----------

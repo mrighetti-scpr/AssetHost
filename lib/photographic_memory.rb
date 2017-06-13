@@ -13,11 +13,13 @@ class PhotographicMemory
     options = {
       region: Rails.application.secrets.s3['region'],
       endpoint: Rails.application.secrets.s3['endpoint'],
+      force_path_style: true,
       credentials: Aws::Credentials.new(
         Rails.application.secrets.s3['access_key_id'], 
         Rails.application.secrets.s3['secret_access_key']
       ),
-      stub_responses: Rails.env.test?
+      stub_responses: Rails.env.test?,
+      signature_version: Rails.application.secrets.s3['signature_version']
     }.select{|k,v| !v.nil?}
     @s3_client = Aws::S3::Client.new(options)
   end
@@ -40,8 +42,8 @@ class PhotographicMemory
     extension          = Rack::Mime::MIME_TYPES.invert[content_type]
     key = "#{id}_#{original_digest}_#{output_fingerprint}#{extension}"
     @s3_client.put_object({
-      bucket: Rails.application.secrets.s3['bucket'], 
-      key: key, 
+      bucket: Rails.application.secrets.s3['bucket'],
+      key: key,
       body: output,
       content_type: content_type
     })
