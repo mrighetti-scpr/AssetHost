@@ -40,20 +40,22 @@ class Asset < ActiveRecord::Base
 
 
   def self.es_search(query=nil, page: 1, per_page: 24)
-    Asset.search(query, boost_by_distance: {
-      taken_at: {
-        origin: Time.zone.now.iso8601,
-        scale: '26w',
-        offset: '13w',
-        decay: 0.8
-      },
-      long_edge: {
-        origin: 4200,
-        scale: 300,
-        offset: 3000,
-        decay: 0.7
-      }
-    }, page: page, per_page: per_page)
+    # Asset.search(query, boost_by_distance: {
+    #   taken_at: {
+    #     origin: Time.zone.now.iso8601,
+    #     scale: '26w',
+    #     offset: '13w',
+    #     decay: 0.8
+    #   },
+    #   long_edge: {
+    #     origin: 4200,
+    #     scale: 300,
+    #     offset: 3000,
+    #     decay: 0.7
+    #   }
+    # }, page: page, per_page: per_page)
+    # 👆re-enable all that once we have upgraded elasticsearch!
+    Asset.search(query, page: page, per_page: per_page)
   end
 
 
@@ -180,7 +182,13 @@ class Asset < ActiveRecord::Base
   def file_key asset_output=nil
     output_fingerprint = asset_output ? asset_output.fingerprint : 'original'
     if id && image_fingerprint && image_content_type
-      "#{id}_#{image_fingerprint}_#{output_fingerprint}#{file_extension}"
+      "#{id}_#{image_fingerprint}_#{output_fingerprint}.jpg"
+      #👆 For backward compatibility, we are leaving the .jpg
+      # extension in place, even when we have a PNG or GIF image.
+      # This is because assets uploaded with an older version
+      # of assethost were all converted to JPGs, and this may
+      # not always be the case now.  The extension in this case
+      # serves no function.
     end
   end
 

@@ -121,7 +121,7 @@ class PhotographicMemory
     # byebug
 
     @labels
-  rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError => e
+  rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError, Seahorse::Client::NetworkingError => e
     # This also is not worth crashing over
     []
   end
@@ -181,6 +181,8 @@ class PhotographicMemory
       max_labels: 123, 
       min_confidence: 65, 
     }).labels
+  rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError, Seahorse::Client::NetworkingError => e
+    []
   end
 
   def detect_faces file
@@ -199,6 +201,8 @@ class PhotographicMemory
       },
       attributes: ["ALL"]
     }).face_details
+  rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError, Seahorse::Client::NetworkingError => e
+    []
   end
 
   def run_command command, input
