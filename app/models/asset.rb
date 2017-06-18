@@ -40,22 +40,22 @@ class Asset < ActiveRecord::Base
 
 
   def self.es_search(query=nil, page: 1, per_page: 24)
-    # Asset.search(query, boost_by_distance: {
-    #   taken_at: {
-    #     origin: Time.zone.now.iso8601,
-    #     scale: '26w',
-    #     offset: '13w',
-    #     decay: 0.8
-    #   },
-    #   long_edge: {
-    #     origin: 4200,
-    #     scale: 300,
-    #     offset: 3000,
-    #     decay: 0.7
-    #   }
-    # }, page: page, per_page: per_page)
+    Asset.search(query, boost_by_distance: {
+      taken_at: {
+        origin: Time.zone.now.iso8601,
+        scale: '26w',
+        offset: '13w',
+        decay: 0.8
+      },
+      long_edge: {
+        origin: 4200,
+        scale: 300,
+        offset: 3000,
+        decay: 0.7
+      }
+    }, page: page, per_page: per_page)
     # 👆re-enable all that once we have upgraded elasticsearch!
-    Asset.search(query, page: page, per_page: per_page)
+    # Asset.search(query, page: page, per_page: per_page)
   end
 
 
@@ -406,7 +406,7 @@ class Asset < ActiveRecord::Base
       self.file = nil # prevents recursive saving/rendering
       self.save
       @reloading = false
-      prerender
+      # prerender
     end
   end
 

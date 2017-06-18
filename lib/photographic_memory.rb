@@ -179,7 +179,7 @@ class PhotographicMemory
         bytes: file
       },
       max_labels: 123, 
-      min_confidence: 65, 
+      min_confidence: 73, 
     }).labels
   rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError, Seahorse::Client::NetworkingError => e
     []

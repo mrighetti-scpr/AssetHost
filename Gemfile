@@ -59,6 +59,10 @@ group :development do
   gem 'spring', '~> 2.0.1'
 end
 
+group :production do
+  gem 'puma'
+end
+
 group :test do 
   gem "capybara", '~> 2.11.0'
   gem "factory_girl", '~> 4.8.0'

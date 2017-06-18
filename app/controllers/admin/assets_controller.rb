@@ -25,8 +25,10 @@ class Admin::AssetsController < Admin::BaseController
     asset = Asset.new({
       file: @file,
       image_file_name: request.headers['HTTP_X_FILE_NAME'],
-      image_content_type: request.headers['HTTP_CONTENT_TYPE']
+      image_content_type: request.content_type
     })
+
+    # image_content_type: request.headers['HTTP_CONTENT_TYPE']
 
     if asset.save
       asset.request = request

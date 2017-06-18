@@ -50,7 +50,7 @@ class PublicController < ApplicationController
     # do we have a rendered output for this style?
     # if not then create a new one.
     asset_output = asset.outputs.where(output_id: output.id, image_fingerprint: asset.image_fingerprint).first_or_create
-
+    
     # if a new asset_output gets created, it should automatically
     # fire off a new render job that will then give it a fingerprint
 
