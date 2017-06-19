@@ -2,7 +2,8 @@ require "resque/server"
 
 Rails.application.routes.draw do
   match '/i/:aprint/:id-:style.:extension', :to => 'public#image', :constraints => { :id => /\d+/, :style => /[^\.]+/}, via: [:get, :post, :put, :patch, :delete], :as => :image
-
+  match '/a', to: redirect('/'), via: :all, status: 302
+  match '/a/chooser', to: redirect('/chooser'), via: :all # to support legacy Outpost client
   match '/a/:path', to: redirect('/'), via: :all, status: 302
 
   resque_constraint = ->(request) do
