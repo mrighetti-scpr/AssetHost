@@ -38,7 +38,6 @@ RUN cp config/templates/secrets.yml.template config/secrets.yml
 
 RUN bundle exec rake assets:precompile RAILS_ENV=production
 
-
 RUN chown -R nginx:www-data /var/lib/nginx
 RUN mkdir /run/nginx
 RUN cp nginx.conf /etc/nginx/nginx.conf
@@ -51,5 +50,5 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stdout log/production.log
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD nginx -g "daemon off;" & rails s -p 3000 -b 0.0.0.0
 
