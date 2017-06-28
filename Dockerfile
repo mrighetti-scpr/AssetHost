@@ -20,7 +20,8 @@ RUN apk update && apk add \
   tzdata \
   yaml-dev \
   nginx \
-  openrc
+  openrc \
+  nodejs
 
 USER root
 ENV HOME /root
@@ -34,6 +35,9 @@ ENV PATH="/root/bin:${PATH}"
 RUN bundle install
 
 RUN cp config/templates/secrets.yml.template config/secrets.yml
+
+RUN bundle exec rake assets:precompile RAILS_ENV=production
+
 
 RUN chown -R nginx:www-data /var/lib/nginx
 RUN mkdir /run/nginx

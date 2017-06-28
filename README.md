@@ -216,6 +216,8 @@ The image would be built just like the main image, with a different tag:
 docker build -t assethost-custom .
 ```
 
+Even simpler, you can make a GitHub repo for your Dockerfile and set up an [automated build process](https://docs.docker.com/docker-hub/builds/) in [Docker Hub](https://hub.docker.com/).
+
 
 ## Credits
 
