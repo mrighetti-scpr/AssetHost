@@ -62,7 +62,7 @@ class PhotographicMemory
     {
       fingerprint: rendered_digest,
       metadata: exif(file),
-      key: key,
+      # key: key,
       extension: extension,
       keywords: keywords,
       gravity: gravity

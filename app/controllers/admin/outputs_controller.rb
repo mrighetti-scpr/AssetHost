@@ -13,7 +13,7 @@ class Admin::OutputsController < Admin::BaseController
   def update
     if @output.update_attributes(outputs_params)
       flash[:notice] = "Updated Output."
-      redirect_to a_outputs_path
+      redirect_to outputs_path
     else
       render :edit
     end
@@ -30,7 +30,7 @@ class Admin::OutputsController < Admin::BaseController
 
     if @output.save
       flash[:notice] = "Created Output."
-      redirect_to a_outputs_path
+      redirect_to outputs_path
     else
       render :new
     end
@@ -40,7 +40,7 @@ class Admin::OutputsController < Admin::BaseController
   def destroy
     @output.destroy
     flash[:notice] = "Destroyed Output."
-    redirect_to a_outputs_path
+    redirect_to outputs_path
   end
 
   private

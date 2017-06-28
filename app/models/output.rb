@@ -3,7 +3,7 @@ class Output < ActiveRecord::Base
 
   has_many :asset_outputs
 
-  after_save :delete_asset_outputs, if: -> { self.size_changed? || self.extension_changed? }
+  after_update :delete_asset_outputs, if: -> { self.size_changed? || self.extension_changed? }
 
   scope :prerenders, ->(){ where(prerender: true) }
 
