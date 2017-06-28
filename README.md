@@ -187,6 +187,35 @@ To start a worker:
 QUEUE=assets rake resque:work
 ```
 
+### Adding Custom Functionality
+
+AssetHost can be extended by writing a [Rails plugin](http://guides.rubyonrails.org/plugins.html).  If you need to add organization-specific code, it's suggested that you write that code into a plugin before you decide to fork the AssetHost codebase for the same purpose.  This ensures that you can easily version-control your own code while being able to easily upgrade the AssetHost core.
+
+KPCC has an open-source [plugin](https://github.com/SCPR/asset_host_kpcc) that extends AssetHost for their own needs, and you can use that as a reference for how to write your own plugin.
+
+It's recommended that if you are going to add plugins to your AssetHost instance, that you create your own Dockerfile that builds off the main AssetHost image.
+
+```sh
+FROM ravenstine/assethost
+
+# ... custom configuration
+```
+
+So a Dockerfile that adds the KPCC plugin would look something like this:
+
+```sh
+FROM ravenstine/assethost
+
+RUN echo "gem 'asset_host_kpcc', github: 'scpr/asset_host_kpcc'" >> Gemfile
+RUN bundle install
+```
+
+The image would be built just like the main image, with a different tag:
+
+```sh
+docker build -t assethost-custom .
+```
+
 
 ## Credits
 
