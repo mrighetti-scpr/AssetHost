@@ -61,6 +61,7 @@ end
 
 group :production do
   gem 'puma'
+  gem 'dalli', '~> 2.7.6'
 end
 
 group :test do 
