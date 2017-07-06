@@ -78,17 +78,8 @@ class PublicController < ApplicationController
   def _send_file(filename)
     downloader = PhotographicMemory.new
     file       = downloader.get(filename)
-    send_data file.read, type: content_type_from_filename(filename), disposition: 'inline'
+    send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
   end
 
-  def content_type_from_filename name
-    extension = name.split('.').last
-    {
-      'jpg' => 'image/jpeg',
-      'jpeg' => 'image/jpeg',
-      'gif' => 'image/gif',
-      'png' => 'image/png'
-    }[extension]
-  end
 end
 

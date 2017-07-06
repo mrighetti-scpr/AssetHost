@@ -27,15 +27,15 @@ module AssetHostCore
 
       def load
         filename = File.basename(@url)
-
         # build asset
         asset = Asset.new(
-          :file     => image_file,
-          :title    => filename,
-          :url      => @url,
-          :notes    => "Fetched from URL: #{@url}"
+          file: image_file,
+          title: filename,
+          url: @url,
+          image_file_name: filename,
+          image_content_type: AssetHostUtils.guess_content_type(filename),
+          notes: "Fetched from URL: #{@url}"
         )
-
         asset.save!
         asset
       end
