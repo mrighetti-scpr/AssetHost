@@ -43,23 +43,17 @@ AssetHost can be run from a [Docker](https://www.docker.com/) image.  Once you h
 docker pull scprdev/assethost
 ```
 
-Alternatively, you can build the image from the provided [Dockerfile](https://github.com/SCPR/AssetHost/blob/v3.0.0/Dockerfile), although it will take a while to finish:
-
-```sh
-docker build -t scprdev/assethost .
-```
-
 AssetHost expects MySQL and various other storage engines such as Redis & Elasticsearch to be available.  The connection settings and credentials should be provided through environment variables.  It is best to store these variables in a **.env** file.  A sample .env file is provided in `config/templates/.env.template`; the variables that are uncommented are required, and the ones commented out are optional for minimal operation.  It is suggested you use a **.env** file because it is already excluded from version tracking and it automatically gets loaded by the application if you need to run it outside of a Docker environment during development.
 
 Once you have obtained an image and filled out your **.env** file, you can then run the image in a new Docker container.
 
 ```sh
-docker run -i -d -p 80:80 --name assethost --env-file .env scprdev/assethost
+docker run -i -d -p 80:8008 --name assethost --env-file .env scprdev/assethost server
 ```
 
 Note that the `--name` parameter specifies the name of the new container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
 
-Now that the container is running, you will need to initialize your database.  To do this, run:
+If this is your first time running AssetHost, you will need to initialize your database.  To do this, run:
 
 ```sh
 docker exec assethost setup
@@ -67,20 +61,12 @@ docker exec assethost setup
 
 This will double-check if all Ruby dependencies are met and will then create a MySQL database with the required tables.  If you already have a database created for AssetHost, you will not need to perform this step again when creating a new container.
 
-Finally, you can run the application like this:
-
-```sh
-docker exec assethost server
-```
-
-Essentially, you are telling it to run the `server` script located inside the assethost container.
-
 On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
 
 To run a worker for asynchronous image encoding:
 
 ```sh
-docker exec assethost worker
+docker run -i -d -p 80:8008 --name assethost --env-file .env scprdev/assethost worker
 ```
 
 The worker is responsible for resizing & saving assets in the background.  This saves on storage space as we are only creating different thumbnail sizes as needed.  An asset might only ever be needed in one size, so it doesn't make sense to render it in every output size.
