@@ -1,7 +1,7 @@
 FROM ruby:2.3.4-alpine
 MAINTAINER Ben Titcomb <btitcomb@scpr.org>
 
-RUN apk update && apk add \
+RUN apk update && apk add --no-cache \
   make \
   gcc \
   libgcc \
@@ -48,7 +48,6 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && touch log/production.log \
   && ln -sf /dev/stdout log/development.log \
   && ln -sf /dev/stdout log/production.log
-EXPOSE 80
 
 CMD nginx -g "daemon off;" & rails s -p 3000 -b 0.0.0.0
 
