@@ -40,13 +40,13 @@ Minimum Requirements:
 AssetHost can be run from a [Docker](https://www.docker.com/) image.  Once you have Docker set up on a machine, pull the AssetHost image from Docker Hub:
 
 ```sh
-docker pull ravenstine/assethost
+docker pull scprdev/assethost
 ```
 
 Alternatively, you can build the image from the provided [Dockerfile](https://github.com/SCPR/AssetHost/blob/v3.0.0/Dockerfile), although it will take a while to finish:
 
 ```sh
-docker build -t ravenstine/assethost .
+docker build -t scprdev/assethost .
 ```
 
 AssetHost expects MySQL and various other storage engines such as Redis & Elasticsearch to be available.  The connection settings and credentials should be provided through environment variables.  It is best to store these variables in a **.env** file.  A sample .env file is provided in `config/templates/.env.template`; the variables that are uncommented are required, and the ones commented out are optional for minimal operation.  It is suggested you use a **.env** file because it is already excluded from version tracking and it automatically gets loaded by the application if you need to run it outside of a Docker environment during development.
@@ -54,7 +54,7 @@ AssetHost expects MySQL and various other storage engines such as Redis & Elasti
 Once you have obtained an image and filled out your **.env** file, you can then run the image in a new Docker container.
 
 ```sh
-docker run -i -d -p 80:80 --name assethost --env-file .env ravenstine/assethost
+docker run -i -d -p 80:80 --name assethost --env-file .env scprdev/assethost
 ```
 
 Note that the `--name` parameter specifies the name of the new container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
@@ -196,7 +196,7 @@ KPCC has an open-source [plugin](https://github.com/SCPR/asset_host_kpcc) that e
 It's recommended that if you are going to add plugins to your AssetHost instance, that you create your own Dockerfile that builds off the main AssetHost image.
 
 ```sh
-FROM ravenstine/assethost
+FROM scprdev/assethost
 
 # ... custom configuration
 ```
@@ -204,7 +204,7 @@ FROM ravenstine/assethost
 So a Dockerfile that adds the KPCC plugin would look something like this:
 
 ```sh
-FROM ravenstine/assethost
+FROM scprdev/assethost
 
 RUN echo "gem 'asset_host_kpcc', github: 'scpr/asset_host_kpcc'" >> Gemfile
 RUN bundle install
