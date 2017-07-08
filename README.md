@@ -48,10 +48,12 @@ AssetHost expects MySQL and various other storage engines such as Redis & Elasti
 Once you have obtained an image and filled out your **.env** file, you can then run the image in a new Docker container.
 
 ```sh
-docker run -i -d -p 80:8008 --name assethost --env-file .env scprdev/assethost server
+docker run -i -d -p 80:8080 --name assethost --env-file .env scprdev/assethost server
 ```
 
 Note that the `--name` parameter specifies the name of the new container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
+
+
 
 If this is your first time running AssetHost, you will need to initialize your database.  To do this, run:
 
@@ -66,7 +68,7 @@ On first use, you will be required to log in.  An initial user called **admin** 
 To run a worker for asynchronous image encoding:
 
 ```sh
-docker run -i -d -p 80:8008 --name assethost --env-file .env scprdev/assethost worker
+docker run -i -d -p 80:8080 --name assethost --env-file .env scprdev/assethost worker
 ```
 
 The worker is responsible for resizing & saving assets in the background.  This saves on storage space as we are only creating different thumbnail sizes as needed.  An asset might only ever be needed in one size, so it doesn't make sense to render it in every output size.
