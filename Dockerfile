@@ -39,23 +39,25 @@ RUN cp config/templates/secrets.yml.template config/secrets.yml
 
 RUN bundle exec rake assets:precompile RAILS_ENV=production
 
-RUN chown -R assethost:assethost /var/lib/nginx
-
-RUN chown -R assethost:assethost /var/run
-
-RUN mkdir /run/nginx
-
 RUN cp nginx.conf /etc/nginx/nginx.conf
+
+# to work around a bug on my end
+RUN rm -rf tmp/* && rm -rf log/*
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log \
+  && ln -sf /dev/stdout log/access.log \
+  && ln -sf /dev/stderr log/error.log \
   && touch log/development.log \
   && touch log/production.log \
   && ln -sf /dev/stdout log/development.log \
   && ln -sf /dev/stdout log/production.log
 
-RUN chown -R assethost:assethost /home/assethost/tmp
+RUN chown -R assethost:assethost tmp
+RUN chmod -R u+X tmp
+RUN chown -R assethost:assethost log
+RUN chmod -R u+X tmp
 
 USER assethost
 
