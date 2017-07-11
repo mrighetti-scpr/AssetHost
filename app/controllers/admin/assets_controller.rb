@@ -7,7 +7,6 @@ class Admin::AssetsController < Admin::BaseController
 
   def index
     @assets = Asset.visible.order("updated_at desc").page(params[:page]).per(24)
-    @assets.map{|a| a.request = request}
   end
 
   #----------
@@ -15,7 +14,6 @@ class Admin::AssetsController < Admin::BaseController
   def search
     @query = params[:q]
     @assets = Asset.es_search(@query, page: params[:page])
-    @assets.map{|a| a.request = request}
     render :index
   end
 
@@ -30,6 +28,8 @@ class Admin::AssetsController < Admin::BaseController
 
     # image_content_type: request.headers['HTTP_CONTENT_TYPE']
 
+    # 👆 use that instead if you aren't using puma as the http server
+
     if asset.save
       asset.request = request
       render json: asset.as_json
@@ -37,8 +37,6 @@ class Admin::AssetsController < Admin::BaseController
       render plain: 'ERROR'
     end
 
-  # rescue => e
-  #   byebug
   end
 
   #----------
