@@ -69,7 +69,6 @@ class Admin::AssetsController < Admin::BaseController
     @assets   = Asset.visible.order('id desc')
     @prev     = @assets.where('id > ?', @asset.id).last
     @next     = @assets.where('id < ?', @asset.id).first
-    @assets.map{|a| a.request = request}
     @prev.try(:request=, request)
     @next.try(:request=, request)
   end
