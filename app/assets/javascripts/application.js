@@ -5,7 +5,7 @@
 //= require underscore.min
 //= require backbone
 //= require exif
-//= require taggle
+//= require tags-input
 
 //= require backbone.modelbinding
 
@@ -19,3 +19,4 @@
 //= require_tree ./templates
 
 //= require_tree .
+
