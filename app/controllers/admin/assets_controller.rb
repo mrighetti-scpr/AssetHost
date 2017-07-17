@@ -7,6 +7,7 @@ class Admin::AssetsController < Admin::BaseController
 
   def index
     @assets = Asset.visible.order("updated_at desc").page(params[:page]).per(24)
+    @assets.each{|a| a.request = request}
   end
 
   #----------
@@ -14,6 +15,7 @@ class Admin::AssetsController < Admin::BaseController
   def search
     @query = params[:q]
     @assets = Asset.es_search(@query, page: params[:page])
+    @assets.each{|a| a.request = request}
     render :index
   end
 
@@ -43,7 +45,7 @@ class Admin::AssetsController < Admin::BaseController
 
   def metadata
     @assets = Asset.where(id: params[:ids].split(','))
-    @assets.map{|a| a.request = request}
+    @assets.each{|a| a.request = request}
   end
 
   #----------

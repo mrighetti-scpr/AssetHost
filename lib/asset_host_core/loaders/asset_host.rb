@@ -4,11 +4,9 @@ module AssetHostCore
       SOURCE = "AssetHost"
 
       def self.build_from_url(url)
-        assethost_root = "#{Rails.application.config.host}"
-
         matches = [
-          %r{#{assethost_root}\/i\/[^\/]+\/(?<id>\d+)-},
-          %r{#{assethost_root}\/api\/assets\/(?<id>\d+)}
+          %r{\/i\/[^\/]+\/(?<id>\d+)-},
+          %r{\/api\/assets\/(?<id>\d+)}
         ]
 
         match = nil
