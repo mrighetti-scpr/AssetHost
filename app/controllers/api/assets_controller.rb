@@ -96,10 +96,7 @@ class Api::AssetsController < Api::BaseController
   end
 
   def get_asset
-    @asset         = Asset.find_by_id(params[:id])
+    @asset         = Asset.find_by_id!(params[:id])
     @asset.request = request
-    if !@asset
-      render_not_found and return false
-    end
   end
 end

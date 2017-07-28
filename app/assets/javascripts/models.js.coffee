@@ -2,7 +2,7 @@ class AssetHost.Models
     constructor: ->
 
     class @Asset extends Backbone.Model
-        urlRoot: "http://#{AssetHost.SERVER}/api/assets/"
+        urlRoot: "/api/assets/"
 
         modal: ->
             @_modal ?= new AssetHost.Models.AssetModalView(model: @)
