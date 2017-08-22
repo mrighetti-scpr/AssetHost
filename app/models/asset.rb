@@ -389,7 +389,7 @@ class Asset < ActiveRecord::Base
 
   def host
     if @request
-      port   = (@request.port === 80) ? "" : ":#{@request.port}"
+      port   = ((@request.port === 80) || (@resque.port === 443)) ? "" : ":#{@request.port}"
       domain = "#{@request.protocol}#{@request.host}#{port}"
     else
       domain = ""

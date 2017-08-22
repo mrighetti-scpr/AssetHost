@@ -58,6 +58,8 @@ RUN chown -R assethost:assethost tmp
 RUN chmod -R u+X tmp
 RUN chown -R assethost:assethost log
 RUN chmod -R u+X tmp
+RUN chown -R assethost:assethost db
+RUN chmod -R u+X db
 
 USER assethost
 

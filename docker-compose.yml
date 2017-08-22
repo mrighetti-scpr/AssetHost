@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+
+  assethost:
+    build: .
+    container_name: assethost
+    ports:
+      - 8080:8080/tcp
+    env_file:
+      - .env
+    networks:
+      assethost-network:
+        aliases:
+          - assethost
+
+  mysql: &defaults
+    # image: mysql:latest
+    image: scpr/restore-percona-backup
+    container_name: assethost-mysql
+    ports:
+      - 3200:3200/tcp
+      - 3306:3306/tcp
+    restart: always
+    command: $DEPLOYBOT_TOKEN
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      DEPLOYBOT_TOKEN: ${DEPLOYBOT_TOKEN}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      assethost-network:
+        aliases:
+         - mysql
+
+  redis:
+    image: 4.0.1-alpine
+    container_name: assethost-redis
+    ports:
+      - 6379:6379/tcp
+    networks:
+      assethost-network:
+        aliases:
+         - redis
+
+  elasticsearch:
+    image: elasticsearch:1.7-alpine
+    container_name: assethost-elasticsearch
+    ports:
+      - 9200:9200/tcp
+      - 9300:9300/tcp
+    volumes:
+      - elasticsearch-data:/var/lib/elasticsearch
+    networks:
+      assethost-network:
+        aliases:
+         - elasticsearch
+
+volumes:
+  mysql-data:
+  elasticsearch-data:
+
+networks:
+  assethost-network:
+
