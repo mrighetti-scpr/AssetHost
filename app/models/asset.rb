@@ -27,7 +27,7 @@ class Asset < ActiveRecord::Base
   has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
   belongs_to :native, :polymorphic => true  # again, this is just for things like youtube videos
 
-  before_create :sync_exif_data
+  before_create :sync_exif_data, :set_version
 
   before_save :reload_image, if: -> {
     image_gravity_changed? && !@reloading
@@ -181,15 +181,19 @@ class Asset < ActiveRecord::Base
 
   def file_key asset_output=nil
     output_fingerprint = asset_output ? asset_output.fingerprint : 'original'
-    output_extension   = asset_output.try(:output).try(:extension) || 'jpg'
-    if id && image_fingerprint && image_content_type 
-      "#{id}_#{image_fingerprint}_#{output_fingerprint}.#{output_extension}"
+    if self.version === 2
+      output_extension = asset_output.try(:output).try(:extension) || 'jpg'
+    else
+      output_extension = 'jpg'
       #👆 For backward compatibility, we are leaving the .jpg
-      # extension in place, even when we have a PNG or GIF image.
+      # extension in place for older assets, even when we have a PNG or GIF image.
       # This is because assets uploaded with an older version
       # of assethost were all converted to JPGs, and this may
       # not always be the case now.  The extension in this case
       # serves no function.
+    end
+    if id && image_fingerprint && image_content_type 
+      "#{id}_#{image_fingerprint}_#{output_fingerprint}.#{output_extension}"
     end
   end
 
@@ -434,6 +438,16 @@ class Asset < ActiveRecord::Base
   def publish_asset_delete
     AssetHost::Application.redis_publish(action: "DELETE", id: self.id)
     # true
+  end
+
+  def set_version
+    # We have to do this to avoid some incompatibilities with the older
+    # version of assethost.  In particular, file keys for older uploads
+    # are always JPG, but we need newere assets to use whatever extension
+    # they come with so we can determine how to use them.
+    #
+    # From now on, the version for an asset is set to 2 instead of 1.
+    self.version = 2
   end
 end
 

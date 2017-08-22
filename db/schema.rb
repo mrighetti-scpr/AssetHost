@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170607233234) do
+ActiveRecord::Schema.define(version: 20170822195302) do
 
-  create_table "asset_host_core_api_user_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_api_user_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.integer  "api_user_id"
     t.integer  "permission_id"
     t.datetime "created_at",    null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20170607233234) do
     t.index ["permission_id"], name: "index_asset_host_core_api_user_permissions_on_permission_id", using: :btree
   end
 
-  create_table "asset_host_core_api_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_api_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string   "name",               null: false
     t.string   "auth_token"
     t.datetime "created_at"
@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20170607233234) do
     t.index ["auth_token", "is_active"], name: "index_asset_host_core_api_users_on_auth_token_and_is_active", using: :btree
   end
 
-  create_table "asset_host_core_asset_outputs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_asset_outputs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.integer  "asset_id",                       null: false
     t.integer  "output_id",                      null: false
     t.string   "fingerprint"
@@ -45,7 +45,7 @@ ActiveRecord::Schema.define(version: 20170607233234) do
     t.index ["output_id"], name: "index_asset_host_core_asset_outputs_on_output_id", using: :btree
   end
 
-  create_table "asset_host_core_assets", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_assets", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "title"
     t.text     "caption",            limit: 65535
     t.string   "owner"
@@ -71,16 +71,17 @@ ActiveRecord::Schema.define(version: 20170607233234) do
     t.datetime "updated_at"
     t.boolean  "is_hidden",                        default: false,    null: false
     t.string   "keywords"
+    t.integer  "version",                          default: 1
   end
 
-  create_table "asset_host_core_brightcove_videos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_brightcove_videos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.bigint   "videoid",    null: false
     t.integer  "length"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "asset_host_core_outputs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_outputs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.string   "code",                       null: false
     t.string   "size",                       null: false
     t.string   "extension",                  null: false
@@ -91,7 +92,7 @@ ActiveRecord::Schema.define(version: 20170607233234) do
     t.index ["code"], name: "index_asset_host_core_outputs_on_code", using: :btree
   end
 
-  create_table "asset_host_core_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string   "resource"
     t.string   "ability"
     t.datetime "created_at", null: false
@@ -99,25 +100,16 @@ ActiveRecord::Schema.define(version: 20170607233234) do
     t.index ["resource", "ability"], name: "index_asset_host_core_permissions_on_resource_and_ability", using: :btree
   end
 
-  create_table "asset_host_core_vimeo_videos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_vimeo_videos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string   "videoid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "asset_host_core_youtube_videos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "asset_host_core_youtube_videos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string   "videoid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string   "username"
-    t.boolean  "is_admin",                       null: false
-    t.boolean  "can_login",       default: true, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "password_digest"
   end
 
 end
