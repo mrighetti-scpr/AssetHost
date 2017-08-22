@@ -21,10 +21,10 @@ default: &default
 
 development:
   <<: *default
-  database: AssetHost_development
+  database: <%= ENV['ASSETHOST_DATABASE_NAME'] || "AssetHost_development" %>
   users:
     <<: *default
-    database: AssetHost_development
+    database: <%= ENV['ASSETHOST_DATABASE_NAME'] || "AssetHost_development" %>
     table_name: users
   
 # Warning: The database defined as "test" will be erased and
