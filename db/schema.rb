@@ -112,4 +112,13 @@ ActiveRecord::Schema.define(version: 20170822195302) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "username"
+    t.boolean  "is_admin",                       null: false
+    t.boolean  "can_login",       default: true, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "password_digest"
+  end
+
 end
