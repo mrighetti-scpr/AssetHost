@@ -2,31 +2,26 @@ version: '3'
 
 services:
 
-  assethost: &server
-    build: 
-      context: .
-      dockerfile: Dockerfile.dev
+  assethost:
+    build: scprdev/assethost:latest
     container_name: assethost
     ports:
       - 8080:8080/tcp
     env_file:
       - .env
-    volumes:
-      - ./:/home/assethost
-      - assethost-bundle:/usr/local/bundle
-      - assethost-gems:/usr/local/lib/ruby/gems/
     networks:
       assethost-network:
         aliases:
           - assethost
 
-  mysql:
+  mysql: &defaults
     image: mysql:latest
     container_name: assethost-mysql
     ports:
       - 3200:3200/tcp
       - 3306:3306/tcp
     restart: always
+    command: $DEPLOYBOT_TOKEN
     environment:
       MYSQL_ROOT_PASSWORD: password
     volumes:
@@ -59,24 +54,21 @@ services:
         aliases:
          - elasticsearch
 
-  fakes3:
-    image: lphoward/fake-s3:latest
-    container_name: assethost-fakes3
-    ports: 
-      - 4569:4569/tcp
-    volumes:
-      - fakes3-data:/fakes3_root
+  memcached:
+    image: memcached:1.5.0-alpine
+    command: memcached
+    container_name: assethost-memcached
+    restart: always
+    ports:
+      - 11211:11211
     networks:
-      assethost-network:
+      scpr-network:
         aliases:
-          - fakes3
+          - memcached
 
 volumes:
-  assethost-bundle:
-  assethost-gems:
   mysql-data:
   elasticsearch-data:
-  fakes3-data:
 
 networks:
   assethost-network:
