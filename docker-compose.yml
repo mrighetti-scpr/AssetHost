@@ -15,8 +15,7 @@ services:
           - assethost
 
   mysql: &defaults
-    # image: mysql:latest
-    image: scpr/restore-percona-backup
+    image: mysql:latest
     container_name: assethost-mysql
     ports:
       - 3200:3200/tcp
@@ -25,7 +24,6 @@ services:
     command: $DEPLOYBOT_TOKEN
     environment:
       MYSQL_ROOT_PASSWORD: password
-      DEPLOYBOT_TOKEN: ${DEPLOYBOT_TOKEN}
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
