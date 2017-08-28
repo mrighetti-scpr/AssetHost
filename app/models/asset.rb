@@ -27,7 +27,7 @@ class Asset < ActiveRecord::Base
   has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
   belongs_to :native, :polymorphic => true  # again, this is just for things like youtube videos
 
-  before_create :sync_exif_data, :set_version
+  before_create :set_version
 
   before_save :reload_image, if: -> {
     image_gravity_changed? && !@reloading
@@ -103,7 +103,6 @@ class Asset < ActiveRecord::Base
     if data[:fingerprint]
       self.image_fingerprint = data[:fingerprint]
     end
-
     # -- determine metadata -- #
     begin
       if p = data[:metadata]
@@ -112,13 +111,11 @@ class Asset < ActiveRecord::Base
           copyright     = [p.by_line,p.credit].join("/")
           title         = p.headline
           description   = p.description
-
         elsif p.credit =~ /AP/
           # smart import for AP photos
           copyright     = [p.by_line,p.credit].join("/")
           title         = p.title
           description   = p.description
-
         else
           copyright     = p.byline || p.credit
           title         = p.title
@@ -130,9 +127,8 @@ class Asset < ActiveRecord::Base
         self.image_description = description
         self.image_copyright   = copyright
         self.image_taken       = p.datetime_original
-        self.keywords          = (p.keywords || []).map(&:downcase).join(", ")
+        self.keywords          = (p.keywords || "").split(", ").map(&:downcase).join(", ")
       end
-
       true
     rescue => e
       # a failure to parse metadata
@@ -409,6 +405,7 @@ class Asset < ActiveRecord::Base
       # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
       self.file = nil # prevents recursive saving/rendering
+      sync_exif_data
       self.save
       @reloading = false
       # prerender
