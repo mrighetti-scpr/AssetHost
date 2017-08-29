@@ -52,6 +52,8 @@ module AssetHost
     config.modal_size           = "small"
     config.detail_size          = "eight"
 
+    config.action_dispatch.default_headers.clear
+
     ENV["ELASTICSEARCH_URL"]  ||= Rails.application.secrets.elasticsearch['host']
 
     def self.redis_pubsub
