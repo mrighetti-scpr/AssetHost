@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  # respond_to :html
+  protect_from_forgery with: :exception
 
   def new
     redirect_to assets_path if current_user

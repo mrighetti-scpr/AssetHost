@@ -1,4 +1,5 @@
 class PublicController < ApplicationController
+  protect_from_forgery with: :exception
 
   def home
     render text: "", status: :ok, layout: false
