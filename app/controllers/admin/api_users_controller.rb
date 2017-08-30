@@ -61,7 +61,7 @@ class Admin::ApiUsersController < Admin::BaseController
   private
 
   def api_user_params
-    params.require(:api_user).permit(:name, :email, :is_active, :permission_ids)
+    params.require(:api_user).permit(:name, :email, :is_active, permission_ids: [])
   end
 
   def get_api_user
