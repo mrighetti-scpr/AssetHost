@@ -15,25 +15,25 @@ When a user is created, they are automatically assigned an auth token.  This tok
 
 #### Operations
 
-**List:** `/assets`
-**Get:** `/assets/{id}`
-**Post:** `/assets/`
+**List:** `/api/assets`
+**Get:** `/api/assets/{id}`
+**Post:** `/api/assets/`
 A POST request takes the following parameters:
 - **url:** The URL of the image on a remote server.  This is currently the only way to import an image using the API.  We will later add the ability to directly upload through the API.
 - **caption:** Custom image caption.
 - **owner:** Owner name.
 - **title:** Custom image title.
-**Put:** `/assets/{id}`
+**Put:** `/api/assets/{id}`
 A PUT request takes the following parameters:
 - **caption:** Custom image caption.
 - **owner:** Owner name.
 - **title:** Custom image title.
-**Delete:** `/assets/{id}`
+**Delete:** `/api/assets/{id}`
 
 ### Outputs
 
 #### Operations
 
-**List:** `/outputs`
-**Get:** `/outputs/{id}`
+**List:** `/api/outputs`
+**Get:** `/api/outputs/{id}`
 
