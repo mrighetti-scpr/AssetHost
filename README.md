@@ -122,6 +122,11 @@ For the purpose of improving ease of searchability, AssetHost can tie into Amazo
 - ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY
 
 
+## API
+
+See the [API documentation](https://github.com/SCPR/AssetHost/blob/master/API.md).
+
+
 ## Development
 
 AssetHost is a [Rails](http://rubyonrails.org/)-based application.  
