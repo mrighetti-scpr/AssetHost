@@ -178,7 +178,7 @@ class Asset < ActiveRecord::Base
   def file_key asset_output=nil
     output_fingerprint = asset_output ? asset_output.fingerprint : 'original'
     if self.version === 2
-      output_extension = asset_output.try(:output).try(:extension) || 'jpg'
+      output_extension = asset_output.try(:output).try(:extension) || file_extension.try(:gsub, ".", "") || 'jpg'
     else
       output_extension = 'jpg'
       #👆 For backward compatibility, we are leaving the .jpg
@@ -188,7 +188,7 @@ class Asset < ActiveRecord::Base
       # not always be the case now.  The extension in this case
       # serves no function.
     end
-    if id && image_fingerprint && image_content_type 
+    if id && image_fingerprint && output_extension
       "#{id}_#{image_fingerprint}_#{output_fingerprint}.#{output_extension}"
     end
   end
