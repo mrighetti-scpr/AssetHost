@@ -6,6 +6,8 @@ class Api::AssetsController < Api::BaseController
 
   before_action :get_asset, only: [:show, :update, :tag]
 
+  before_action :get_uploaded_file, only: [:create]
+
 
   def index
     if params[:q].present?
@@ -31,15 +33,47 @@ class Api::AssetsController < Api::BaseController
 
 
   def update
+
+    if @file
+      @asset.file               = @file
+      @asset.image_file_name    = request.headers['HTTP_X_FILE_NAME']
+      @asset.image_content_type = request.content_type
+      if @asset.save
+        @asset.request = request
+        respond_with @asset, location: asset_path(@asset)
+      else
+        render nothing: true, status: 400
+      end
+      return false
+    end
+
     if @asset.update_attributes(asset_params)
       respond_with @asset
     else
       respond_with @asset.errors.full_messages, :status => :error
     end
+
   end
 
-
   def create
+
+    if @file
+      asset = Asset.new({
+        file: @file,
+        image_file_name: request.headers['HTTP_X_FILE_NAME'],
+        image_content_type: request.content_type
+      })
+      # image_content_type: request.headers['HTTP_CONTENT_TYPE']
+      # 👆 use that instead if you aren't using puma as the http server
+      if asset.save
+        asset.request = request
+        respond_with asset, location: asset_path(asset)
+      else
+        render nothing: true, status: 400
+      end
+      return false
+    end
+
     if !params[:url]
       render_bad_request(message: "Must provide an asset URL")
       return false
@@ -99,4 +133,15 @@ class Api::AssetsController < Api::BaseController
     @asset         = Asset.find_by_id!(params[:id])
     @asset.request = request
   end
+
+  def get_uploaded_file
+    return if !request.headers['HTTP_X_FILE_UPLOAD']
+    @file = request.env['rack.input']
+    if @file
+      @file.class.class_eval { attr_accessor :original_filename, :content_type }
+      @file.original_filename = request.headers['HTTP_X_FILE_NAME']
+      @file.content_type      = request.headers['HTTP_CONTENT_TYPE']
+    end
+  end
+
 end

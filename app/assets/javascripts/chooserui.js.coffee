@@ -7,7 +7,6 @@ class AssetHost.ChooserUI
         uploads: true
         limit: 0
         uploadPath: "/assets/upload"
-        # uploadPath: "http://#{AssetHost.SERVER}/assets/upload"
 
     #----------
 
