@@ -92,7 +92,9 @@ class Admin::AssetsController < Admin::BaseController
       render :text => 'ERROR' and return
     end
 
-    @asset.file = @file
+    @asset.file               = @file
+    @asset.image_file_name    = request.headers['HTTP_X_FILE_NAME']
+    @asset.image_content_type = request.content_type
 
     if @asset.save
       render json: @asset.as_json
