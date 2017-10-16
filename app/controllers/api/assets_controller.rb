@@ -6,7 +6,7 @@ class Api::AssetsController < Api::BaseController
 
   before_action :get_asset, only: [:show, :update, :tag]
 
-  before_action :get_uploaded_file, only: [:create]
+  before_action :get_uploaded_file, only: [:create, :update]
 
 
   def index
@@ -33,11 +33,10 @@ class Api::AssetsController < Api::BaseController
 
 
   def update
-
     if @file
       @asset.file               = @file
-      @asset.image_file_name    = request.headers['HTTP_X_FILE_NAME']
-      @asset.image_content_type = request.content_type
+      @asset.image_file_name    = @file.original_filename
+      @asset.image_content_type = @file.content_type
       if @asset.save
         @asset.request = request
         respond_with @asset, location: asset_path(@asset)
@@ -56,15 +55,11 @@ class Api::AssetsController < Api::BaseController
   end
 
   def create
-
     if @file
-      asset = Asset.new({
-        file: @file,
-        image_file_name: request.headers['HTTP_X_FILE_NAME'],
-        image_content_type: request.content_type
-      })
-      # image_content_type: request.headers['HTTP_CONTENT_TYPE']
-      # 👆 use that instead if you aren't using puma as the http server
+      asset = Asset.new(upload_params)
+      asset.file               = @file
+      asset.image_file_name    = @file.original_filename
+      asset.image_content_type = @file.content_type
       if asset.save
         asset.request = request
         respond_with asset, location: asset_path(asset)
@@ -75,7 +70,7 @@ class Api::AssetsController < Api::BaseController
     end
 
     if !params[:url]
-      render_bad_request(message: "Must provide an asset URL")
+      render_bad_request(message: "Must provide an image or an asset URL")
       return false
     end
 
@@ -125,6 +120,10 @@ class Api::AssetsController < Api::BaseController
     params.require(:asset).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
   end
 
+  def upload_params
+    params.fetch(:asset, params).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image_taken, :native, :image_gravity)
+  end
+
   def authorize(ability)
     super ability, "Asset"
   end
@@ -135,13 +134,19 @@ class Api::AssetsController < Api::BaseController
   end
 
   def get_uploaded_file
-    return if !request.headers['HTTP_X_FILE_UPLOAD']
-    @file = request.env['rack.input']
-    if @file
-      @file.class.class_eval { attr_accessor :original_filename, :content_type }
-      @file.original_filename = request.headers['HTTP_X_FILE_NAME']
-      @file.content_type      = request.headers['HTTP_CONTENT_TYPE']
+    if params[:image].is_a?(ActionDispatch::Http::UploadedFile)
+      @file = params[:image]
+    elsif request.headers['HTTP_X_FILE_UPLOAD']
+      @file = request.env['rack.input']
     end
+    return nil if @file.nil?
+    @file.original_filename = request.headers['HTTP_X_FILE_NAME']     || @file.original_filename || "untitled.jpg"
+    @file.content_type      = (params[:content_type]                  || # custom param overrides
+                              request.headers['HTTP_X_CONTENT_TYPE']  || # custom header overrides
+                              @file.content_type                      || # assumed content type overrides
+                              request.headers['HTTP_CONTENT_TYPE']    || # request content type
+                              Rack::Mime::MIME_TYPES[".#{@file.original_filename.split('.').last}"]) # fallback to file extension
+                              .split(/\,\s*/).select{|c| c.match("image/")}.first
   end
 
 end

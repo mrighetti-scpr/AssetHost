@@ -28,24 +28,27 @@ A POST request can take the following parameters:
 - **owner:** Owner name.
 - **title:** Custom image title.
 
-Alternatively, the same POST request can deliver an image directly w/ the following **required** request headers set:
+Alternatively, the same POST request can deliver an image directly in the request body.  The simplest way to do this is as a normal file upload with the binary data as the body and the `Content-Type` in the header.  Or you can upload the image with other data as a form.  These are the following form keys you will need:
+
+- **image:** The binary image data.
+- **title:** Custom image title.
+- **owner:** Owner name.
+- **caption:** Custom image caption.
+- **image_gravity:** Custom image gravity.
+- **image_created:** Custom image timestamp.
+- **notes:** Notes used internally about the image.
+- **content_type:** Custom content type.  This parameter is not required because if no content type is specified either in this parameter or the `X_CONTENT_TYPE` header, the content type will be assumed by the file extension.  However, it's recommended you be specific and provide a content type MIME type.
+
+With a binary upload, the `X_FILE_UPLOAD` header **must** be set to true.  This can be omitted when using form data.
+
+These headers are optional:
 
 - **X_FILE_NAME:** The file name of the asset being uploaded.
-- **CONTENT_TYPE:** The MIME type of the asset file.
-- **HTTP_X_FILE_UPLOAD:** Set the value to `true` to signal a file upload to the HTTP server.
+- **X_CONTENT_TYPE:** The MIME type of the asset file.
 
 **Put:** `/api/assets/{id}`
 
-A PUT request takes the following parameters:
-- **caption:** Custom image caption.
-- **owner:** Owner name.
-- **title:** Custom image title.
-
-Alternatively, the same PUT request can deliver an image directly w/ the following **required** request headers set:
-
-- **X_FILE_NAME:** The file name of the asset being uploaded.
-- **CONTENT_TYPE:** The MIME type of the asset file.
-- **HTTP_X_FILE_UPLOAD:** Set the value to `true` to signal a file upload to the HTTP server.
+A PUT request should exhibit identical behavior to a POST request.
 
 **Delete:** `/api/assets/{id}`
 

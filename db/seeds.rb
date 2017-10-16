@@ -18,3 +18,8 @@ User.create username: "admin", is_admin: true, password: "password"
 .each do |output|
   Output.create(output)
 end
+
+Permission.create resource: "Asset", ability: "read"
+Permission.create resource: "Asset", ability: "write"
+Permission.create resource: "Output", ability: "read"
+Permission.create resource: "Output", ability: "write"
