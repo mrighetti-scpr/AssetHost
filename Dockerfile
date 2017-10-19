@@ -37,7 +37,7 @@ RUN bundle install
 
 RUN cp config/templates/secrets.yml.template config/secrets.yml
 
-RUN bundle exec rake assets:precompile RAILS_ENV=production
+RUN bundle exec rake resources:precompile RAILS_ENV=production
 
 RUN cp nginx.conf /etc/nginx/nginx.conf
 
