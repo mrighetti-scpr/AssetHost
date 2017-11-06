@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170822195302) do
+ActiveRecord::Schema.define(version: 20171106212830) do
 
   create_table "asset_host_core_api_user_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.integer  "api_user_id"
@@ -70,7 +70,7 @@ ActiveRecord::Schema.define(version: 20170822195302) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "is_hidden",                        default: false,    null: false
-    t.string   "keywords"
+    t.text     "keywords",           limit: 65535
     t.integer  "version",                          default: 1
   end
 
