@@ -1,1 +1,1 @@
-<iframe type='text/html' src='http://www.youtube.com/embed/<%=@videoid%>' frameborder='0' allowfullscreen='true' />
+<iframe type='text/html' src='https://www.youtube.com/embed/<%=@videoid%>' frameborder='0' allowfullscreen='true' />
