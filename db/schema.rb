@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171106212830) do
+ActiveRecord::Schema.define(version: 20171107183955) do
 
   create_table "asset_host_core_api_user_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.integer  "api_user_id"
@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(version: 20171106212830) do
   end
 
   create_table "asset_host_core_assets", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
-    t.string   "title"
+    t.text     "title",              limit: 65535
     t.text     "caption",            limit: 65535
     t.string   "owner"
     t.string   "url"
