@@ -136,8 +136,8 @@ class Api::AssetsController < Api::BaseController
   def get_uploaded_file
     if params[:image].is_a?(ActionDispatch::Http::UploadedFile)
       @file = params[:image]
-    elsif request.headers['HTTP_X_FILE_UPLOAD']
-      @file = request.env['rack.input']
+    elsif request.headers['HTTP_X_FILE_UPLOAD'] && request.env['rack.input']
+      @file = ActionDispatch::Http::UploadedFile.new({tempfile: request.env['rack.input']})
     end
     return nil if @file.nil?
     @file.original_filename = request.headers['HTTP_X_FILE_NAME']     || @file.original_filename || "untitled.jpg"
