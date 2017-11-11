@@ -37,14 +37,14 @@ Alternatively, the same POST request can deliver an image directly in the reques
 - **image_gravity:** Custom image gravity.
 - **image_created:** Custom image timestamp.
 - **notes:** Notes used internally about the image.
-- **content_type:** Custom content type.  This parameter is not required because if no content type is specified either in this parameter or the `X_CONTENT_TYPE` header, the content type will be assumed by the file extension.  However, it's recommended you be specific and provide a content type MIME type.
+- **content_type:** Custom content type.  This parameter is not required because if no content type is specified either in this parameter or the `Content-Type` header, the content type will be assumed by the file extension.  However, it's recommended you be specific and provide a content type MIME type.
 
-With a binary upload, the `X_FILE_UPLOAD` header **must** be set to true.  This can be omitted when using form data.
+With a binary upload, the `X-File-Upload` header **must** be set to true.  This can be omitted when using form data.
 
 These headers are optional:
 
-- **X_FILE_NAME:** The file name of the asset being uploaded.
-- **X_CONTENT_TYPE:** The MIME type of the asset file.
+- **X-File-Name:** The file name of the asset being uploaded.
+- **Content-Type:** The MIME type of the asset file.
 
 **Put:** `/api/assets/{id}`
 
