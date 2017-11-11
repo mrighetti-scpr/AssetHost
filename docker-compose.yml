@@ -3,12 +3,14 @@ version: '3'
 services:
 
   assethost:
-    build: .
+    image: assethost
     container_name: assethost
     ports:
       - 8080:8080/tcp
     env_file:
       - .env
+    stdin_open: true
+    tty: true
     networks:
       assethost-network:
         aliases:
@@ -54,9 +56,22 @@ services:
         aliases:
          - elasticsearch
 
+  s3:
+    image: fingershock/fakes3:0.2.4
+    container_name: assethost-s3
+    ports:
+      - 8000:8000/tcp
+    volumes:
+      - s3-data:/fakes3_data:rw
+    networks:
+      assethost-network:
+        aliases:
+          - s3
+
 volumes:
   mysql-data:
   elasticsearch-data:
+  s3-data:
 
 networks:
   assethost-network:
