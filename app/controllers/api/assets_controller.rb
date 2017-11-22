@@ -39,7 +39,7 @@ class Api::AssetsController < Api::BaseController
       @asset.image_content_type = @file.content_type
       if @asset.save
         @asset.request = request
-        respond_with @asset, location: asset_path(@asset)
+        render json: @asset.as_json
       else
         render nothing: true, status: 400
       end
