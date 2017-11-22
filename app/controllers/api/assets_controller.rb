@@ -37,6 +37,7 @@ class Api::AssetsController < Api::BaseController
       @asset.file               = @file
       @asset.image_file_name    = @file.original_filename
       @asset.image_content_type = @file.content_type
+      @asset.assign_attributes(upload_params)
       if @asset.save
         @asset.request = request
         render json: @asset.as_json
