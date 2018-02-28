@@ -65,7 +65,7 @@ group :production do
 end
 
 group :test do 
-  gem "capybara", '~> 2.11.0'
+  gem "capybara", '~> 2.18.0'
   gem "factory_girl", '~> 4.8.0'
   gem "fakeweb", '~> 1.3.0'
   gem "launchy", '>= 2.1.1'
