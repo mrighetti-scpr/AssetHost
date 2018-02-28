@@ -20,8 +20,8 @@ gem 'jbuilder', '~> 2.5'
 gem 'jwt', '~> 0.1.4'
 gem 'responders', '~> 2.3.0'
 
-gem "paperclip", "5.0.0"
-gem "searchkick", '~> 2.2.0'
+gem "paperclip", "5.2.1"
+gem "searchkick", '~> 2.5.0'
 gem "cocaine", "0.5.8"
 gem "resque", "~> 1.27.2"
 gem 'sinatra', github: 'sinatra/sinatra', branch: 'master', require: false, ref: "34521720b6028c2fa696cf85109345a89f306c99"

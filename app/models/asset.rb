@@ -25,7 +25,7 @@ class Asset < ActiveRecord::Base
   scope :visible, -> { where(is_hidden: false) }
 
   has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
-  belongs_to :native, :polymorphic => true  # again, this is just for things like youtube videos
+  belongs_to :native, polymorphic: true, optional: true  # again, this is just for things like youtube videos
 
   before_create :set_version
 
