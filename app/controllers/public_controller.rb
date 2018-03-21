@@ -70,7 +70,7 @@ class PublicController < ApplicationController
 
     # crap.  totally failed.
     redirect_to asset.image_url(output.code) and return
-
+  
   end
 
 
@@ -80,6 +80,11 @@ class PublicController < ApplicationController
     downloader = PhotographicMemory.new
     file       = downloader.get(filename)
     send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
+  rescue Aws::S3::Errors::NoSuchKey
+    # It's possible that a requested image won't be available in S3
+    # even though we already have a fingerprint.  Sometimes a URL
+    # might also be malformed.  This error doesn't really help us
+    # here.
   end
 
 end
