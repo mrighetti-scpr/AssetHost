@@ -1,0 +1,26 @@
+.asset-list
+  background:      $color-white
+  display:         flex
+  flex-wrap:       wrap
+  justify-content: center
+  list-style:      none
+
+.asset-list__item, .asset-list__spacer
+  margin-right:  pixels($margin)
+  width:         width(3)
+
+.asset-list__item
+  background:    $color-gray-light
+  flex-shrink:   0
+  height:        width(3)
+  margin-bottom: pixels($margin)
+  width:         width(3)
+
+.asset-list__spacer
+  height: 0
+
+@mixin asset-list--sm
+  .asset-list__item
+    height: width(5)
+    width:  width(6)
+

@@ -1,0 +1,29 @@
+{{#file-dropzone id="index__drop-zone" class="drop-zone" name="assets" as |dropzone queue|}}
+  {{#if dropzone.active}}
+    {{#if dropzone.valid}}
+      Drop to upload
+    {{else}}
+      Invalid
+    {{/if}}
+  {{else if queue.files.length}}
+    Uploading {{queue.files.length}} files. ({{queue.progress}}%)
+  {{else}}
+    <h4 class="drop-zone__heading">Upload Images</h4>
+    <p class="drop-zone__text">
+      {{#if dropzone.supported}}
+        Drag and drop images onto this area to upload them or
+      {{/if}}
+      {{#file-upload name="assets"
+                     accept="image/*"
+                     multiple=true
+                     onfileadd=(action "uploadAsset")}}
+        <a id="upload-image" class="md-default-theme md-button md-raised" tabindex=0>Add an Image.</a>
+      {{/file-upload}}
+    </p>
+  {{/if}}
+{{/file-dropzone}}
+
+{{#each pages as |page|}}
+  {{asset-list id="index__asset-list" assets=page}}
+{{/each}}
+

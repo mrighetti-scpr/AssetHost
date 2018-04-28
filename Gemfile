@@ -15,6 +15,8 @@ gem 'railties', '~> 5.0.2'
 gem 'sprockets-rails', '~> 3.2.0'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
 
+gem "ember-cli-rails"
+
 gem 'jquery-rails', '~> 4.2.2'
 gem 'jbuilder', '~> 2.5'
 gem 'jwt', '~> 0.1.4'

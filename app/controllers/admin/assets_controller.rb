@@ -6,8 +6,8 @@ class Admin::AssetsController < Admin::BaseController
   #----------
 
   def index
-    @assets = Asset.visible.order("updated_at desc").page(params[:page]).per(24)
-    @assets.each{|a| a.request = request}
+    # @assets = Asset.visible.order("updated_at desc").page(params[:page]).per(24)
+    # @assets.each{|a| a.request = request}
   end
 
   #----------

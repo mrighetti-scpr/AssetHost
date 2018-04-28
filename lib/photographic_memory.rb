@@ -48,13 +48,15 @@ class PhotographicMemory
       content_type: content_type
     })
     if style_name == 'original' && !Rails.env.test?
-      reference = StringIO.new render(file, ["-quality 10"])
-      # 👆 this is a low quality reference image we generate
-      # which is sufficient for classification purposes but
-      # saves bandwidth and overcomes the file size limit
-      # for Rekognition
-      keywords = classify reference
-      gravity  = detect_gravity reference
+      if rendering = render(file, ["-quality 10"])
+        reference = StringIO.new rendering
+        # 👆 this is a low quality reference image we generate
+        # which is sufficient for classification purposes but
+        # saves bandwidth and overcomes the file size limit
+        # for Rekognition
+        keywords = classify reference
+        gravity  = detect_gravity reference
+      end
     else
       keywords = []
       gravity  = "Center"
@@ -117,8 +119,6 @@ class PhotographicMemory
 
     @labels ||= detect_labels file
     @faces  ||= detect_faces file
-
-    # byebug
 
     @labels
   rescue Aws::Rekognition::Errors::ServiceError, Aws::Errors::MissingRegionError, Seahorse::Client::NetworkingError => e
@@ -228,14 +228,14 @@ class PhotographicMemory
       error  = error_buffer.any? ? error_buffer.join('') : nil
 
       unless error
-        raise PhotographicMemoryError.new("No output received.") if !output
-        return output
+        raise PhotographicMemoryError, "No output received." if !output
       else
-        raise PhotographicMemoryError.new(error)
+        raise PhotographicMemoryError, error
       end
+      output
     end
-  rescue Timeout::Error, PhotographicMemoryError, Errno::EPIPE => e
-    e
+  rescue Timeout::Error, Errno::EPIPE => e
+    raise PhotographicMemoryError, e.message
   ensure
     begin
       Process.kill("KILL", pid) if pid

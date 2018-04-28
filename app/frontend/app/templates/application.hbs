@@ -1,0 +1,26 @@
+{{#paper-toolbar id="application__toolbar" class="toolbar-component" as |toolbar|}}
+   {{#toolbar.tools}}
+     <h2>AssetHost</h2>
+     {{paper-input class="toolbar-component__search-box flex-20" label="Search" value=name onChange=null}}
+     {{#paper-button}}
+       Assets
+     {{/paper-button}}
+     {{#paper-button}}
+       Manage Outputs
+     {{/paper-button}}
+     {{#paper-button}}
+       API Users
+     {{/paper-button}}
+     <span class="flex"></span>
+     {{#paper-button raised=true}}
+       Learn More
+     {{/paper-button}}
+     {{#paper-button mini=true aria-label="Favorite"}}
+      {{paper-icon "favorite"}}
+     {{/paper-button}}
+   {{/toolbar.tools}}
+ {{/paper-toolbar}}
+<div id="application__content-box" class="content-box">
+  {{outlet}}
+</div>
+
