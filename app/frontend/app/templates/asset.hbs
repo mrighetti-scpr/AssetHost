@@ -1,0 +1,33 @@
+<div id="asset__editor" class="asset-editor">
+  <h1 id="asset__title" class="asset-editor__title">{{or model.title "Untitled Asset"}}</h1>
+  <img id="asset__image" class="asset-editor__image" src="{{model.urls.full}}">
+  <div id="asset__attributes" class="asset-editor__attributes">
+    <div class="asset-editor__attributes-row"> 
+      <div>Asset Id</div>
+      <div>{{model.id}}</div>
+    </div>
+    <div class="asset-editor__attributes-row"> 
+      <div>URL</div>
+      <div></div>
+    </div>
+    <div class="asset-editor__attributes-row"> 
+      <div>Tag</div>
+      <div></div>
+    </div>
+  </div>
+  <h2>Basics</h2>
+  <div class="asset-editor__attributes">
+    <div class="asset-editor__attributes-row"> 
+      <div>Asset Id</div>
+      <div>{{model.id}}</div>
+    </div>
+    <div class="asset-editor__attributes-row"> 
+      <div>URL</div>
+      <div></div>
+    </div>
+    <div class="asset-editor__attributes-row"> 
+      <div>Tag</div>
+      <div></div>
+    </div>
+  </div>
+</div>

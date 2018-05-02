@@ -1,7 +1,7 @@
 require "resque/server"
 
 Rails.application.routes.draw do
-  mount_ember_assets :frontend, to: "/"
+  # mount_ember_assets :frontend, to: "/"
   match '/i/:aprint/:id-:style.:extension', :to => 'public#image', :constraints => { :id => /\d+/, :style => /[^\.]+/}, via: [:get, :post, :put, :patch, :delete], :as => :image
   match '/a', to: redirect('/'), via: :all, status: 302
   match '/a/chooser', to: redirect('/chooser'), via: :all # to support legacy Outpost client

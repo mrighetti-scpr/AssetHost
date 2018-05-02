@@ -15,7 +15,7 @@ class Api::AssetsController < Api::BaseController
     else
       @assets = Asset.visible.order("updated_at desc")
         .page(params[:page])
-        .per(24)
+        .per(20)
     end
 
     @assets.map {|a| a.request = request}

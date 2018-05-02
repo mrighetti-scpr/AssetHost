@@ -1,9 +1,11 @@
 {{#paper-toolbar id="application__toolbar" class="toolbar-component" as |toolbar|}}
    {{#toolbar.tools}}
      <h2>AssetHost</h2>
-     {{paper-input class="toolbar-component__search-box flex-20" label="Search" value=name onChange=null}}
+     <div class="toolbar-component__search-box flex-20">
+       {{paper-input class="toolbar-component__search-box" label="Search" value=query onChange=(action (mut query))}}
+     </div>
      {{#paper-button}}
-       Assets
+       {{#link-to 'index'}}Assets{{/link-to}}
      {{/paper-button}}
      {{#paper-button}}
        Manage Outputs
@@ -12,15 +14,18 @@
        API Users
      {{/paper-button}}
      <span class="flex"></span>
-     {{#paper-button raised=true}}
-       Learn More
-     {{/paper-button}}
-     {{#paper-button mini=true aria-label="Favorite"}}
-      {{paper-icon "favorite"}}
-     {{/paper-button}}
+    {{#paper-button}}
+      Log Out
+    {{/paper-button}}
    {{/toolbar.tools}}
  {{/paper-toolbar}}
 <div id="application__content-box" class="content-box">
   {{outlet}}
 </div>
+
+{{#if isOffline}}
+  {{#paper-toaster}}
+    You are offline.
+  {{/paper-toaster}}
+{{/if}}
 

@@ -7,6 +7,10 @@ export default DS.RESTSerializer.extend({
         data: payload.map(this._normalizeRecord)
       }
     }
+    return {
+      meta: {},
+      data: this._normalizeRecord(payload)
+    }
   },
   _normalizeRecord(record){
     const attributes = Object.assign({}, record),

@@ -1,9 +1,16 @@
 {{#each (sort-by "created_at:desc" assets) as |asset|}}
-  <li class="asset-list__item">
-    <img src="{{asset.urls.lsquare}}">
+  <li class="asset-list__item" style={{asset.style}}>
+    {{#if asset.isUploading}}
+      {{paper-progress-circular warn=true class="md-hue-3 asset-list__item-progress" diameter=70}}
+    {{/if}}
+    {{#paper-tooltip position="top"}}
+      {{asset.id}}: {{asset.title}} {{asset.owner}}  {{asset.taken_at}} {{asset.size}}
+    {{/paper-tooltip}}
+    {{#if asset.id}}
+      {{#link-to 'asset' asset.id class="asset-list__item-link"}} {{/link-to}}
+    {{/if}}
   </li>
 {{/each}}
-
 
 <li class="asset-list__spacer"></li>
 <li class="asset-list__spacer"></li>

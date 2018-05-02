@@ -6,7 +6,13 @@ module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
     sassOptions: {
       extension: 'sass'
-    }
+    },
+    'esw-cache-fallback': {
+      patterns: [
+        '/api/assets(.*)'
+      ],
+    },
+    sassVariables: 'app/styles/vars.sass'
   });
 
   // Use `app.import` to add additional libraries to the generated
