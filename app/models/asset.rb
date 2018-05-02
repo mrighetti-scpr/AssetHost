@@ -402,7 +402,13 @@ class Asset < ActiveRecord::Base
     # If you want the asset to render or re-render, all you have to do
     # is place a File or StringIO object in the file attribute
     if file
-      uploader = PhotographicMemory.new
+      uploader = PhotographicMemory.new({
+        s3_bucket:            Rails.application.secrets.s3['bucket'],
+        s3_region:            Rails.application.secrets.s3['region'],
+        s3_endpoint:          Rails.application.secrets.s3['endpoint'],
+        s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
+        s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
+      })
       self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: image_content_type
       # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
@@ -425,7 +431,13 @@ class Asset < ActiveRecord::Base
   def reload_image
     @reloading = true
     # pulls the original image from storage
-    downloader = PhotographicMemory.new
+    downloader = PhotographicMemory.new({
+      s3_bucket:            Rails.application.secrets.s3['bucket'],
+      s3_region:            Rails.application.secrets.s3['region'],
+      s3_endpoint:          Rails.application.secrets.s3['endpoint'],
+      s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
+      s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
+    })
     self.file = downloader.get file_key
   end
 

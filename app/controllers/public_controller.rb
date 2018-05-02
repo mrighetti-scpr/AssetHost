@@ -77,7 +77,13 @@ class PublicController < ApplicationController
   private
 
   def _send_file(filename)
-    downloader = PhotographicMemory.new
+    downloader = PhotographicMemory.new({
+      s3_bucket:            Rails.application.secrets.s3['bucket'],
+      s3_region:            Rails.application.secrets.s3['region'],
+      s3_endpoint:          Rails.application.secrets.s3['endpoint'],
+      s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
+      s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
+    })
     file       = downloader.get(filename)
     send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
   rescue Aws::S3::Errors::NoSuchKey
