@@ -70,7 +70,6 @@ class PublicController < ApplicationController
 
     # crap.  totally failed.
     redirect_to asset.image_url(output.code) and return
-  
   end
 
 
@@ -78,6 +77,7 @@ class PublicController < ApplicationController
 
   def _send_file(filename)
     downloader = PhotographicMemory.new({
+      environment:          Rails.env,
       s3_bucket:            Rails.application.secrets.s3['bucket'],
       s3_region:            Rails.application.secrets.s3['region'],
       s3_endpoint:          Rails.application.secrets.s3['endpoint'],

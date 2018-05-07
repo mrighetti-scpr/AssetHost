@@ -5,6 +5,7 @@ class RenderJob < ApplicationJob
     asset_output = AssetOutput.find(asset_output_id)
     asset        = asset_output.asset
     client       = PhotographicMemory.new({
+      environment:          Rails.env,
       s3_bucket:            Rails.application.secrets.s3['bucket'],
       s3_region:            Rails.application.secrets.s3['region'],
       s3_endpoint:          Rails.application.secrets.s3['endpoint'],
