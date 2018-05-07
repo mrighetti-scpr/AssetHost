@@ -35,17 +35,10 @@ class ApplicationController < ActionController::Base
 
   def render_error(options={})
     options[:message] ||= "Error"
-
-    respond_to do |format|
-      format.html { render status: options[:status] }
-
-      format.json do
-        render :json => {
-          :status => options[:status],
-          :error  => options[:message]
-        }, :status => options[:status]
-      end
-    end
+    render :json => {
+      :status => options[:status],
+      :error  => options[:message]
+    }, :status => options[:status]
   end
   
 end
