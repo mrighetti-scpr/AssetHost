@@ -6,6 +6,8 @@ class Asset < ActiveRecord::Base
 
   attr_accessor :image, :file, :request
 
+  MAX_COL_LENGTH = 32766
+
   VIA_UNKNOWN   = 0
   VIA_FLICKR    = 1
   VIA_LOCAL     = 2
@@ -35,6 +37,8 @@ class Asset < ActiveRecord::Base
   before_save :reload_image, if: -> {
     image_gravity_changed? && !@reloading
   }
+
+  before_save :truncate_cols
 
   after_save :save_image
 
@@ -218,8 +222,6 @@ class Asset < ActiveRecord::Base
           Output.paperclip_sizes[style][:format]
         end
       end
-    rescue => e
-      byebug
     end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
@@ -455,12 +457,25 @@ class Asset < ActiveRecord::Base
   def set_version
     # We have to do this to avoid some incompatibilities with the older
     # version of assethost.  In particular, file keys for older uploads
-    # are always JPG, but we need newere assets to use whatever extension
+    # are always JPG, but we need newer assets to use whatever extension
     # they come with so we can determine how to use them.
     #
     # From now on, the version for an asset is set to 2 instead of 1.
     self.version = 2
   end
+
+  def truncate_cols
+    cols = Asset.columns_hash
+
+    cols.each do |entry|
+      col_size = entry[1].limit
+      value    = self.send(entry[0])
+      next if !value || !(entry[1].type == :text || entry[1].type == :string) 
+      # self.send "#{entry[0]}=", value.truncate(col_size)
+      self.send "#{entry[0]}=", value.truncate(MAX_COL_LENGTH)
+    end
+  end
+
 end
 
 #----------
