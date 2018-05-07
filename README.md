@@ -44,12 +44,16 @@ AssetHost is a [Rails](http://rubyonrails.org/)-based application.
 
 The most straight-forward way to setup AssetHost is to use [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) with a pre-built image.
 
+Clone this repo, and then run these two commands:
+
 ```sh
 docker-compose up -d
 docker-compose exec assethost setup
 ```
 
 The web application will then be available at [localhost:8080](http://localhost:8080).
+
+#### Native Development Installation
 
 For code modification, you will need to have [Ruby](https://ruby-lang.org) installed natively.
 
