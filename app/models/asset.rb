@@ -1,4 +1,7 @@
 class Asset < ActiveRecord::Base
+
+  include Concurrency
+
   self.table_name = "asset_host_core_assets"
 
   attr_accessor :image, :file, :request
@@ -54,8 +57,6 @@ class Asset < ActiveRecord::Base
         decay: 0.7
       }
     }, page: page, per_page: per_page)
-    # 👆re-enable all that once we have upgraded elasticsearch!
-    # Asset.search(query, page: page, per_page: per_page)
   end
 
 
