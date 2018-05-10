@@ -50,8 +50,20 @@ class PublicController < ApplicationController
 
     # do we have a rendered output for this style?
     # if not then create a new one.
-    asset_output = asset.outputs.where(output_id: output.id, image_fingerprint: asset.image_fingerprint).first_or_create
-    
+    retries = 0
+    begin
+      asset_output = asset.outputs.where(output_id: output.id, image_fingerprint: asset.image_fingerprint).first_or_create
+    rescue ActiveRecord::RecordNotUnique => ex
+      if ex.message =~ /Duplicate entry/
+        retries += 1
+        raise ex if retries > 3  # max 3 retries 
+        sleep 5
+        retry
+      else
+        raise ex
+      end
+    end
+
     # if a new asset_output gets created, it should automatically
     # fire off a new render job that will then give it a fingerprint
 
