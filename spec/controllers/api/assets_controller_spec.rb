@@ -72,6 +72,11 @@ describe Api::AssetsController, type: :controller do
       asset.should be_present
     end
 
+    it 'returns a bad request if the URL is invalid' do
+      post :create, params: {url: "<iframe src='totalnonsense'></iframe>"}
+      response.status.should eq 401
+    end
+
     it 'appends to the notes if present' do
       post :create, params: api_request_params(url: "http://imgur.com/someimg.png", note: "Imported via Tests")
       json = JSON.parse(response.body)

@@ -95,6 +95,9 @@ class Api::AssetsController < Api::BaseController
                                 "the URL #{params[:url]}")
       return false
     end
+  rescue URI::InvalidURIError
+    render_bad_request(message: "The URL provided is not valid.")
+    return false 
   end
 
 

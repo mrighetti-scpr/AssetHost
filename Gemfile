@@ -16,6 +16,7 @@ gem 'sprockets-rails', '~> 3.2.0'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
 
 gem "ember-cli-rails"
+gem "photographic_memory", github: "scpr/photographic_memory"
 
 gem 'jquery-rails', '~> 4.2.2'
 gem 'jbuilder', '~> 2.5'

@@ -50,8 +50,20 @@ class PublicController < ApplicationController
 
     # do we have a rendered output for this style?
     # if not then create a new one.
-    asset_output = asset.outputs.where(output_id: output.id, image_fingerprint: asset.image_fingerprint).first_or_create
-    
+    retries = 0
+    begin
+      asset_output = asset.outputs.where(output_id: output.id, image_fingerprint: asset.image_fingerprint).first_or_create
+    rescue ActiveRecord::RecordNotUnique => ex
+      if ex.message =~ /Duplicate entry/
+        retries += 1
+        raise ex if retries > 3  # max 3 retries 
+        sleep 5
+        retry
+      else
+        raise ex
+      end
+    end
+
     # if a new asset_output gets created, it should automatically
     # fire off a new render job that will then give it a fingerprint
 
@@ -70,14 +82,20 @@ class PublicController < ApplicationController
 
     # crap.  totally failed.
     redirect_to asset.image_url(output.code) and return
-  
   end
 
 
   private
 
   def _send_file(filename)
-    downloader = PhotographicMemory.new
+    downloader = PhotographicMemory.new({
+      environment:          Rails.env,
+      s3_bucket:            Rails.application.secrets.s3['bucket'],
+      s3_region:            Rails.application.secrets.s3['region'],
+      s3_endpoint:          Rails.application.secrets.s3['endpoint'],
+      s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
+      s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
+    })
     file       = downloader.get(filename)
     send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
   rescue Aws::S3::Errors::NoSuchKey

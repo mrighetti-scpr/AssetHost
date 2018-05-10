@@ -2,22 +2,39 @@ version: '3'
 
 services:
 
-  assethost:
-    image: assethost
+  assethost: &main
+    image: scprdev/assethost
     container_name: assethost
     ports:
       - 8080:8080/tcp
     env_file:
-      - .env
+      - .dev.env
     stdin_open: true
     tty: true
     networks:
       assethost-network:
         aliases:
           - assethost
+    depends_on:
+      - mysql
+      - elasticsearch
+      - redis
+      - s3
+  
+  worker:
+    <<: *main
+    container_name: worker
+    command: worker
+    networks:
+      assethost-network:
+        aliases:
+          - worker
+    ports: []
+    depends_on:
+      - assethost
 
   mysql: &defaults
-    image: mysql:latest
+    image: mysql:5.7.21
     container_name: assethost-mysql
     ports:
       - 3200:3200/tcp

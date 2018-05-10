@@ -1,7 +1,12 @@
 class Asset < ActiveRecord::Base
+
+  include Concurrency
+
   self.table_name = "asset_host_core_assets"
 
   attr_accessor :image, :file, :request
+
+  MAX_COL_LENGTH = 65535
 
   VIA_UNKNOWN   = 0
   VIA_FLICKR    = 1
@@ -33,6 +38,8 @@ class Asset < ActiveRecord::Base
     image_gravity_changed? && !@reloading
   }
 
+  before_save :truncate_cols
+
   after_save :save_image
 
   after_commit :publish_asset_update, :if => :persisted?
@@ -54,8 +61,6 @@ class Asset < ActiveRecord::Base
         decay: 0.7
       }
     }, page: page, per_page: per_page)
-    # 👆re-enable all that once we have upgraded elasticsearch!
-    # Asset.search(query, page: page, per_page: per_page)
   end
 
 
@@ -217,8 +222,6 @@ class Asset < ActiveRecord::Base
           Output.paperclip_sizes[style][:format]
         end
       end
-    rescue => e
-      byebug
     end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
@@ -402,7 +405,14 @@ class Asset < ActiveRecord::Base
     # If you want the asset to render or re-render, all you have to do
     # is place a File or StringIO object in the file attribute
     if file
-      uploader = PhotographicMemory.new
+      uploader = PhotographicMemory.new({
+        environment:          Rails.env,
+        s3_bucket:            Rails.application.secrets.s3['bucket'],
+        s3_region:            Rails.application.secrets.s3['region'],
+        s3_endpoint:          Rails.application.secrets.s3['endpoint'],
+        s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
+        s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
+      })
       self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: image_content_type
       # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
       self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
@@ -425,7 +435,13 @@ class Asset < ActiveRecord::Base
   def reload_image
     @reloading = true
     # pulls the original image from storage
-    downloader = PhotographicMemory.new
+    downloader = PhotographicMemory.new({
+      s3_bucket:            Rails.application.secrets.s3['bucket'],
+      s3_region:            Rails.application.secrets.s3['region'],
+      s3_endpoint:          Rails.application.secrets.s3['endpoint'],
+      s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
+      s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
+    })
     self.file = downloader.get file_key
   end
 
@@ -442,12 +458,24 @@ class Asset < ActiveRecord::Base
   def set_version
     # We have to do this to avoid some incompatibilities with the older
     # version of assethost.  In particular, file keys for older uploads
-    # are always JPG, but we need newere assets to use whatever extension
+    # are always JPG, but we need newer assets to use whatever extension
     # they come with so we can determine how to use them.
     #
     # From now on, the version for an asset is set to 2 instead of 1.
     self.version = 2
   end
+
+  def truncate_cols
+    cols = Asset.columns_hash
+
+    cols.each do |entry|
+      col_size = entry[1].limit
+      value    = self.send(entry[0])
+      next if !col_size || !value || !(entry[1].type == :text || entry[1].type == :string) 
+      self.send "#{entry[0]}=", value.truncate(col_size)
+    end
+  end
+
 end
 
 #----------

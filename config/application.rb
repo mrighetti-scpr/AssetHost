@@ -19,7 +19,7 @@ module AssetHost
   class Application < Rails::Application
     require "#{Rails.root}/lib/asset_host_core"
     require "#{Rails.root}/lib/asset_host_utils"
-    require "#{Rails.root}/lib/photographic_memory"
+    # require "#{Rails.root}/lib/photographic_memory"
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.

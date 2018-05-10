@@ -1,4 +1,7 @@
 class Output < ActiveRecord::Base
+
+  include Concurrency
+
   self.table_name = "asset_host_core_outputs"
 
   has_many :asset_outputs

@@ -26,6 +26,7 @@ Plus:
 
 Minimum Requirements:
 
+- Ruby
 - Docker
 - MySQL
 
@@ -37,41 +38,51 @@ Minimum Requirements:
 
 ### Setup
 
-AssetHost can be run from a [Docker](https://www.docker.com/) image.  Once you have Docker set up on a machine, pull the [AssetHost image from Docker Hub](https://hub.docker.com/r/scprdev/assethost/):
+#### Development
+
+AssetHost is a [Rails](http://rubyonrails.org/)-based application.
+
+The most straight-forward way to setup AssetHost is to use [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) with a pre-built image.
+
+Clone this repo, and then run these two commands:
 
 ```sh
-docker pull scprdev/assethost
+docker-compose up -d
+docker-compose exec assethost setup
 ```
 
-AssetHost expects MySQL and various other storage engines such as Redis & Elasticsearch to be available.  The connection settings and credentials should be provided through environment variables.  It is best to store these variables in a **.env** file.  A sample .env file is provided in [config/templates/.env.template](https://github.com/SCPR/AssetHost/blob/master/config/templates/.env.template); the variables that are uncommented are required for minimal operation, and the ones commented out are optional.  It is suggested you use a **.env** file because it is already excluded from version tracking and it automatically gets loaded by the application if you need to run it outside of a Docker environment during development.
+The web application will then be available at [localhost:8080](http://localhost:8080).
 
-Once you have obtained an image and filled out your **.env** file, you can then run the image in a new Docker container.
+#### Native Development Installation
+
+For code modification, you will need to have [Ruby](https://ruby-lang.org) installed natively.
+
+Make sure you have the prerequisite services running.  You can either have them installed natively, or you can use the `docker-compose.yml` file to run them with containers:
 
 ```sh
-docker run -i -d -p 80:8080 --name assethost --env-file .env scprdev/assethost server
+docker-compose up -d mysql elasticsearch redis s3
 ```
 
-Note that the `--name` parameter specifies the name of the new container, and the last parameter is the name of the image.  `--name` can be left blank and Docker will assign a random name to it.  It's recommended that you pick a name and stick with it.
-
-
-
-If this is your first time running AssetHost, you will need to initialize your database.  To do this, run:
+Then run the setup to pull in dependencies and initialize the database
 
 ```sh
-docker exec assethost setup
+./bin/setup
 ```
 
-This will double-check if all Ruby dependencies are met and will then create a MySQL database with the required tables.  If you already have a database created for AssetHost, you will not need to perform this step again when creating a new container.  You can skip this step when creating more containers that share the same database settings(like workers).
+Finally, run the server:
+
+```sh
+rails s
+```
+
+The web application will be available at [localhost:3000](http://localhost:3000).
 
 On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
 
-To run a worker for asynchronous image encoding:
 
-```sh
-docker run -i -d -p 80:8080 --name assethost --env-file .env scprdev/assethost worker
-```
+#### Production
 
-The worker is responsible for resizing & saving assets in the background.  This saves on storage space as we are only creating different thumbnail sizes as needed.  An asset might only ever be needed in one size, so it doesn't make sense to render it in every output size.
+It's suggested that you use Docker and a container management solution like [Rancher](https://rancher.com/).  The `docker-compose.yml` file included with this project is meant to be used for development, but can also be adapted into configuration used for production.
 
 
 ## Workflow
@@ -127,10 +138,6 @@ For the purpose of improving ease of searchability, AssetHost can tie into Amazo
 See the [API documentation](https://github.com/SCPR/AssetHost/blob/master/API.md).
 
 
-## Development
-
-AssetHost is a [Rails](http://rubyonrails.org/)-based application.  
-
 ### Prerequisites
 
 The application requires the following prerequisites:
@@ -144,29 +151,6 @@ The application requires the following prerequisites:
 - Elasticsearch >= 1.6.0
 - Memcached
 
-### Installation
-
-Like when running the Docker container, you will be using a **.env** file for configuration.  Outside a Docker container, AssetHost will look for a **.env** in the project root directory and use those variables.  As mentioned above, there's a sample **.env** file in `config/templates/.env.template`.
-
-Once the required variables have been populated, you can install dependencies by running the setup script:
-
-```sh
-bin/setup
-```
-
-To start the server:
-
-```sh
-rails s
-```
-
-*The application will be accessible at http://localhost:3000.*
-
-To start a worker:
-
-```sh
-QUEUE=assets rake resque:work
-```
 
 ### Adding Custom Functionality
 
