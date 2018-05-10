@@ -6,7 +6,7 @@ class Asset < ActiveRecord::Base
 
   attr_accessor :image, :file, :request
 
-  MAX_COL_LENGTH = 32766
+  MAX_COL_LENGTH = 65535
 
   VIA_UNKNOWN   = 0
   VIA_FLICKR    = 1
@@ -471,9 +471,8 @@ class Asset < ActiveRecord::Base
     cols.each do |entry|
       col_size = entry[1].limit
       value    = self.send(entry[0])
-      next if !value || !(entry[1].type == :text || entry[1].type == :string) 
-      # self.send "#{entry[0]}=", value.truncate(col_size)
-      self.send "#{entry[0]}=", value.truncate(MAX_COL_LENGTH)
+      next if !col_size || !value || !(entry[1].type == :text || entry[1].type == :string) 
+      self.send "#{entry[0]}=", value.truncate(col_size)
     end
   end
 
