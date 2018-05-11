@@ -1,0 +1,25 @@
+// "converts" pixels to REM
+@function pixels($value)
+  @return ($value / 16) + rem
+
+// Creates a width by adding up columns and gutters
+@function width($value)
+  $i: 0
+  $output: 0
+  @while $i < $value
+    @if ($i % 2) == 1
+      $output: $output + $gutter
+    @else
+      $output: $output + $col
+    $i: $i + 1
+  @return pixels($output)
+
+// Returns a REM based height by multiplying against our set row size
+@function height($value)
+  $i: 0
+  $output: 0
+  @while $i < $value
+    $output: $output + $row
+    $i: $i + 1
+  @return pixels($output)
+

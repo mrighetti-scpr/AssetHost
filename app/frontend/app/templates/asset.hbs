@@ -1,0 +1,130 @@
+<div id="asset__editor" class="asset-editor application-pane">
+  <h1 id="asset__title" class="asset-editor__title">{{or model.title "Untitled Asset"}}</h1>
+  {{!-- <div id="asset__editor-row-1"> --}}
+  <div class="layout-row">
+    <div id="asset__image-box" class="asset-editor__image-box">
+      <img id="asset__image" class="asset-editor__image" src="{{imageURL}}">
+      <div class="asset-editor__attributes">
+        <div class="asset-editor__attributes-row"> 
+          <div class="asset-editor__attribute-name">Asset Id</div>
+          <div class="asset-editor__attribute-value">{{model.id}}</div>
+        </div>
+        <div class="asset-editor__attributes-row"> 
+          <div class="asset-editor__attribute-name">URL</div>
+          {{paper-input class="asset-editor__attribute-value" value=imageURL onChange=null}}
+        </div>
+        <div class="asset-editor__attributes-row">
+          <div class="asset-editor__attribute-name">Tag</div>
+          {{paper-input class="asset-editor__attribute-value" value=imageTag onChange=null}}
+        </div>
+      </div>
+      <h2>Basics</h2>
+      <div class="asset-editor__attributes">
+        <div class="asset-editor__attributes-row">
+          <div class="asset-editor__attribute-name">Title</div>
+          {{paper-input class="asset-editor__attribute-value" value=model.title onChange=(mut model.title)}}
+        </div>
+        <div class="asset-editor__attributes-row asset-editor__attributes-row--chips">
+          <div class="asset-editor__attribute-name">Keywords</div>
+          {{#paper-chips
+            class="asset-editor__attribute-value"
+            readOnly=false
+            removeItem=(action "removeKeyword")
+            addItem=(action "addKeyword")
+            placeholder="Add a keyword"
+            content=model.keywordList as |keyword|}}
+            <strong>{{keyword}}</strong>
+          {{/paper-chips}}
+        </div>
+        <div class="asset-editor__attributes-row asset-editor__attributes-row--textarea"> 
+          <div class="asset-editor__attribute-name">Caption</div>
+          {{paper-input class="asset-editor__attribute-value" textarea=true block=true maxlength=150 passThru=(hash rows=5 maxRows=5)
+  value=model.caption onChange=(action (mut model.caption))}}
+        </div>
+      </div>
+      <h2>Rights</h2>
+      <div class="asset-editor__attributes">
+        <div class="asset-editor__attributes-row">
+          <div class="asset-editor__attribute-name">Owner</div>
+          {{paper-input class="asset-editor__attribute-value" value=model.owner onChange=(mut model.owner)}}
+        </div>
+        <div class="asset-editor__attributes-row">
+          <div class="asset-editor__attribute-name">URL</div>
+          {{paper-input class="asset-editor__attribute-value" value='' onChange=null}}
+        </div>
+      </div>
+      <h2>Metadata</h2>
+      <div class="asset-editor__attributes">
+        <div class="asset-editor__attributes-row">
+          <div class="asset-editor__attribute-name">Image taken</div>
+          {{paper-input class="asset-editor__attribute-value" type="date" value='' onChange=null}}
+        </div>
+        <div class="asset-editor__attributes-row">
+          <div class="asset-editor__attribute-name">Image Gravity</div>
+          {{#paper-select
+            class="asset-editor__attribute-value"
+            options=gravities
+            selected=imageGravity
+            onChange=(action 'setGravity')
+            as |gravity|}}
+            {{gravity.[0]}}
+          {{/paper-select}}
+        </div>
+      </div>
+      <h2>Internal</h2>
+      <div class="asset-editor__attributes">
+        <div class="asset-editor__attributes-row asset-editor__attributes-row--textarea">
+          <div class="asset-editor__attribute-name">Notes</div>
+          {{paper-input class="asset-editor__attribute-value" textarea=true block=true maxlength=150 passThru=(hash rows=5 maxRows=5)
+  value=model.notes onChange=(action (mut model.notes))}}
+        </div>
+      </div>
+      {{#paper-button raised=true}}Update Asset{{/paper-button}}
+      {{#paper-button raised=true warn=true}}Destroy Asset{{/paper-button}}
+    </div>
+    <div id="asset__output-nav" class="asset-editor__output-nav">
+      <h3>Sizes</h3>
+      {{#paper-button raised=true primary=(eq selectedOutput 'thumb')   onClick=(action "selectOutput" "thumb")}}thumb{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'lsquare') onClick=(action "selectOutput" "lsquare")}}lsquare{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'lead')    onClick=(action "selectOutput" "lead")}}lead{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'wide')    onClick=(action "selectOutput" "wide")}}wide{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'full')    onClick=(action "selectOutput" "full")}}full{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'three')   onClick=(action "selectOutput" "three")}}three{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'eight')   onClick=(action "selectOutput" "eight")}}eight{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'four')    onClick=(action "selectOutput" "four")}}four{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'six')     onClick=(action "selectOutput" "six")}}six{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'five')    onClick=(action "selectOutput" "five")}}five{{/paper-button}}
+      {{#paper-button raised=true primary=(eq selectedOutput 'small')   onClick=(action "selectOutput" "small")}}small{{/paper-button}}
+    </div>
+  </div>
+
+  {{!-- </div> --}}
+  {{!-- <h2>Basics</h2>
+  <div class="asset-editor__attributes">
+    <div class="asset-editor__attributes-row"> 
+      <div>Asset Id</div>
+      <div>{{model.id}}</div>
+    </div>
+    <div class="asset-editor__attributes-row"> 
+      <div>URL</div>
+      <div></div>
+    </div>
+    <div class="asset-editor__attributes-row"> 
+      <div>Tag</div>
+      <div></div>
+    </div>
+  </div> --}}
+</div>
+
+{{!-- <div class="layout-row layout-wrap">
+  <div class="flex-6">flex-6</div>
+  <div class="flex-2">flex-2</div>
+</div>
+<div class="layout-row layout-wrap">
+  <div class="flex-6">flex-6</div>
+  <div class="flex-2">flex-2</div>
+</div>
+<div class="layout-row layout-wrap">
+  <div class="flex-8">flex-8</div>
+  <div class="flex-2">flex-2</div>
+</div> --}}

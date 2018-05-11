@@ -1,0 +1,49 @@
+.asset-editor
+  padding-left:  pixels($gutter)
+  padding-right: pixels($gutter)
+
+.asset-editor__image
+  max-width:       100%
+  min-width:       0
+  object-fit:      contain
+  object-position: top
+
+.asset-editor__attributes
+  display:        flex
+  flex-direction: column
+
+.asset-editor__attributes-row
+  display: flex
+  margin-bottom: pixels($row / 2)
+
+.asset-editor__attribute-name, .asset-editor__attribute-value
+  align-items: center
+  display:     flex
+  
+.asset-editor__attribute-name
+  font-weight:  800
+  margin-right: pixels($margin)
+  min-height:   pixels(22)
+  min-width:    pixels(100)
+
+.asset-editor__attribute-value
+  margin:      0
+  max-height:  pixels(22)
+  max-width:   pixels(550)
+  width:       100%
+
+.asset-editor__output-nav
+  display: flex
+  flex-direction: column
+
+.asset-editor__attributes-row--textarea, .asset-editor__attributes-row--chips
+  .asset-editor__attribute-name, .asset-editor__attribute-value
+    align-items: unset
+    max-height:  initial
+
+.asset-editor__attributes-row--chips .md-chips
+  width: 100%
+
+@mixin asset-editor__output-nav
+  flex-direction: row
+
