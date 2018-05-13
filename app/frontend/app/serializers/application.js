@@ -11,13 +11,6 @@ export default DS.RESTSerializer.extend({
       meta: {},
       data: this._normalizeRecord(payload)
     }
-  },
-  _normalizeRecord(record){
-    const attributes = Object.assign({}, record),
-          id         = attributes.id,
-          type       = 'asset';
-    delete attributes.id;
-    return { id, type, attributes };
   }
 });
 

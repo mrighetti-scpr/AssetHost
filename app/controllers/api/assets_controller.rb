@@ -46,7 +46,6 @@ class Api::AssetsController < Api::BaseController
       end
       return false
     end
-
     if @asset.update_attributes(asset_params)
       respond_with @asset
     else
@@ -121,11 +120,11 @@ class Api::AssetsController < Api::BaseController
   private
 
   def asset_params
-    params.require(:asset).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
+    params.require(:asset).permit(:title, :caption, :keywords, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)
   end
 
   def upload_params
-    params.fetch(:asset, params).permit(:title, :caption, :owner, :url, :notes, :creator_id, :image_taken, :native, :image_gravity)
+    params.fetch(:asset, params).permit(:title, :caption, :keywords, :owner, :url, :notes, :creator_id, :image_taken, :native, :image_gravity)
   end
 
   def authorize(ability)

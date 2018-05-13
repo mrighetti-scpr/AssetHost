@@ -34,6 +34,8 @@ Rails.application.routes.draw do
     end
 
     resources :outputs, defaults: { format: :json }
+
+    resources :sessions, defaults: { format: :json }
   end
 
   scope module: "admin" do

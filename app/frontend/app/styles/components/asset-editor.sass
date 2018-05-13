@@ -2,11 +2,29 @@
   padding-left:  pixels($gutter)
   padding-right: pixels($gutter)
 
+.asset-editor__title .ember-inline-edit-input 
+  border:  none
+  outline: none
+
+.asset-editor__image-box
+  display:  inline-block
+  position: relative
+
 .asset-editor__image
+  // max-height:      100vh
   max-width:       100%
   min-width:       0
   object-fit:      contain
   object-position: top
+
+.asset-editor__image--loading
+  opacity: 0.75
+
+.asset-editor__image-loading-circle
+  left:      50%
+  position:  absolute
+  top:       50%
+  transform: translate(-50%, -50%)
 
 .asset-editor__attributes
   display:        flex

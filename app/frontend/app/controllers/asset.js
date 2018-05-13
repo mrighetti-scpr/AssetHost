@@ -1,5 +1,7 @@
 import Controller from '@ember/controller';
 import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import $ from 'jquery';
 
 export default Controller.extend({
   init(){
@@ -31,8 +33,22 @@ export default Controller.extend({
           gravity    = gravities.find(g => g[1] === geoGravity) || gravities[0];
     return gravity;
   }),
+  paperToaster: service(),
   actions: {
+    saveAsset(){
+      this.get('model')
+        .save()
+        .then(() => {
+          this.get('paperToaster').show('Asset saved successfully.', { toastClass: 'application-toast' });
+        })
+        .catch(() => {
+          this.get('paperToaster').show('Asset failed to save.', { toastClass: 'application-toast' });
+        });
+    },
     selectOutput(outputName){
+      const previous = this.get('selectedOutput');
+      if(previous !== outputName) this.set('isLoadingImage', true);
+      $('#asset__image').one('load error', () => this.set('isLoadingImage', false));
       this.set('selectedOutput', outputName);
     },
     addKeyword(keyword){

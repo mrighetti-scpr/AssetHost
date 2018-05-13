@@ -1,9 +1,26 @@
 <div id="asset__editor" class="asset-editor application-pane">
-  <h1 id="asset__title" class="asset-editor__title">{{or model.title "Untitled Asset"}}</h1>
+
+  <h1 id="asset__title" class="asset-editor__title">
+    {{ember-inline-edit
+      value=(readonly model.title)
+      onSave=(action (mut model.title))
+      placeholder="Untitled asset"
+      showSaveButton=false
+      showCancelButton=false 
+    }}
+  </h1>
+
   {{!-- <div id="asset__editor-row-1"> --}}
   <div class="layout-row">
-    <div id="asset__image-box" class="asset-editor__image-box">
-      <img id="asset__image" class="asset-editor__image" src="{{imageURL}}">
+    <div id="asset__left-col">
+      <div id="asset__image-box" class="asset-editor__image-box">
+        <img id="asset__image" 
+             class="asset-editor__image {{if isLoadingImage 'asset-editor__image--loading'}}" 
+             src="{{imageURL}}">
+        {{#if isLoadingImage}}
+          {{paper-progress-circular warn=true class="asset-editor__image-loading-circle"}}
+        {{/if}}
+      </div>
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row"> 
           <div class="asset-editor__attribute-name">Asset Id</div>
@@ -22,7 +39,7 @@
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row">
           <div class="asset-editor__attribute-name">Title</div>
-          {{paper-input class="asset-editor__attribute-value" value=model.title onChange=(mut model.title)}}
+          {{paper-input class="asset-editor__attribute-value" value=model.title onChange=(action (mut model.title))}}
         </div>
         <div class="asset-editor__attributes-row asset-editor__attributes-row--chips">
           <div class="asset-editor__attribute-name">Keywords</div>
@@ -79,7 +96,7 @@
   value=model.notes onChange=(action (mut model.notes))}}
         </div>
       </div>
-      {{#paper-button raised=true}}Update Asset{{/paper-button}}
+      {{#paper-button onClick=(action 'saveAsset') raised=true}}Update Asset{{/paper-button}}
       {{#paper-button raised=true warn=true}}Destroy Asset{{/paper-button}}
     </div>
     <div id="asset__output-nav" class="asset-editor__output-nav">

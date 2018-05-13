@@ -9,11 +9,11 @@ class Admin::BaseController < ApplicationController
   helper_method :_sign_out_path
 
   def _authenticate_user!
-    if !current_user
-      session[:return_to] = request.fullpath
-      redirect_to Rails.application.routes.url_helpers.login_path
-      false
-    end
+    # if !current_user
+    #   session[:return_to] = request.fullpath
+    #   redirect_to Rails.application.routes.url_helpers.login_path
+    #   false
+    # end
   end
 
 

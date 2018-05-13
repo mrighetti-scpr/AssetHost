@@ -1,3 +1,5 @@
+{{paper-toaster}}
+
 {{#paper-toolbar id="application__toolbar" class="toolbar-component" as |toolbar|}}
    {{#toolbar.tools}}
      <h2>AssetHost</h2>
@@ -14,15 +16,19 @@
        API Users
      {{/paper-button}}
      <span class="flex"></span>
-    {{#paper-button}}
-      Log Out
-    {{/paper-button}}
+    {{#if session.isAuthenticated}}
+      <a {{action 'invalidateSession'}}>
+        {{paper-button label="Log out"}}
+      </a>
+    {{else}}
+      {{#link-to 'login'}}
+        {{paper-button label="Log in"}}
+      {{/link-to}}
+    {{/if}}
    {{/toolbar.tools}}
  {{/paper-toolbar}}
 <div id="application__content-box" class="content-box">
   {{outlet}}
 </div>
-
-{{paper-toaster}}
 
 

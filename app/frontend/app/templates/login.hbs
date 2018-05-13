@@ -1,0 +1,14 @@
+<div id="login" class="application-pane login-pane">
+  <h1>Login</h1>
+  <div id="login__form" class="login-pane__form">
+    {{paper-input class="login-pane__form-field" label="Username" value=model.username onChange=(action (mut model.username))}}
+    {{paper-input class="login-pane__form-field" label="Password" type="password" value=model.password onChange=(action (mut model.password))}}
+    {{paper-button 
+      class="login-pane__form-submit"
+      raised=true
+      label="Submit"
+      onClick=(action 'authenticate' model.username model.password)
+    }}
+  </div>
+</div>
+
