@@ -2,13 +2,17 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 
 export default Controller.extend({
-  session: service('session'),
+  session: service(),
+  paperToaster: service(),
   actions: {
-    authenticate(username, password){
-      this.get('session').authenticate('authenticator:assethost', username, password)
-        .catch(reason => {
-          this.set('errorMessage', reason.error || reason);
+    authenticate(identification, password){
+      return this.get('session').authenticate('authenticator:jwt', { identification, password })
+        .catch(() => {
+          this.get('paperToaster').show('Username or password incorrect.', { 
+            toastClass: 'application-toast application-toast--top-center' 
+          });
         });
     }
   }
 });
+

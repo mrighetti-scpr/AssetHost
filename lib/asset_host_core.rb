@@ -1,4 +1,4 @@
-require 'google/api_client'
+# require 'google/api_client'
 require 'open-uri'
 require 'faraday_middleware'
 require "asset_host_core/paperclip"

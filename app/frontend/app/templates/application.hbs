@@ -3,18 +3,20 @@
 {{#paper-toolbar id="application__toolbar" class="toolbar-component" as |toolbar|}}
    {{#toolbar.tools}}
      <h2>AssetHost</h2>
-     <div class="toolbar-component__search-box flex-20">
-       {{paper-input class="toolbar-component__search-box" label="Search" value=query onChange=(action (mut query))}}
-     </div>
-     {{#paper-button}}
-       {{#link-to 'index'}}Assets{{/link-to}}
-     {{/paper-button}}
-     {{#paper-button}}
-       Manage Outputs
-     {{/paper-button}}
-     {{#paper-button}}
-       API Users
-     {{/paper-button}}
+     {{#if session.isAuthenticated}}
+      <div class="toolbar-component__search-box flex-20">
+        {{paper-input class="toolbar-component__search-box" label="Search" value=query onChange=(action (mut query))}}
+      </div>
+      {{#paper-button}}
+        {{#link-to 'index'}}Assets{{/link-to}}
+      {{/paper-button}}
+      {{#paper-button}}
+        Manage Outputs
+      {{/paper-button}}
+      {{#paper-button}}
+        API Users
+      {{/paper-button}}
+    {{/if}}
      <span class="flex"></span>
     {{#if session.isAuthenticated}}
       <a {{action 'invalidateSession'}}>

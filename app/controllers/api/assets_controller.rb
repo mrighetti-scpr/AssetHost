@@ -1,8 +1,11 @@
 class Api::AssetsController < Api::BaseController
+  
+  before_action :authenticate_user
+
   before_action :set_access_control_headers
 
-  before_action -> { authorize(:read) }, only: [:index, :show, :tag]
-  before_action -> { authorize(:write) }, only: [:update, :create]
+  # before_action -> { authorize(:read) }, only: [:index, :show, :tag]
+  # before_action -> { authorize(:write) }, only: [:update, :create]
 
   before_action :get_asset, only: [:show, :update, :tag]
 

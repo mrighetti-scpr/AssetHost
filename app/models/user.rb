@@ -18,4 +18,16 @@ class User < ActiveRecord::Base
     alias_attribute :is_admin, :is_superuser
   end
 
+  def self.from_token_request request
+    username = request.params["user_token"] && request.params["user_token"]["username"]
+    self.where(username: username).first
+  end
+  
+  # def self.from_token_payload payload
+  #   # Returns a valid user, `nil` or raise
+  #   # e.g.
+  #   #   self.find payload["sub"]
+  #   byebug
+  # end
+
 end

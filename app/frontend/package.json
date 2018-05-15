@@ -51,6 +51,7 @@
     "ember-service-worker-cache-fallback": "^0.6.1",
     "ember-service-worker-index": "^0.6.6",
     "ember-simple-auth": "^1.6.0",
+    "ember-simple-auth-token": "^3.0.0",
     "ember-simple-infinite-scroller": "^1.0.12",
     "ember-source": "~3.1.0",
     "ember-truth-helpers": "^2.0.0",
