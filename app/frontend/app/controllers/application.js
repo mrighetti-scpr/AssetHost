@@ -1,6 +1,9 @@
-import Controller            from '@ember/controller';
+import   Controller          from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { observer }          from '@ember/object';
+import { run }               from '@ember/runloop';
+
+const { debounce } = run;
 
 export default Controller.extend({
   init(){
@@ -8,14 +11,13 @@ export default Controller.extend({
     this.set('query', '');
     this.get('connectionStatus.offline');
   },
-  computeQuery: observer('application.query', function(){
-    // debounce(this, this.onQuery, 300);
+  queery: 'foo',
+  search: service(),
+  computeQuery: observer('query', function(){
+    debounce(this, this.onQuery, 300);
   }),
   onQuery(){
-    // this.get('pages').clear();
-    this.get('store').unloadAll();
-    this.set('page', 1); 
-    this.send('getPage', true);
+    this.set('search.query', this.get('query'));
   },
   showOffline: observer('connectionStatus.offline', function(){
     const isOffline = this.get('connectionStatus.offline');

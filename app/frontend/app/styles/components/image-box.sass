@@ -1,0 +1,37 @@
+.image-box
+  background: $color-gray-lightest
+  display:    inline-block
+  position:   relative
+
+.image-box__image, .image-box__placeholder
+  // max-height:      100vh
+  max-width:       100%
+  min-width:       0
+  object-fit:      contain
+  object-position: top
+
+.image-box__image
+  opacity:    1
+  position:   absolute
+  top:        0
+  transition: opacity 0.5s
+
+.image-box--loading .image-box__image
+  opacity: 0
+  transition: initial
+
+// .image-box--loading
+//   .image-box__image
+//     opacity: 0
+//     height: 0
+//   .image-box__placeholder
+//     height: initial
+//     opacity: 1
+
+
+.image-box__loading-circle
+  left:      50%
+  position:  absolute
+  top:       50%
+  transform: translate(-50%, -50%)
+

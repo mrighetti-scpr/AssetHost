@@ -2,6 +2,7 @@
 
   <h1 id="asset__title" class="asset-editor__title">
     {{ember-inline-edit
+      class="asset-editor__title-editor"
       value=(readonly model.title)
       onSave=(action (mut model.title))
       placeholder="Untitled asset"
@@ -13,14 +14,19 @@
   {{!-- <div id="asset__editor-row-1"> --}}
   <div class="layout-row">
     <div id="asset__left-col">
-      <div id="asset__image-box" class="asset-editor__image-box">
+      {{!-- <div id="asset__image-box" class="asset-editor__image-box">
         <img id="asset__image" 
-             class="asset-editor__image {{if isLoadingImage 'asset-editor__image--loading'}}" 
+             class="asset-editor__image {{if isLoadingImage 'asset-editor__image--loading'}}"
              src="{{imageURL}}">
         {{#if isLoadingImage}}
           {{paper-progress-circular warn=true class="asset-editor__image-loading-circle"}}
         {{/if}}
-      </div>
+      </div> --}}
+      {{image-box id="asset__image-box" 
+                  url=imageURL 
+                  height=imageSize.height 
+                  width=imageSize.width 
+                  class="asset-editor__image-box"}}
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row"> 
           <div class="asset-editor__attribute-name">Asset Id</div>

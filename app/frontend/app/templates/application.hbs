@@ -1,34 +1,82 @@
 {{paper-toaster}}
 
+{{#paper-sidenav-container class="toolbar-component__sidenav-container inner-sidenav"}}
+
 {{#paper-toolbar id="application__toolbar" class="toolbar-component" as |toolbar|}}
    {{#toolbar.tools}}
      <h2>AssetHost</h2>
      {{#if session.isAuthenticated}}
-      <div class="toolbar-component__search-box flex-20">
-        {{paper-input class="toolbar-component__search-box" label="Search" value=query onChange=(action (mut query))}}
+      <div class="toolbar-component__search-box">
+        {{paper-input 
+            class="toolbar-component__search-box" 
+            iconRight="search" 
+            value=query 
+            onChange=(action (mut query))
+        }}
       </div>
-      {{#paper-button}}
-        {{#link-to 'index'}}Assets{{/link-to}}
-      {{/paper-button}}
-      {{#paper-button}}
-        Manage Outputs
-      {{/paper-button}}
-      {{#paper-button}}
-        API Users
-      {{/paper-button}}
+      <div class="toolbar-component__buttons">
+        {{#paper-button}}
+          {{#link-to 'index'}}Assets{{/link-to}}
+        {{/paper-button}}
+        {{#paper-button}}
+          Manage Outputs
+        {{/paper-button}}
+        {{#paper-button}}
+          API Users
+        {{/paper-button}}
+      </div>
     {{/if}}
      <span class="flex"></span>
     {{#if session.isAuthenticated}}
-      <a {{action 'invalidateSession'}}>
-        {{paper-button label="Log out"}}
-      </a>
+      <div class="toolbar-component__buttons">
+        <a {{action 'invalidateSession'}}>
+          {{paper-button label="Log out"}}
+        </a>
+      </div>
     {{else}}
       {{#link-to 'login'}}
         {{paper-button label="Log in"}}
       {{/link-to}}
     {{/if}}
+    {{#if session.isAuthenticated}}
+      {{#paper-sidenav-toggle name="right" as |toggleAction|}}
+        {{#paper-button class="toolbar-component__menu-toggle" iconButton=true onClick=(action toggleAction)}}
+          {{paper-icon "menu"}}
+        {{/paper-button}}
+      {{/paper-sidenav-toggle}}
+    {{/if}}
    {{/toolbar.tools}}
  {{/paper-toolbar}}
+
+  {{#if session.isAuthenticated}}
+    {{#paper-sidenav
+      class="application__side-menu md-whiteframe-z2"
+      name="right"
+      position="right"
+      open=rightSideBarOpen
+      lockedOpen=false
+      onToggle=(action (mut rightSideBarOpen))}}
+      {{#paper-toolbar as |toolbar|}}
+        {{#paper-toolbar-tools}}Menu{{/paper-toolbar-tools}}
+      {{/paper-toolbar}}
+      {{#paper-list}}
+        {{#paper-item href="index"}}
+          <p>Assets</p>
+        {{/paper-item}}
+        {{#paper-item href="index"}}
+          <p>Manage Outputs</p>
+        {{/paper-item}}
+        {{#paper-item href="index"}}
+          <p>API Users</p>
+        {{/paper-item}}
+        {{#paper-item onClick=(action "invalidateSession")}}
+          <p>Log out</p>
+        {{/paper-item}}
+      {{/paper-list}}
+    {{/paper-sidenav}}
+  {{/if}}
+
+{{/paper-sidenav-container}}
 <div id="application__content-box" class="content-box">
   {{outlet}}
 </div>

@@ -25,9 +25,7 @@
   </div>
 {{/file-dropzone}}
 
-{{!-- {{#each pages as |page|}} --}}
-  {{asset-list class="application-pane" assets=results}}
-{{!-- {{/each}} --}}
+{{asset-list class="application-pane" assets=results message=message}}
 
 {{#infinite-scroller use-document=true trigger-at="75%" on-load-more=(action 'getPage')}}
 {{/infinite-scroller}}

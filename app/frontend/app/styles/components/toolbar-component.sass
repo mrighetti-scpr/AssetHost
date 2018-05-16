@@ -8,5 +8,24 @@
   align-items:     center
   display:         flex
   flex-direction:  column
+  height:          0
   justify-content: center
+  margin-left:     pixels($margin)
+  margin-top:      0
+
+.toolbar-component__search-box .paper-icon
+  // color:     $color-gray
+  transform: translateY(pixels(-7))
+
+.toolbar-component__menu-toggle
+  display: none
+
+.toolbar-component__sidenav-container .md-sidenav-backdrop, .application__side-menu
+  position: fixed
+
+@mixin toolbar-component--sm
+  .toolbar-component__buttons
+    display: none
+  .toolbar-component__menu-toggle
+    display: block
 

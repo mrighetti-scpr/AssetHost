@@ -1,7 +1,7 @@
-import Controller from '@ember/controller';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
-import $ from 'jquery';
+import   Controller           from '@ember/controller';
+import { computed, observer } from '@ember/object';
+import { inject as service }  from '@ember/service';
+import { htmlSafe }           from '@ember/string';
 
 export default Controller.extend({
   init(){
@@ -18,7 +18,12 @@ export default Controller.extend({
       [ "Bottom Left",      "SouthWest" ],
       [ "Bottom Right",     "SouthEast" ]
     ]);
+    this.get('search.query');
   },
+  search:   service(),
+  onQuery:  observer('search.query', function(){
+    this.transitionToRoute('index');
+  }),
   imageURL: computed('model.id', 'selectedOutput', function(){
     const selectedOutput = this.get('selectedOutput');
     return this.get(`model.urls.${selectedOutput}`);
@@ -26,6 +31,14 @@ export default Controller.extend({
   imageTag: computed('model.id', 'selectedOutput', function(){
     const selectedOutput = this.get('selectedOutput');
     return this.get(`model.tags.${selectedOutput}`);
+  }),
+  imageSize: computed('model.sizes', 'selectedOutput', function(){
+    const selectedOutput = this.get('selectedOutput');
+    return this.get(`model.sizes.${selectedOutput}`);
+  }),
+  imageBoxSize: computed('imageSize', function(){
+    const imageSize = this.get('imageSize');
+    return htmlSafe(`min-height: 100%; width: 100%; max-height: ${imageSize.height}px; max-width: ${imageSize.width}px;`);
   }),
   imageGravity: computed('model.image_gravity', function(){
     const gravities  = this.getWithDefault('gravities', []),
@@ -42,13 +55,13 @@ export default Controller.extend({
           this.get('paperToaster').show('Asset saved successfully.', { toastClass: 'application-toast' });
         })
         .catch(() => {
-          this.get('paperToaster').show('Asset failed to save.', { toastClass: 'application-toast' });
+          this.get('paperToaster').show('Asset failed to save.',     { toastClass: 'application-toast' });
         });
     },
     selectOutput(outputName){
       const previous = this.get('selectedOutput');
       if(previous !== outputName) this.set('isLoadingImage', true);
-      $('#asset__image').one('load error', () => this.set('isLoadingImage', false));
+      // $('#asset__image').one('load error', () => this.set('isLoadingImage', false));
       this.set('selectedOutput', outputName);
     },
     addKeyword(keyword){
