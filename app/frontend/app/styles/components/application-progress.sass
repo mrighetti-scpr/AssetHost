@@ -1,0 +1,27 @@
+.application-progress
+  opacity: 0
+  transition: opacity 0.5s
+  // transition-property: opacity
+  // transition-delay: 0.5s
+
+.application-progress__bar
+  background: #ff9800
+  height:     4px
+  transition-property: width
+  transition-duration: 0s
+  transition-timing-function: linear
+
+.application-progress--active
+  opacity: 1
+
+.application-progress--active .application-progress__bar
+  transition-duration: 1.5s
+
+// .application-progress--resetting
+//   transition: initial
+//   transition: unset
+
+.application-progress
+  md-progress-linear .md-container .md-bar1, md-progress-linear .md-container .md-bar2
+    transition: transform 1.2s linear
+

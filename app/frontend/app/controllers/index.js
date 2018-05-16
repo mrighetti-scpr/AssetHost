@@ -12,22 +12,24 @@ export default Controller.extend(MousewheelFix, {
     this.send('getPage');
     this.set('isLoadingPage', false);
     this.set('results', this.get('store').peekAll('asset'));
+    this.get('progress').start(10);
     this.get('session').on('authenticationSucceeded', () => {
       // Kicks off loading results after login
       this.send('getPage');
     });
     this.get('search.query');
   },
+  assetUpload:  service(),
+  progress:     service(),
   session:      service(),
   search:       service(),
+  upload:       alias('assetUpload.upload'),
   computeQuery: observer('search.query', function(){
     this.get('store').unloadAll();
     this.set('page', 1);
     this.set('message', undefined);
     this.send('getPage');
   }),
-  assetUpload: service(),
-  upload:      alias('assetUpload.upload'),
   actions: {
     getPage(){
       const page  = this.get('page');
@@ -36,6 +38,7 @@ export default Controller.extend(MousewheelFix, {
       const query  = this.getWithDefault('search.query', ''),
             q      = query.length ? query : undefined,
             params = q ? { page, q } : { page };
+      this.get('progress').start(10);
       this.get('store').query('asset', params)
         .then(results => {
           const page       = this.get('page'),
@@ -45,7 +48,11 @@ export default Controller.extend(MousewheelFix, {
           if(!hasResults) return this.set('page', null);
           this.incrementProperty('page');
         })
-        .then(() => this.set('isLoadingPage', false));
+        .catch(err => console.error(err))
+        .then(() => { 
+          this.get('progress').done(100);
+          this.set('isLoadingPage', false);
+        });
     },
     uploadAsset(file){
       get(this, 'upload').perform(file);

@@ -1,3 +1,5 @@
+{{application-progress id="application__progress"}}
+
 {{paper-toaster}}
 
 {{#paper-sidenav-container class="toolbar-component__sidenav-container inner-sidenav"}}
@@ -15,9 +17,7 @@
         }}
       </div>
       <div class="toolbar-component__buttons">
-        {{#paper-button}}
-          {{#link-to 'index'}}Assets{{/link-to}}
-        {{/paper-button}}
+        {{paper-button label="Assets" href=(href-to "index")}}
         {{#paper-button}}
           Manage Outputs
         {{/paper-button}}
@@ -60,7 +60,7 @@
         {{#paper-toolbar-tools}}Menu{{/paper-toolbar-tools}}
       {{/paper-toolbar}}
       {{#paper-list}}
-        {{#paper-item href="index"}}
+        {{#paper-item href=(href-to "index")}}
           <p>Assets</p>
         {{/paper-item}}
         {{#paper-item href="index"}}

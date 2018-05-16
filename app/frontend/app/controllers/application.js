@@ -11,7 +11,6 @@ export default Controller.extend({
     this.set('query', '');
     this.get('connectionStatus.offline');
   },
-  queery: 'foo',
   search: service(),
   computeQuery: observer('query', function(){
     debounce(this, this.onQuery, 300);
@@ -33,6 +32,7 @@ export default Controller.extend({
   connectionStatus: service(),
   paperToaster:     service(),
   session:          service(),
+  progress:         service(),
   actions: {
     invalidateSession(){
       this.get('session').invalidate();

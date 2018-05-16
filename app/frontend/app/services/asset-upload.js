@@ -2,7 +2,7 @@ import Service       from '@ember/service';
 import { task }      from 'ember-concurrency';
 import { get }       from '@ember/object';
 import { bind, run } from '@ember/runloop';
-import { inject as service }    from '@ember/service';
+import { inject as service } from '@ember/service';
 
 const { later } = run;
 
@@ -35,3 +35,4 @@ export default Service.extend({
     }
   }).maxConcurrency(3).enqueue(),
 });
+

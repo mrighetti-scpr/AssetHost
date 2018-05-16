@@ -1,9 +1,17 @@
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import { inject as service } from '@ember/service';
 
 export default Route.extend(AuthenticatedRouteMixin, {
+  progress: service(),
   model({ id }) {
-    // return this.modelFor('asset').find(model => model.id === id);
     return this.get('store').findRecord('asset', id);
+  },
+  beforeModel(){
+    this.get('progress').start(10);
+  },
+  afterModel(){
+    this.get('progress').done(100);
   }
 });
+
