@@ -12,7 +12,7 @@ export default Controller.extend(MousewheelFix, {
     this.send('getPage');
     this.set('isLoadingPage', false);
     this.set('results', this.get('store').peekAll('asset'));
-    this.get('session').on('authenticationSucceeded', function(){
+    this.get('session').on('authenticationSucceeded', () => {
       // Kicks off loading results after login
       this.send('getPage');
     });
