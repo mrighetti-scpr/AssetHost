@@ -2,9 +2,9 @@ require "resque/server"
 
 Rails.application.routes.draw do
   post '/api/authenticate' => 'api/user_token#create'
-  root to: "public#home"
+  root to: "application#home"
   mount_ember_assets :frontend, to: "/"
-  match '/i/:aprint/:id-:style.:extension', :to => 'public#image', :constraints => { :id => /\d+/, :style => /[^\.]+/}, via: [:get, :post, :put, :patch, :delete], :as => :image
+  match '/i/:aprint/:id-:style.:extension', to: 'public#image', constraints: { id: /\d+/, style: /[^\.]+/}, via: :all, as: :image
 
   resque_constraint = ->(request) do
     # 🚨 New authentication system needs to be applied here.
