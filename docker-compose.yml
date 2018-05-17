@@ -8,7 +8,7 @@ services:
     ports:
       - 8080:8080/tcp
     env_file:
-      - .dev.env
+      - .env.development.docker
     stdin_open: true
     tty: true
     networks:

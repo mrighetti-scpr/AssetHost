@@ -20,71 +20,6 @@ Plus:
 - Automatic tagging of image features using deep-learning through [Amazon Rekognition](https://aws.amazon.com/rekognition/), allowing for images to become searchable upon upload with no user intervention.
 
 
-## Getting Started
-
-### Prerequisites
-
-Minimum Requirements:
-
-- Ruby
-- Docker
-- MySQL
-
-*The minimum requirements will get the application up and running, but many features will not work.  For production functionality, you will need the following:*
-
-- Redis
-- Elasticsearch
-- Memcached
-
-### Setup
-
-#### Development
-
-AssetHost is a [Rails](http://rubyonrails.org/)-based application.
-
-The most straight-forward way to setup AssetHost is to use [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) with a pre-built image.
-
-Clone this repo, and then run these two commands:
-
-```sh
-docker-compose up -d
-docker-compose exec assethost setup
-```
-
-The web application will then be available at [localhost:8080](http://localhost:8080).
-
-#### Native Development Installation
-
-For code modification, you will need to have [Ruby](https://ruby-lang.org) installed natively.
-
-Make sure you have the prerequisite services running.  You can either have them installed natively, or you can use the `docker-compose.yml` file to run them with containers:
-
-```sh
-docker-compose up -d mysql elasticsearch redis s3
-```
-
-Then run the setup to pull in dependencies and initialize the database
-
-```sh
-./bin/setup
-```
-
-Finally, run the server:
-
-```sh
-rails s
-```
-
-The web application will be available at [localhost:3000](http://localhost:3000).
-
-On first use, you will be required to log in.  An initial user called **admin** already exists with the password **password**.  Use those credentials to log in, and then promptly change the password to a more suitable one.
-
-
-#### Production
-
-It's suggested that you use Docker and a container management solution like [Rancher](https://rancher.com/).  The `docker-compose.yml` file included with this project is meant to be used for development, but can also be adapted into configuration used for production.
-
-
 ## Workflow
 
 1. Photographer / Author / Editor goes to AssetHost and uploads or imports a media asset.
@@ -100,57 +35,61 @@ It's suggested that you use Docker and a container management solution like [Ran
 5. AssetHost will return a 302 Found to the rendered image asset if it exists, or render it on-the-fly if it does not yet exist.
 
 
-## Image Storage
+## Getting Started
 
-AssetHost supports Amazon S3 as a storage backend.  For in-house storage, you can use [Riak CS](https://github.com/basho/riak_cs), which implements the S3 API and can be used in the same way.  For AssetHost to work properly, AWS credentials for S3 need to be set as these environment variables:
+### Quick Start
 
-- ASSETHOST_S3_BUCKET
-- ASSETHOST_S3_REGION
-- ASSETHOST_S3_ACCESS_KEY_ID
-- ASSETHOST_S3_SECRET_ACCESS_KEY
+The quickest way to get AssetHost up and running on your machine is to use [Docker](https://www.docker.com/) w/ [Docker Compose](https://docs.docker.com/compose/) and a pre-built AssetHost image.
 
-When using Riak, you can provide the host under the `ASSETHOST_S3_ENDPOINT` and comment out the `ASSETHOST_S3_REGION` variable.
+#### Instructions
 
-Local filesystem storage may be implemented in the future.
+1. Install **Docker** and **Docker Compose**.
+2. Clone this repo and enter its directory in your command line terminal.
+3. Run `docker-compose up -d`.  This will pull the necessary images and run the containers.
+4. Run `docker-compose exec assethost setup`
 
+The AssetHost web application will be available at http://localhost:8080
 
-## Rich Media Support
+You will be prompted to log in.  The database has been initialized with a user named `admin` with `password` as the password.
 
-Rich media assets are delivered as specially-tagged img tags, and are replaced on the client-side via an AssetHost.Client plugin.
+### Development
 
-### Brightcove Video
-
-Brightcove videos can be imported as assets and used to place videos into image display contexts. The video is delivered as an img tag, and the AssetHost.Client library will see the tag and call the AssetHost.Client.Brightcove plugin. The plugin will replace the asset with the video.
-
-Brightcove assets can be imported via a key in the URL Input field.
-
-## Feature Recognition
-
-For the purpose of improving ease of searchability, AssetHost can tie into Amazon's Rekognition service which uses computer-vision to classify features inside a given image.  When enabled, photos are automatically populated with keywords without any user intervention.  For example, a photo of people mountain biking will be immediately searchable with queries like "bicycle" or "outdoors" upon upload even when no metadata is provided.  This optional feature can be enabled when AWS credentials are set in the following environment variables:
-
-- ASSETHOST_REKOGNITION_REGION
-- ASSETHOST_REKOGNITION_ACCESS_KEY_ID
-- ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY
-
-
-## API
-
-See the [API documentation](https://github.com/SCPR/AssetHost/blob/master/API.md).
-
+AssetHost is an [Ember](https://emberjs.com/) application running on a [Rails](https://rubyonrails.org/) backend.
 
 ### Prerequisites
 
-The application requires the following prerequisites:
+Minimum Requirements:
 
 - Ruby >= 2.3
-- Rails >= 5.0.0
-- Imagemagick
-- Exiftool
 - MySQL
 - Redis
-- Elasticsearch >= 1.6.0
-- Memcached
+- Elasticsearch
+- Imagemagick
+- Exiftool
+- S3-compatible storage medium([Riak CS](https://github.com/basho/riak_cs), [Fake S3](https://github.com/jubos/fake-s3), or [AWS S3](https://aws.amazon.com/s3/) itself.)
 
+Recommended Requirements (see note below):
+
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+*NOTE: It's highly recommended that you install [Ruby](https://ruby-lang.org) natively and use Docker Compose to run the other prerequisite services.  To do this, run `docker-compose up -d` after cloning this repo.  You can certainly run those services natively, but Docker installation is much easier and allows simpler management of those services.*
+
+### Instructions
+
+Be sure that MySQL, Elasticsearch, Redis, Imagamagick, Exiftool, and an S3-compatible storage medium are running and available on the host machine.
+
+1. If you haven't done so already, install [Bundler](https://bundler.io/) by running `gem install bundler`.
+2. Clone this repo and enter its directory in your command line terminal.
+3. Run `bundle install`.
+4. Copy `templates/.env.development` to the root of your cloned AssetHost directory.  With a standard configuration(services using their standard ports on localhost, etc.), you shouldn't have to change anything in this file out of the box.  The reason you must perform this step is so secrets don't accidentally get committed to source control.
+5. Run `bin/setup`.
+
+Upon completion of those steps, start the server by running `bundle exec rails s`.
+
+The web application will be available at http://localhost:3000.
+
+You will be prompted to log in.  The database has been initialized with a user named **admin** with **password** as the password.
 
 ### Adding Custom Functionality
 
@@ -183,6 +122,46 @@ docker build -t assethost-custom .
 
 Even simpler, you can make a GitHub repo for your Dockerfile and set up an [automated build process](https://docs.docker.com/docker-hub/builds/) in [Docker Hub](https://hub.docker.com/).
 
+
+### Production
+
+It's suggested that you use Docker and a container management solution like [Rancher](https://rancher.com/).  The `docker-compose.yml` file included with this project is meant to be used for development, but can also be adapted into configuration used for production.
+
+
+## API
+
+See the [API documentation](https://github.com/SCPR/AssetHost/blob/master/API.md).
+
+## Image Storage
+
+AssetHost supports Amazon S3 as a storage backend.  For in-house storage, you can use [Riak CS](https://github.com/basho/riak_cs), which implements the S3 API and can be used in the same way.  For AssetHost to work properly, AWS credentials for S3 need to be set as these environment variables:
+
+- ASSETHOST_S3_BUCKET
+- ASSETHOST_S3_REGION
+- ASSETHOST_S3_ACCESS_KEY_ID
+- ASSETHOST_S3_SECRET_ACCESS_KEY
+
+When using Riak, you can provide the host under the `ASSETHOST_S3_ENDPOINT` and comment out the `ASSETHOST_S3_REGION` variable.
+
+Local filesystem storage may be implemented in the future.
+
+## Rich Media Support
+
+Rich media assets are delivered as specially-tagged img tags, and are replaced on the client-side via an AssetHost.Client plugin.
+
+### Brightcove Video
+
+Brightcove videos can be imported as assets and used to place videos into image display contexts. The video is delivered as an img tag, and the AssetHost.Client library will see the tag and call the AssetHost.Client.Brightcove plugin. The plugin will replace the asset with the video.
+
+Brightcove assets can be imported via a key in the URL Input field.
+
+## Feature Recognition
+
+For the purpose of improving ease of searchability, AssetHost can tie into Amazon's Rekognition service which uses computer-vision to classify features inside a given image.  When enabled, photos are automatically populated with keywords without any user intervention.  For example, a photo of people mountain biking will be immediately searchable with queries like "bicycle" or "outdoors" upon upload even when no metadata is provided.  This optional feature can be enabled when AWS credentials are set in the following environment variables:
+
+- ASSETHOST_REKOGNITION_REGION
+- ASSETHOST_REKOGNITION_ACCESS_KEY_ID
+- ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY
 
 ## Credits
 

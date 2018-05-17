@@ -16,9 +16,10 @@
 # Ignore Byebug command history file.
 .byebug_history
 
-config/secrets.yml
 .env
 .env.production
+.env.development
+.env.test
 .production-env
 
 # compiled assets don't need to be committed

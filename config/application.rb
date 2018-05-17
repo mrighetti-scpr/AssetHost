@@ -15,6 +15,9 @@ require "sprockets/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require "dotenv"
+Dotenv.overload(".env.#{Rails.env}")
+
 module AssetHost
   class Application < Rails::Application
     require "#{Rails.root}/lib/asset_host_core"

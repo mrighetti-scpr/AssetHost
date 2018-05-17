@@ -21,7 +21,7 @@ gem "resque", "~> 1.27.2"
 gem "searchkick", "~> 2.5.0"
 gem "cocaine", "0.5.8"
 
-gem "photographic_memory", path: "~/workspace/photographic_memory"
+gem "photographic_memory", github: "scpr/photographic_memory"
 gem "paperclip", "5.2.1"
 gem "mini_exiftool", "~> 2.8.0"
 gem "faraday", "~> 0.9.2"
@@ -46,7 +46,7 @@ group :development, :test do
   gem "sass-rails", "~> 5.0"
   gem "uglifier", ">= 1.3.0"
   gem "byebug", platform: :mri
-  gem "dotenv-rails"
+  gem "dotenv-rails", require: false
 end
 
 group :development do
@@ -56,7 +56,6 @@ end
 
 group :production do
   gem "puma"
-  gem "dalli", "~> 2.7.6"
 end
 
 group :test do 

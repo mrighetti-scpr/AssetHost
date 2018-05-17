@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/scpr/photographic_memory.git
+  revision: 1a77f00d4bf4524d20c616f4dfb776e6fe05f8d2
+  specs:
+    photographic_memory (0.0.1)
+      aws-sdk (~> 2)
+      mini_exiftool (~> 2.8.0)
+      rack (~> 2.0.3)
+
+GIT
   remote: https://github.com/sinatra/sinatra.git
   revision: 34521720b6028c2fa696cf85109345a89f306c99
   ref: 34521720b6028c2fa696cf85109345a89f306c99
@@ -11,14 +20,6 @@ GIT
       rack (~> 2.0)
       rack-protection (= 2.0.0.rc2)
       tilt (~> 2.0)
-
-PATH
-  remote: ~/workspace/photographic_memory
-  specs:
-    photographic_memory (0.0.1)
-      aws-sdk (~> 2)
-      mini_exiftool (~> 2.8.0)
-      rack (~> 2.0.3)
 
 GEM
   remote: https://rubygems.org/
@@ -92,7 +93,6 @@ GEM
       climate_control (>= 0.0.3, < 1.0)
     concurrent-ruby (1.0.5)
     crass (1.0.4)
-    dalli (2.7.8)
     declarative (0.0.10)
     declarative-option (0.1.0)
     diff-lcs (1.3)
@@ -351,7 +351,6 @@ DEPENDENCIES
   byebug
   capybara (~> 2.18.0)
   cocaine (= 0.5.8)
-  dalli (~> 2.7.6)
   dotenv-rails
   ember-cli-rails
   factory_girl (~> 4.8.0)

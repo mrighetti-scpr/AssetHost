@@ -11,9 +11,9 @@
 # Ignore Byebug command history file.
 .byebug_history
 
+
 config/secrets.yml
-.env
-.env.production
+.env*
 .production-env
 .DS_Store
 
