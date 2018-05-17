@@ -5,8 +5,8 @@ class RenderJob < ApplicationJob
     asset_output = AssetOutput.find(asset_output_id)
     asset        = asset_output.asset
     # Retrieve the original asset
-    original_filename = "#{asset.id}_#{asset.image_fingerprint}_original#{asset.file_extension}"
-    file              = PHOTOGRAPHIC_MEMORY_CLIENT.get original_filename
+    original_filename       = "#{asset.id}_#{asset.image_fingerprint}_original#{asset.file_extension}"
+    file                    = PHOTOGRAPHIC_MEMORY_CLIENT.get original_filename
     asset_output.image_data = PHOTOGRAPHIC_MEMORY_CLIENT.put({
       file: file, 
       id: asset.id,

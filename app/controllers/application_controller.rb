@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
 
+  layout :application
+
   def current_user
     begin
       @current_user ||= User.where(can_login: true).find(session[:user_id])

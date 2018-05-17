@@ -1,1 +1,0 @@
-<li data-page="<%= @page %>" <% if @current: %>class="active"<% end %> ><a href="#"><%= @page %></a></li>

@@ -1,4 +1,0 @@
-<b><%= @id %>: <%= @title || "No Title"%></b>
-<br/><%= @owner || "No Credit" %>
-<br/><%= @taken_at %>
-<br/><%= @size %>
