@@ -38,7 +38,6 @@ module AssetHostCore
       :elasticsearch_index,
       :paperclip_options,
       :server,
-      :resque_queue,
-      :redis_pubsub
+      :resque_queue
   end
 end

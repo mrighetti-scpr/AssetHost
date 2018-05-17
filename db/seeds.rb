@@ -23,3 +23,6 @@ Permission.create resource: "Asset", ability: "read"
 Permission.create resource: "Asset", ability: "write"
 Permission.create resource: "Output", ability: "read"
 Permission.create resource: "Output", ability: "write"
+
+Asset.reindex
+
