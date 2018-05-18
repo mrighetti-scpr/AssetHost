@@ -27,7 +27,7 @@ class RenderJob < ApplicationJob
         raise ex
       end
     end
-    
+    asset_output.image_data
   end
 end
 
