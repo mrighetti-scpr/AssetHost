@@ -14,13 +14,9 @@ module AssetHostCore
       AssetHostCore::Loaders.load(url)
     end
 
-    #----------------
-
     def configure
       yield config
     end
-
-    #----------------
 
     def config
       @config ||= AssetHostCore::Config.new
@@ -32,4 +28,3 @@ module AssetHostCore
   end
 end
 
-# ActiveRecord::Base.send(:include, AssetHostCore::ModelMethods)

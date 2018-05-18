@@ -30,7 +30,6 @@ Rails.application.routes.draw do
 
     resources :outputs, defaults: { format: :json }
 
-    resources :sessions, defaults: { format: :json }
   end
 
 end

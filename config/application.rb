@@ -6,9 +6,7 @@ require "active_model/railtie"
 require "active_job/railtie"
 require "active_record/railtie"
 require "action_controller/railtie"
-# require "action_mailer/railtie"
 require "action_view/railtie"
-# require "action_cable/engine"
 require "sprockets/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -22,7 +20,6 @@ module AssetHost
   class Application < Rails::Application
     require "#{Rails.root}/lib/asset_host_core"
     require "#{Rails.root}/lib/asset_host_utils"
-    # require "#{Rails.root}/lib/photographic_memory"
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -47,6 +44,7 @@ module AssetHost
     config.host_protocol = ENV['ASSETHOST_HOST_PROTOCOL'] || 'https'
     config.host          = "#{config.host_name}" + ((config.host_port == '80') ? "" : ":#{config.host_port}")
     ## ^^ This is necessary for URL generation.
+    ##    🚨 ☝️ Or *is* it? 🤔
 
     config.thumb_size           = "lsquare"
     config.modal_size           = "small"

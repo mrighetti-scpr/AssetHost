@@ -10,27 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180510163741) do
-
-  create_table "asset_host_core_api_user_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.integer  "api_user_id"
-    t.integer  "permission_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.index ["api_user_id"], name: "index_asset_host_core_api_user_permissions_on_api_user_id", using: :btree
-    t.index ["permission_id"], name: "index_asset_host_core_api_user_permissions_on_permission_id", using: :btree
-  end
-
-  create_table "asset_host_core_api_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.string   "name",               null: false
-    t.string   "auth_token"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "is_active"
-    t.datetime "last_authenticated"
-    t.string   "email"
-    t.index ["auth_token", "is_active"], name: "index_asset_host_core_api_users_on_auth_token_and_is_active", using: :btree
-  end
+ActiveRecord::Schema.define(version: 20180518021406) do
 
   create_table "asset_host_core_asset_outputs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci" do |t|
     t.integer  "asset_id",                       null: false
@@ -90,14 +70,6 @@ ActiveRecord::Schema.define(version: 20180510163741) do
     t.datetime "updated_at"
     t.boolean  "prerender",  default: false, null: false
     t.index ["code"], name: "index_asset_host_core_outputs_on_code", using: :btree
-  end
-
-  create_table "asset_host_core_permissions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.string   "resource"
-    t.string   "ability"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["resource", "ability"], name: "index_asset_host_core_permissions_on_resource_and_ability", using: :btree
   end
 
   create_table "asset_host_core_vimeo_videos", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|

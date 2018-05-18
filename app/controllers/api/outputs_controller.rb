@@ -1,7 +1,7 @@
 class Api::OutputsController < Api::BaseController
-  # before_filter -> { authorize(:read) }, only: [:index, :show]
+  before_action :authenticate_user
+  
   before_filter :get_output, only: [:show]
-
 
   def index
     @outputs = Output.all
@@ -32,15 +32,4 @@ class Api::OutputsController < Api::BaseController
     @output = Output.find(params[:id])
   end
 
-  # def authorize(ability)
-  #   super ability, "Output"
-  # end
-
-  # def get_output
-  #   @output = Output.find_by_code(params[:id])
-
-  #   if !@output
-  #     render_not_found and return false
-  #   end
-  # end
 end

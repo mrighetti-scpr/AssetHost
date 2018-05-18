@@ -4,9 +4,6 @@ class Api::AssetsController < Api::BaseController
 
   before_action :set_access_control_headers
 
-  # before_action -> { authorize(:read) }, only: [:index, :show, :tag]
-  # before_action -> { authorize(:write) }, only: [:update, :create]
-
   before_action :get_asset, only: [:show, :update, :tag]
 
   before_action :get_uploaded_file, only: [:create, :update]
@@ -128,10 +125,6 @@ class Api::AssetsController < Api::BaseController
 
   def upload_params
     params.fetch(:asset, params).permit(:title, :caption, :keywords, :owner, :url, :notes, :creator_id, :image_taken, :native, :image_gravity)
-  end
-
-  def authorize(ability)
-    super ability, "Asset"
   end
 
   def get_asset

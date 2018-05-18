@@ -10,10 +10,8 @@ class Output < ActiveRecord::Base
 
   scope :prerenders, ->(){ where(prerender: true) }
 
-  #----------
-
-  def self.paperclip_sizes
-    @paperclip_sizes ||= begin
+  def self.all_sizes
+    @all_sizes ||= begin
       sizes = {}
 
       Output.all.each do |output|
@@ -24,14 +22,9 @@ class Output < ActiveRecord::Base
     end
   end
 
-
-  #----------
-
   def code_sym
     self.code.to_sym
   end
-
-  #----------
 
   def paperclip_options
     {
@@ -45,8 +38,6 @@ class Output < ActiveRecord::Base
       }
     }
   end
-
-  #----------
 
   protected
 

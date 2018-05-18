@@ -42,10 +42,6 @@ class Asset < ActiveRecord::Base
 
   after_save :save_image
 
-  after_commit :publish_asset_update, :if => :persisted?
-  after_commit :publish_asset_delete, :on => :destroy
-
-
   def self.es_search(query=nil, page: 1, per_page: 24)
     Asset.search(query, boost_by_distance: {
       taken_at: {
@@ -98,12 +94,23 @@ class Asset < ActiveRecord::Base
       # don't worry about it.
       :image_file_size    => self.image_file_size,
       :url        => "#{host}/api/assets/#{self.id}/",
-      :sizes      => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = { width: self.image.width(s), height: self.image.height(s) }; h },
-      :urls       => Output.paperclip_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
+      :sizes      => self.sizes,
+      :urls       => Output.all_sizes.inject({}) { |h, (s,_)| h[s] = self.image_url(s); h }
     }.merge(self.image_shape())
   end
 
   alias :json :as_json
+
+  def sizes
+    Output.all.inject({}) do |result, output|
+      code = output.code.to_sym
+      result[code] = { 
+        width: self.image.width(code),
+        height: self.image.height(code) 
+      }
+      result
+    end
+  end
 
   def image_data= data
 
@@ -113,26 +120,11 @@ class Asset < ActiveRecord::Base
     # -- determine metadata -- #
     begin
       if p = data[:metadata]
-        if p.credit =~ /Getty Images/
-          # smart import for Getty Images photos
-          copyright     = [p.by_line,p.credit].join("/")
-          title         = p.headline
-          description   = p.description
-        elsif p.credit =~ /AP/
-          # smart import for AP photos
-          copyright     = [p.by_line,p.credit].join("/")
-          title         = p.title
-          description   = p.description
-        else
-          copyright     = p.byline || p.credit
-          title         = p.title
-          description   = p.description
-        end
         self.image_width       = p.image_width
         self.image_height      = p.image_height
-        self.image_title       = title
-        self.image_description = description
-        self.image_copyright   = copyright
+        self.image_title       = p.title || p.headline
+        self.image_description = p.description
+        self.image_copyright   = [p.by_line,p.credit].join("/")
         self.image_taken       = p.datetime_original
         self.keywords          = (p.keywords || "").split(", ").map(&:downcase).join(", ")
       end
@@ -140,7 +132,6 @@ class Asset < ActiveRecord::Base
     rescue => e
       # a failure to parse metadata
       # should not crash everything 
-      puts e
       false
     end
 
@@ -210,23 +201,21 @@ class Asset < ActiveRecord::Base
     ext = nil
     begin
       # FIXME: Need to add correct extension
-      original_file_extension = File.extname(self.image.original_filename || "jpg").gsub(/^\.+/, "")
+      original_file_extension = File.extname(self.image_file_name || "jpg").gsub(/^\.+/, "")
       ext = case style
-      when :original
-        original_file_extension
-      else
-        # Right now, we have a special exemption for 
-        if original_file_extension.match("gif")
-          original_file_extension
-        else
-          Output.paperclip_sizes[style][:format]
-        end
-      end
+            when :original
+              original_file_extension
+            else
+              # Right now, we have a special exemption for 
+              if original_file_extension.match("gif")
+                original_file_extension
+              else
+                Output.all_sizes[style][:format]
+              end
+            end
     end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
-
-
 
   def as_indexed_json
     {
@@ -262,7 +251,7 @@ class Asset < ActiveRecord::Base
     self.image.tag(style)
   end
 
-  def isPortrait?
+  def portrait?
     self.image_width < self.image_height
   end
 
@@ -274,101 +263,15 @@ class Asset < ActiveRecord::Base
   end
 
 
-
   def output_by_style(style)
     @s_outputs ||= self.outputs.inject({}) { |h,o| h[o.output.code] = o; h }
     @s_outputs[style.to_s] || false
   end
 
   def rendered_outputs
-    @rendered ||= Output.paperclip_sizes.collect do |s|
+    @rendered ||= Output.all_sizes.collect do |s|
       ["#{s[0]} (#{self.image.width(s[0])}x#{self.image.height(s[0])})",s[0]]
     end
-  end
-
-
-
-  def self.interpolate(pattern, attachment, style)
-    # we support:
-    # global:
-    #   :rails_root -- Rails.root
-    #
-    # style-based:
-    #   :style -- output code
-    #   :extension -- extension for Output
-    #
-    # asset-based:
-    #   :id -- asset id
-    #   :fingerprint -- image fingerprint
-    #
-    # output-based:
-    #   :sprint -- AssetOutput fingerprint
-    #
-    # first see what we've been passed as a style. could be string, symbol,
-    # Output or AssetOutput
-
-    asset   = attachment.instance
-    result  = pattern.clone
-
-    if style.respond_to?(:to_sym) && style.to_sym == :original
-      # special case...
-
-    elsif style.is_a? AssetOutput
-      ao      = style
-      output  = ao.output
-
-    elsif style.is_a? Output
-      output  = style
-      ao      = attachment.instance.outputs.where(output_id: output.id).first
-      return nil if !ao
-
-    else
-      output = Output.where(code: style).first
-      return nil if !output
-
-      ao = attachment.instance.outputs.where(output_id: output.id).first
-    end
-
-
-    # global rules
-    result.gsub!(":rails_root", Rails.root.to_s)
-
-    if asset
-      # asset-based rules
-      result.gsub!(":id", asset.id.to_s)
-      result.gsub!(":fingerprint", asset.image_fingerprint.to_s)
-    else
-      if pattern =~ /:(?:id|fingerprint)/
-        return false
-      end
-    end
-
-    if style.respond_to?(:to_sym) && style.to_sym == :original
-      # hardcoded handling for the original file
-      result.gsub!(":style", "original")
-      result.gsub!(":extension", File.extname(attachment.original_filename).gsub(/^\.+/, ""))
-      result.gsub!(":sprint","original")
-    else
-      if output
-        # style-based rules
-        result.gsub!(":style", output.code.to_s)
-        result.gsub!(":extension", output.extension)
-      else
-        if pattern =~ /:(?:style|extension)/
-          return false
-        end
-      end
-
-
-      if ao && ao.fingerprint
-        # output-based rules
-        result.gsub!(":sprint", ao.fingerprint)
-      else
-        result.gsub!(":sprint", "NOT_YET_RENDERED")
-      end
-    end
-
-    result
   end
 
 
@@ -381,8 +284,8 @@ class Asset < ActiveRecord::Base
   end
 
 
-
   def method_missing(method, *args)
+    # 🚨 What is this???
     if output = Output.where(code: method.to_s).first
       self.size(output.code)
     else
@@ -417,10 +320,9 @@ class Asset < ActiveRecord::Base
   end
 
   def prerender
-    if image_fingerprint
-      Output.prerenders.map do |output|
-        self.outputs.where(output_id: output.id, image_fingerprint: self.image_fingerprint).first_or_create
-      end
+    return if !image_fingerprint
+    Output.prerenders.map do |output|
+      self.outputs.where(output_id: output.id, image_fingerprint: self.image_fingerprint).first_or_create
     end
   end
 
@@ -428,16 +330,6 @@ class Asset < ActiveRecord::Base
     @reloading = true
     # pulls the original image from storage
     self.file = PHOTOGRAPHIC_MEMORY_CLIENT.get file_key
-  end
-
-  def publish_asset_update
-    AssetHost::Application.redis_publish(action: "UPDATE", id: self.id)
-    # true
-  end
-
-  def publish_asset_delete
-    AssetHost::Application.redis_publish(action: "DELETE", id: self.id)
-    # true
   end
 
   def set_version
@@ -463,7 +355,7 @@ class Asset < ActiveRecord::Base
 
 end
 
-#----------
+
 
 class AssetSize
   attr_accessor  :width, :height, :tag, :url, :asset, :output
