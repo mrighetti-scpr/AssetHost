@@ -1,44 +1,41 @@
-class Asset < ActiveRecord::Base
-
-  include Concurrency
-
-  self.table_name = "asset_host_core_assets"
-
+class Asset
   attr_accessor :image, :file, :request
 
-  MAX_COL_LENGTH = 65535
+  include Mongoid::Document
+  
+  field :title,              type: String
+  field :caption,            type: String
+  field :owner,              type: String
+  field :url,                type: String
+  field :notes,              type: String
+  field :image_file_name,    type: String
+  field :image_content_type, type: String
+  field :image_copyright,    type: String
+  field :image_description,  type: String
+  field :image_fingerprint,  type: String
+  field :image_title,        type: String
+  field :image_updated_at,   type: DateTime
+  field :image_gravity,      type: String, default: "Center"
+  field :image_width,        type: Integer
+  field :image_height,       type: Integer
+  field :image_file_size,    type: Integer
+  field :image_taken,        type: DateTime
+  field :created_at,         type: DateTime
+  field :updated_at,         type: DateTime
+  field :keywords,           type: String
+  field :version,            type: Integer, default: 2
 
-  VIA_UNKNOWN   = 0
-  VIA_FLICKR    = 1
-  VIA_LOCAL     = 2
-  VIA_UPLOAD    = 3
+  embeds_many :outputs, class_name: "Rendering"
 
-  GRAVITY_OPTIONS = [
-    [ "Center (default)", "Center"    ],
-    [ "Top",              "North"     ],
-    [ "Bottom",           "South"     ],
-    [ "Left",             "West"      ],
-    [ "Right",            "East"      ],
-    [ "Top Left",         "NorthWest" ],
-    [ "Top Right",        "NorthEast" ],
-    [ "Bottom Left",      "SouthWest" ],
-    [ "Bottom Right",     "SouthEast" ]
-  ]
+  embeds_one :native
 
   searchkick index_name: Rails.application.config.elasticsearch_index
 
-  has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
-  belongs_to :native, polymorphic: true, optional: true  # again, this is just for things like youtube videos
-
-  before_create :set_version
-
   before_save :reload_image, if: -> {
-    image_gravity_changed? && !@reloading
+    !new? && self.image_fingerprint && image_gravity_changed? && !@reloading
   }
 
-  before_save :truncate_cols
-
-  after_save :save_image
+  after_save :replace_original_image, if: -> { self.file && !@reloading }
 
   def self.es_search(query=nil, page: 1, per_page: 24)
     Asset.search(query, boost_by_distance: {
@@ -57,32 +54,15 @@ class Asset < ActiveRecord::Base
     }, page: page, per_page: per_page)
   end
 
-
-  def size(code)
-    @_sizes ||= {}
-    @_sizes[ code ] ||= AssetSize.new(self, Output.where(code: code).first, @request)
-  end
-
-
-  def image
-    # Here, we're shimming the Paperclip attachment so that
-    # important methods for generating #as_json still function.
-    #
-    # We should work to do away with this entirely if Paperclip
-    # is otherwise doing nothing.
-    @_image ||= Paperclip::Attachment.new 'image', self 
-  end
-
-
   def as_json(options={})
     {
-      :id                 => self.id,
+      :id                 => self.id.to_s,
       :title              => self.title,
       :caption            => self.caption,
       :owner              => self.owner,
       :size               => [self.image_width, self.image_height].join('x'),
       :image_gravity      => self.image_gravity,
-      :tags               => self.image.tags,
+      :tags               => self.tags,
       :keywords           => self.keywords,
       :notes              => self.notes,
       :created_at         => self.created_at,
@@ -101,15 +81,23 @@ class Asset < ActiveRecord::Base
 
   def sizes
     Output.all.inject({}) do |result, output|
-      code = output.code.to_sym
-      result[code] = { 
-        width: self.image.width(code),
-        height: self.image.height(code) 
-      }
+      code = output.name.to_sym
+      result[code] = output.calculate_size(self.image_width, self.image_height)
       result
     end
   end
 
+  def tags
+    result = {}
+    self.sizes.each do |pair|
+      result[pair[0]] = %Q(<img src="#{self.image_url(pair[0])}" width="#{pair[1]["width"]}" height="#{pair[1]["height"]}" alt="#{self.title.to_s.gsub('"', ERB::Util::HTML_ESCAPE['"'])}" />).html_safe
+    end
+    result
+  end
+
+  ##
+  # Ingests data from post-render
+  ##
   def image_data= data
 
     if data[:fingerprint]
@@ -136,8 +124,6 @@ class Asset < ActiveRecord::Base
     self.keywords       = (keywords || "").split(/,\s*/).concat((data[:keywords] || []).map{|label| label.name.downcase }).join(", ")
     self.image_gravity  = data[:gravity] ? data[:gravity] : self.image_gravity
   end
-
-
 
   def image_shape
     if !self.image_width || !self.image_height
@@ -171,53 +157,34 @@ class Asset < ActiveRecord::Base
     }
   end
 
-  def file_key asset_output=nil
-    output_fingerprint = asset_output ? asset_output.fingerprint : 'original'
-    if self.version === 2
-      output_extension = asset_output.try(:output).try(:extension) || file_extension.try(:gsub, ".", "") || 'jpg'
-    else
-      output_extension = 'jpg'
-      #👆 For backward compatibility, we are leaving the .jpg
-      # extension in place for older assets, even when we have a PNG or GIF image.
-      # This is because assets uploaded with an older version
-      # of assethost were all converted to JPGs, and this may
-      # not always be the case now.  The extension in this case
-      # serves no function.
-    end
+  def file_key rendering_name
+    rendering        = self.outputs.find_or_create_by(name: rendering_name)
+    output_extension = rendering.try(:file_extension) || file_extension || 'jpg'
     if id && image_fingerprint && output_extension
-      "#{id}_#{image_fingerprint}_#{output_fingerprint}.#{output_extension}"
+      "#{id}_#{image_fingerprint}_#{rendering.fingerprint}.#{output_extension}"
     end
   end
 
   def file_extension
-    Rack::Mime::MIME_TYPES.invert[image_content_type]
+    Rack::Mime::MIME_TYPES.invert[image_content_type].gsub(".", "")
   end
 
-  def image_url(request=nil, style)
+  def image_url(style)
+    return if !self.image_fingerprint
     style = style.to_sym
-
-    ext = nil
-    begin
-      # FIXME: Need to add correct extension
-      original_file_extension = File.extname(self.image_file_name || "jpg").gsub(/^\.+/, "")
-      ext = case style
-            when :original
-              original_file_extension
-            else
-              # Right now, we have a special exemption for 
-              if original_file_extension.match("gif")
-                original_file_extension
-              else
-                Output.all_sizes[style][:format]
-              end
-            end
-    end
+    ext = case style
+          when :original
+            file_extension
+          else
+            rendering = self.outputs.where(name: style).first_or_initialize.file_extension 
+            rendering || file_extension || "jpg"
+          end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
 
   def as_indexed_json
     {
-      :id               => self.id,
+      :id               => self.id.to_s,
       :title            => self.title,
       :caption          => self.caption,
       :keywords         => self.keywords,
@@ -225,53 +192,11 @@ class Asset < ActiveRecord::Base
       :notes            => self.notes,
       :created_at       => self.created_at,
       :taken_at         => self.image_taken || self.created_at,
-      :image_file_size  => self.image_file_size,
-      :native_type      => self.native_type,
-      :hidden           => self.is_hidden,
+      :image_file_size  => self.image_file_size
     }.merge(self.image_shape())
   end
 
   alias_method :search_data, :as_indexed_json
-
-  def shape
-    if !self.image_width || !self.image_height
-      :unknown
-    elsif self.image_width == self.image_height
-      :square
-    elsif self.image_width > self.image_height
-      :landscape
-    else
-      :portrait
-    end
-  end
-
-  def tag(style)
-    self.image.tag(style)
-  end
-
-  def portrait?
-    self.image_width < self.image_height
-  end
-
-  def url_domain
-    return nil if !self.url
-
-    domain = URI.parse(self.url).host
-    domain == 'www.flickr.com' ? 'Flickr' : domain
-  end
-
-
-  def output_by_style(style)
-    @s_outputs ||= self.outputs.inject({}) { |h,o| h[o.output.code] = o; h }
-    @s_outputs[style.to_s] || false
-  end
-
-  def rendered_outputs
-    @rendered ||= Output.all_sizes.collect do |s|
-      ["#{s[0]} (#{self.image.width(s[0])}x#{self.image.height(s[0])})",s[0]]
-    end
-  end
-
 
   # syncs the exif to the corresponding Asset attributes
   # We don't want to override anything that was set explicitly.
@@ -281,92 +206,46 @@ class Asset < ActiveRecord::Base
     self.owner     = self.image_copyright   if self.owner.blank?
   end
 
-
-  def method_missing(method, *args)
-    # 🚨 What is this???
-    if output = Output.where(code: method.to_s).first
-      self.size(output.code)
-    else
-      super
-    end
-  end
-
   private
 
-  def host
-    if @request
-      port   = ((@request.port === 80) || (@request.port === 443)) ? "" : ":#{@request.port}"
-      domain = "#{@request.protocol}#{@request.host}#{port}"
-    else
-      domain = ""
-    end
+  def new?
+    !self.id || !(self.changes["_id"] || [])[0]
   end
 
-  def save_image
+  def host
+    return "" if !@request
+    port   = ((@request.port === 80) || (@request.port === 443)) ? "" : ":#{@request.port}"
+    "#{@request.protocol}#{@request.host}#{port}"
+  end
+
+  def replace_original_image
     # If you want the asset to render or re-render, all you have to do
     # is place a File or StringIO object in the file attribute
-    if file
-      self.image_data = PHOTOGRAPHIC_MEMORY_CLIENT.put file: file, id: self.id, style_name: 'original', content_type: image_content_type
-      # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
-      self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
-      self.file = nil # prevents recursive saving/rendering
-      sync_exif_data
-      self.save
-      @reloading = false
-      # prerender
-    end
+    return if !file
+    self.outputs.destroy_all
+    self.image_data = RenderJob.perform_now(self.id.to_s, "original", file)
+    prerender file
+    self.file = nil
+    sync_exif_data
+    self.save
+    @reloading = false
   end
 
-  def prerender
+  def prerender file=nil
     return if !image_fingerprint
-    Output.prerenders.map do |output|
-      self.outputs.where(output_id: output.id, image_fingerprint: self.image_fingerprint).first_or_create
+    Output.prerenderers.each do |output|
+      next if output.name == "original"
+      RenderJob.perform_now(self.id.to_s, output.name, file)
     end
   end
 
   def reload_image
     @reloading = true
     # pulls the original image from storage
-    self.file = PHOTOGRAPHIC_MEMORY_CLIENT.get file_key
-  end
-
-  def set_version
-    # We have to do this to avoid some incompatibilities with the older
-    # version of assethost.  In particular, file keys for older uploads
-    # are always JPG, but we need newer assets to use whatever extension
-    # they come with so we can determine how to use them.
-    #
-    # From now on, the version for an asset is set to 2 instead of 1.
-    self.version = 2
-  end
-
-  def truncate_cols
-    cols = Asset.columns_hash
-
-    cols.each do |entry|
-      col_size = entry[1].limit
-      value    = self.send(entry[0])
-      next if !col_size || !value || !(entry[1].type == :text || entry[1].type == :string) 
-      self.send "#{entry[0]}=", value.truncate(col_size)
-    end
+    rendering = self.outputs.first_or_create(name: "original")
+    self.file = PHOTOGRAPHIC_MEMORY_CLIENT.get self.file_key(rendering.name)
   end
 
 end
 
-
-
-class AssetSize
-  attr_accessor  :width, :height, :tag, :url, :asset, :output
-
-  def initialize(asset,output,request=nil)
-    @asset         = asset
-    @asset.request = request
-    @output        = output
-
-    @width    = @asset.image.width(output.code_sym)
-    @height   = @asset.image.height(output.code_sym)
-    @url      = @asset.image_url(output.code_sym)
-    @tag      = @asset.image.tag(output.code_sym)
-  end
-end
 

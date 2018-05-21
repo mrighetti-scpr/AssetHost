@@ -1,49 +1,87 @@
-class Output < ActiveRecord::Base
+##
+# Determines how assets are rendered based on provided rules.
+##
 
-  include Concurrency
+class Output
 
-  self.table_name = "asset_host_core_outputs"
+  include Mongoid::Document
 
-  has_many :asset_outputs
+  CONTENT_TYPES = ["image/jpeg", "image/png", "image/gif"]
 
-  after_update :delete_asset_outputs, if: -> { self.size_changed? || self.extension_changed? }
+  field :name,           type: String
+  field :render_options, type: Array,   default: []
+  field :prerender,      type: Boolean, default: false
+  field :content_type,   type: String
+  field :created_at,     type: DateTime
+  field :updated_at,     type: DateTime
 
-  scope :prerenders, ->(){ where(prerender: true) }
+  before_validation :nullify_blank_content_type
+
+  validates :name, uniqueness: true, presence: true
+  validate  :check_content_type
+
+  index name: 1
+
+  scope :prerenderers, -> { where(prerender: true) }
 
   def self.all_sizes
-    @all_sizes ||= begin
-      sizes = {}
+    self.all.map(&:name)
+  end
 
-      Output.all.each do |output|
-        sizes.merge! output.paperclip_options
+  def convert_arguments
+    args = []
+    (self.render_options || []).each do |o|
+      operation  = OpenStruct.new(o)
+      properties = OpenStruct.new(operation.properties || {})
+      if operation.name == "scale"
+        args << "-scale #{properties.width}x#{properties.height}^"
       end
+      if operation.name == "crop"
+        args << "-crop #{properties.width}x#{properties.height}+#{properties.offsetX}+#{properties.offsetY} +repage"
+      end
+      if operation.name == "quality"
+        args << "-quality #{properties.value}"
+      end
+    end
+    args.join(" ")
+  end
 
-      sizes
+  ##
+  # Predicts the size of a rendered image for the output with a given width and height
+  ##
+  def calculate_size width, height
+    output = ActiveSupport::HashWithIndifferentAccess.new({ width: width, height: height})
+    scale  = ActiveSupport::HashWithIndifferentAccess.new(render_options.find{|o| o["name"] == "scale"} || { properties: {} })
+    s_width  = scale["properties"]["width"]
+    s_height = scale["properties"]["height"]
+    if scale["properties"]["maintainRatio"]
+      s_width  = (s_height * (width.to_f / height.to_f)).round
+      s_height = (s_width  * (height.to_f / width.to_f)).round
+    end
+    crop   = ActiveSupport::HashWithIndifferentAccess.new(render_options.find{|o| o["name"] == "crop"}  || { properties: {} })
+    output["width"]  = [s_width,  crop["properties"]["width"],  width].compact.min
+    output["height"] = [s_height, crop["properties"]["height"], height].compact.min
+    output
+  end
+
+  def as_json arg
+    json = super
+    json.delete("_id")
+    json["id"] = self.id.to_s
+    json
+  end
+  
+  private
+
+  def nullify_blank_content_type
+    if self.content_type && self.content_type.empty?
+      self.content_type = nil
     end
   end
 
-  def code_sym
-    self.code.to_sym
-  end
-
-  def paperclip_options
-    {
-      self.code.to_sym => {
-        :geometry     => '',
-        :size         => self.size,
-        :format       => self.extension.to_sym,
-        :prerender    => self.prerender,
-        :output       => self.id,
-        :rich         => self.is_rich
-      }
-    }
-  end
-
-  protected
-
-  def delete_asset_outputs
-    # destroy each AssetOutput, triggering file and cache deletion
-    self.asset_outputs.each { |ao| ao.destroy }
+  def check_content_type
+    return if !self.content_type
+    errors.add(:content_type, "Content type not supported.") if CONTENT_TYPES.none?{|e| e == self.content_type}
   end
 end
 

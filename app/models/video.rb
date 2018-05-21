@@ -1,6 +1,8 @@
-class Video < ActiveRecord::Base
-  self.abstract_class = true
+class Video
+  include Mongoid::Document
 
-  has_one :asset
+  field :videoid, type: String
+
+  embedded_in :asset, class_name: "Asset"
 end
 

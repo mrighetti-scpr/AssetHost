@@ -20,7 +20,7 @@ module AssetHostCore
         video = data[0]
         return nil if !video
 
-        native = VimeoVideo.create(videoid: video["id"])
+        native = VimeoVideo.new(videoid: video["id"])
         @image_url = video["thumbnail_large"]
 
         asset = Asset.new(

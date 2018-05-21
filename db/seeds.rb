@@ -38,11 +38,11 @@
 # validates_presence_of :options
 
 
-# AssetX.reindex
+# Asset.reindex
 
-# o = OutputX.find_or_create_by({ name: "original", prerender: true, render_options: []})
+# o = Output.find_or_create_by({ name: "original", prerender: true, render_options: []})
 
-# OutputX.first_or_create({
+# Output.first_or_create({
 #   name: "thumb",
 #   prerender: true,
 #   render_options: [
@@ -66,6 +66,7 @@
 # })
 
 [
+  {"name" => "original", "prerender" => true},
   {"name"=>"thumb", "prerender"=>false, "render_options": [
     { 
       name: "scale", 
@@ -107,8 +108,16 @@
       } 
     }
   ]},
- 
   {"name"=>"lead", "prerender"=>false, "render_options": [
+    { 
+      name: "scale", 
+      properties: {
+        width: 324, 
+        height: 324
+      } 
+    }
+  ]},
+  {"name"=>"wide", "prerender"=>false, "render_options": [
     { 
       name: "scale", 
       properties: {
@@ -191,6 +200,6 @@
   ]}
 ]
 .each do |output|
-  OutputX.where(name: output["name"]).first_or_create(output)
+  Output.where(name: output["name"]).first_or_create(output)
 end
 

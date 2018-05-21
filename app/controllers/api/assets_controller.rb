@@ -11,9 +11,9 @@ class Api::AssetsController < Api::BaseController
 
   def index
     if params[:q].present?
-      @assets = AssetX.es_search(params[:q],page:params[:page]||1)
+      @assets = Asset.es_search(params[:q],page:params[:page]||1)
     else
-      @assets = AssetX.order("updated_at desc")
+      @assets = Asset.order("updated_at desc")
                       .page(params[:page])
                       .per(20)
     end
@@ -56,7 +56,7 @@ class Api::AssetsController < Api::BaseController
 
   def create
     if @file
-      asset = AssetX.new(upload_params)
+      asset = Asset.new(upload_params)
       asset.file               = @file
       asset.image_file_name    = @file.original_filename
       asset.image_content_type = @file.content_type
@@ -99,7 +99,7 @@ class Api::AssetsController < Api::BaseController
 
 
   def tag
-    output  = OutputX.find_by(name: params[:style]) || raise(Mongoid::Errors::DocumentNotFound)
+    output  = Output.find_by(name: params[:style]) || raise(Mongoid::Errors::DocumentNotFound)
     ao      = @asset.outputs.where(output_id: output.id).first
 
     tag = {
@@ -126,7 +126,7 @@ class Api::AssetsController < Api::BaseController
   end
 
   def get_asset
-    @asset         = AssetX.find_by(id: params[:id]) || raise(Mongoid::Errors::DocumentNotFound)
+    @asset         = Asset.find_by(id: params[:id]) || raise(Mongoid::Errors::DocumentNotFound)
     @asset.request = request
   end
 

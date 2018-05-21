@@ -13,7 +13,7 @@ class Rendering
 
   validates :name, uniqueness: true, presence: true
 
-  embedded_in :asset, class_name: "AssetX"
+  embedded_in :asset, class_name: "Asset"
 
   def should_prerender
     self.name == "original" || super

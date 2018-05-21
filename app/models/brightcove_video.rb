@@ -1,7 +1,5 @@
 class BrightcoveVideo < Video
-  self.table_name = "asset_host_core_brightcove_videos"
-
-  # attr_accessible :length
+  field :length, type: Integer
 
   def attrs
     {

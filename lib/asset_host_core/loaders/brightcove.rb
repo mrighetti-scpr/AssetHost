@@ -25,7 +25,7 @@ module AssetHostCore
         # get our video info
         response = brightcove.get("find_video_by_id", { video_id: @id }).parsed_response
 
-        native = BrightcoveVideo.create(
+        native = BrightcoveVideo.new(
           :videoid  => response['id'],
           :length   => response['length']
         )
@@ -55,13 +55,6 @@ module AssetHostCore
       private
 
       def image_file
-        # @image_file ||= begin
-        #   tempfile = Tempfile.new('ah-brightcove', encoding: "ascii-8bit")
-        #   open(@image_url) { |f| tempfile.write(f.read) }
-        #   tempfile.rewind
-
-        #   tempfile
-        # end
         @image_file ||= open(@image_url)
       end
     end

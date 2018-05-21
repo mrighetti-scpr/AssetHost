@@ -2,8 +2,8 @@ class RenderJob < ApplicationJob
   queue_as Rails.application.config.resque_queue
 
   def perform asset_id, output_name, file=nil
-    output = OutputX.find_by(name: output_name)
-    asset  = AssetX.find(asset_id)
+    output = Output.find_by(name: output_name)
+    asset  = Asset.find(asset_id)
     return if !asset || !output
     # Retrieve the original asset
     unless file

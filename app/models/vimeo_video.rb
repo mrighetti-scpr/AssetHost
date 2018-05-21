@@ -1,5 +1,4 @@
 class VimeoVideo < Video
-  self.table_name = "asset_host_core_vimeo_videos"
 
   def attrs
     {

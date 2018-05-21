@@ -4,7 +4,7 @@ class PublicController < ActionController::API
   # If so, redirect to the image file. If not, fire off a render process for
   # the style.
   def image
-    asset = AssetX.find_by(id: params[:id])
+    asset = Asset.find_by(id: params[:id])
 
     return head(404) if !asset
 
@@ -20,7 +20,7 @@ class PublicController < ActionController::API
     end
 
     # valid style?
-    output = OutputX.find_by(name: params[:style])
+    output = Output.find_by(name: params[:style])
 
     return head(404) if !output
 

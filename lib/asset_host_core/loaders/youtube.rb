@@ -24,7 +24,7 @@ module AssetHostCore
         snippet = video["snippet"]
         return nil if !snippet
 
-        native = YoutubeVideo.create(
+        native = YoutubeVideo.new(
           :videoid => video["id"]
         )
 

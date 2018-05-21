@@ -4,7 +4,7 @@ class Api::OutputsController < Api::BaseController
   before_action :get_output, only: [:show, :destroy]
 
   def index
-    @outputs = OutputX.all
+    @outputs = Output.all
     respond_with @outputs
   end
 
@@ -13,7 +13,7 @@ class Api::OutputsController < Api::BaseController
   end
 
   def create
-    @output = OutputX.create(outputs_params)
+    @output = Output.create(outputs_params)
     respond_with @output
   end
 
@@ -29,7 +29,7 @@ class Api::OutputsController < Api::BaseController
   end
 
   def get_output
-    @output = OutputX.find(params[:id])
+    @output = Output.find(params[:id])
   end
 
 end
