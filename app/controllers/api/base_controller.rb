@@ -9,7 +9,7 @@ class Api::BaseController < ActionController::API
   private
   
   def authenticate_user
-    Knock::AuthToken.new(token: token).entity_for(User)
+    # Knock::AuthToken.new(token: token).entity_for(User)
   rescue Knock.not_found_exception_class, JWT::DecodeError
     render nothing: true, status: 401
   end

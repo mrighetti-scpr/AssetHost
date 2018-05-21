@@ -1,33 +1,32 @@
 class RenderJob < ApplicationJob
   queue_as Rails.application.config.resque_queue
 
-  def perform asset_output_id
-    asset_output = AssetOutput.find(asset_output_id)
-    asset        = asset_output.asset
+  def perform asset_id, output_name, file=nil
+    output = OutputX.find_by(name: output_name)
+    asset  = AssetX.find(asset_id)
+    return if !asset || !output
     # Retrieve the original asset
-    original_filename       = "#{asset.id}_#{asset.image_fingerprint}_original#{asset.file_extension}"
-    file                    = PHOTOGRAPHIC_MEMORY_CLIENT.get original_filename
-    asset_output.image_data = PHOTOGRAPHIC_MEMORY_CLIENT.put({
-      file: file, 
-      id: asset.id,
-      convert_options: asset_output.convert_options, 
-      style_name: asset_output.output.code, 
-      content_type: asset_output.content_type 
-    })
-    retries = 0
-    begin
-      asset_output.save
-    rescue  ActiveRecord::StatementInvalid => ex
-      if ex.message =~ /Deadlock found when trying to get lock/ #ex not e!!
-        retries += 1   
-        raise ex if retries > 3  ## max 3 retries 
-        sleep 5
-        retry
-      else
-        raise ex
-      end
+    unless file
+      original_filename  = asset.file_key("original")
+      file               = PHOTOGRAPHIC_MEMORY_CLIENT.get original_filename
     end
-    asset_output.image_data
+    content_type = output.content_type || asset.image_content_type
+    image_data = PHOTOGRAPHIC_MEMORY_CLIENT.put({
+      file:            file,
+      id:              asset.id,
+      convert_options: output.convert_arguments,
+      style_name:      output.name, 
+      content_type:    content_type
+    })
+    asset.outputs.find_or_create_by(name: output.name).update({
+      fingerprint:  output.name == "original" ? "original" : image_data[:fingerprint],
+      width:        image_data[:metadata].ImageWidth,
+      height:       image_data[:metadata].ImageHeight,
+      content_type: content_type
+    })
+   image_data
+  rescue Aws::S3::Errors::NoSuchKey => e
+    puts e.message
   end
 end
 

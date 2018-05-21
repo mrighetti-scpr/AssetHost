@@ -1,10 +1,10 @@
 class Api::OutputsController < Api::BaseController
   before_action :authenticate_user
   
-  before_filter :get_output, only: [:show]
+  before_action :get_output, only: [:show, :destroy]
 
   def index
-    @outputs = Output.all
+    @outputs = OutputX.all
     respond_with @outputs
   end
 
@@ -13,7 +13,7 @@ class Api::OutputsController < Api::BaseController
   end
 
   def create
-    @output = Output.create(outputs_params)
+    @output = OutputX.create(outputs_params)
     respond_with @output
   end
 
@@ -25,11 +25,11 @@ class Api::OutputsController < Api::BaseController
   private
 
   def outputs_params
-    params.require(:output).permit(:code, :size, :extension, :prerender, :is_rich)
+    params.require(:output).permit(:name, :render_options, :extension, :prerender)
   end
 
   def get_output
-    @output = Output.find(params[:id])
+    @output = OutputX.find(params[:id])
   end
 
 end

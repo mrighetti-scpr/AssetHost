@@ -16,6 +16,7 @@ services:
         aliases:
           - assethost
     depends_on:
+      - mongodb
       - mysql
       - elasticsearch
       - redis
@@ -32,6 +33,17 @@ services:
     ports: []
     depends_on:
       - assethost
+
+  mongodb:
+    image: bitnami/mongodb:3.6.4
+    networks:
+      assethost-network:
+        aliases:
+          - mongodb
+    ports:
+      - 27017:27017/tcp
+    volumes:
+      - mongodb-data:/bitnami
 
   mysql: &defaults
     image: mysql:5.7.21
@@ -86,6 +98,7 @@ services:
           - s3
 
 volumes:
+  mongodb-data:
   mysql-data:
   elasticsearch-data:
   s3-data:

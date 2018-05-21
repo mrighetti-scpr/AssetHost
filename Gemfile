@@ -5,23 +5,24 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem "activerecord", "~> 5.0.2"
-gem "actionpack", "~> 5.0.2"
-gem "actionview", "~> 5.0.2"
-gem "activejob", "~> 5.0.2"
-gem "activesupport", "~> 5.0.2"
-gem "railties", "~> 5.0.2"
+gem "activerecord", "~> 5.2.0"
+gem "actionpack", "~> 5.2.0"
+gem "actionview", "~> 5.2.0"
+gem "activejob", "~> 5.2.0"
+gem "activesupport", "~> 5.2.0"
+gem "railties", "~> 5.2.0"
 gem "sprockets-rails", "~> 3.2.0"
 gem "sinatra", github: "sinatra/sinatra", branch: "master", require: false, ref: "34521720b6028c2fa696cf85109345a89f306c99"
 # ^^ we need this for the resque interface to work, sadly
 gem "ember-cli-rails"
 
 gem "mysql2", ">= 0.3.18", "< 0.5"
+gem 'mongoid', "~> 7.0.1"
 gem "resque", "~> 1.27.2"
 gem "searchkick", "~> 2.5.0"
 gem "cocaine", "0.5.8"
 
-gem "photographic_memory", github: "scpr/photographic_memory"
+gem "photographic_memory", path: "~/workspace/photographic_memory"
 gem "paperclip", "5.2.1"
 gem "mini_exiftool", "~> 2.8.0"
 gem "faraday", "~> 0.9.2"
@@ -33,8 +34,9 @@ gem "aws-sdk", "~> 2"
 gem "knock"
 gem "jbuilder", "~> 2.5"
 gem "jwt", "~> 1.5"
-gem "responders", "~> 2.3.0"
-gem "kaminari", "~> 0.14.1"
+gem "responders", "~> 2.4.0"
+gem "kaminari", "~> 1.1.1"
+gem "kaminari-mongoid"
 
 # Use ActiveModel has_secure_password
 gem "bcrypt", "~> 3.1.7"

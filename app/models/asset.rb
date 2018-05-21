@@ -27,8 +27,6 @@ class Asset < ActiveRecord::Base
 
   searchkick index_name: Rails.application.config.elasticsearch_index
 
-  scope :visible, -> { where(is_hidden: false) }
-
   has_many :outputs, -> { order("created_at desc").distinct }, :class_name => "AssetOutput", :dependent => :destroy
   belongs_to :native, polymorphic: true, optional: true  # again, this is just for things like youtube videos
 

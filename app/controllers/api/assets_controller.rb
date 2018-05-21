@@ -11,11 +11,11 @@ class Api::AssetsController < Api::BaseController
 
   def index
     if params[:q].present?
-      @assets = Asset.es_search(params[:q],page:params[:page]||1)
+      @assets = AssetX.es_search(params[:q],page:params[:page]||1)
     else
-      @assets = Asset.visible.order("updated_at desc")
-        .page(params[:page])
-        .per(20)
+      @assets = AssetX.order("updated_at desc")
+                      .page(params[:page])
+                      .per(20)
     end
 
     @assets.map {|a| a.request = request}
@@ -44,7 +44,7 @@ class Api::AssetsController < Api::BaseController
       else
         render nothing: true, status: 400
       end
-      return false
+      return
     end
     if @asset.update_attributes(asset_params)
       respond_with @asset
@@ -56,22 +56,21 @@ class Api::AssetsController < Api::BaseController
 
   def create
     if @file
-      asset = Asset.new(upload_params)
+      asset = AssetX.new(upload_params)
       asset.file               = @file
       asset.image_file_name    = @file.original_filename
       asset.image_content_type = @file.content_type
       if asset.save
         asset.request = request
-        respond_with asset, location: asset_path(asset)
+        render json: asset.as_json
       else
         render nothing: true, status: 400
       end
-      return false
+      return
     end
 
     if !params[:url]
       render_bad_request(message: "Must provide an image or an asset URL")
-      return false
     end
 
     # see if we have a loader for this URL
@@ -90,18 +89,17 @@ class Api::AssetsController < Api::BaseController
       respond_with asset, location: asset_path(asset)
 
     else
-      render_not_found(message: "Unable to find or load an asset at " \
-                                "the URL #{params[:url]}")
-      return false
+      # render_not_found(message: "Unable to find or load an asset at " \
+      #                           "the URL #{params[:url]}")
+      render nothing: true, status: 404
     end
   rescue URI::InvalidURIError
     render_bad_request(message: "The URL provided is not valid.")
-    return false 
   end
 
 
   def tag
-    output  = Output.find_by_code!(params[:style])
+    output  = OutputX.find_by(name: params[:style]) || raise(Mongoid::Errors::DocumentNotFound)
     ao      = @asset.outputs.where(output_id: output.id).first
 
     tag = {
@@ -128,7 +126,7 @@ class Api::AssetsController < Api::BaseController
   end
 
   def get_asset
-    @asset         = Asset.find_by_id!(params[:id])
+    @asset         = AssetX.find_by(id: params[:id]) || raise(Mongoid::Errors::DocumentNotFound)
     @asset.request = request
   end
 

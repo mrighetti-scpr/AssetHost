@@ -24,7 +24,7 @@ export default DS.Model.extend({
   short_edge:      attr('number'),
   ratio:           attr('number'),
   keywordList:     computed('keywords', function(){
-    return this.getWithDefault('keywords', '')
+    return (this.get('keywords') || '')
       .split(/\s*,\s*/g)
       .filter(k => k.length);
   }),
