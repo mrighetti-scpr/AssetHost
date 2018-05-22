@@ -9,8 +9,11 @@ module.exports = function(defaults) {
     },
     'esw-cache-fallback': {
       patterns: [
-        '/api/assets(.*)'
+        '/api/assets(.*)',
       ],
+    },
+    'esw-index': {
+      excludeScope: [/\/i(\/.*)?$/, /\/api(\/.*)?$/],
     },
     sassVariables: 'app/styles/vars.sass'
   });

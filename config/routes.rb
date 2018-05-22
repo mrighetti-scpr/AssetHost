@@ -5,8 +5,7 @@ Rails.application.routes.draw do
   
   match '/i/:aprint/:id-:style.:extension', to: 'public#image', constraints: { id: /[a-z0-9]+/, style: /[^\.]+/}, via: :all, as: :image
 
-  root to: "application#home"
-  mount_ember_assets :frontend, to: "/"
+  # root to: "application#home"
 
   resque_constraint = ->(request) do
     # 🚨 New authentication system needs to be applied here.
@@ -34,4 +33,5 @@ Rails.application.routes.draw do
 
   end
 
+  mount_ember_app :frontend, to: "/"
 end
