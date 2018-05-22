@@ -70,7 +70,7 @@ Rails.application.configure do
   end
 
   # Do not dump schema after migrations.
-  config.active_record.dump_schema_after_migration = false
+  # config.active_record.dump_schema_after_migration = false
 
   # We're minimally using ActionView, so we don't need caching.
   config.action_controller.perform_caching = false

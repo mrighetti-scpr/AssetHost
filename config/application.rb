@@ -4,7 +4,7 @@ require "rails"
 # Pick the frameworks you want:
 require "active_model/railtie"
 require "active_job/railtie"
-require "active_record/railtie"
+# require "active_record/railtie"
 require "action_controller/railtie"
 require "action_view/railtie"
 require "sprockets/railtie"
@@ -53,6 +53,9 @@ module AssetHost
     config.action_dispatch.default_headers.clear
 
     ENV["ELASTICSEARCH_URL"]  ||= Rails.application.secrets.elasticsearch['host']
+
+    config.middleware.delete ActionDispatch::Cookies
+    config.middleware.delete ActionDispatch::Session::CookieStore
 
   end
 end

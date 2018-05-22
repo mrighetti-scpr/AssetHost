@@ -5,6 +5,7 @@
 class Output
 
   include Mongoid::Document
+  include Mongoid::Timestamps
 
   CONTENT_TYPES = ["image/jpeg", "image/png", "image/gif"]
 
@@ -12,8 +13,6 @@ class Output
   field :render_options, type: Array,   default: []
   field :prerender,      type: Boolean, default: false
   field :content_type,   type: String
-  field :created_at,     type: DateTime
-  field :updated_at,     type: DateTime
 
   before_validation :nullify_blank_content_type
 
@@ -50,15 +49,15 @@ class Output
   # Predicts the size of a rendered image for the output with a given width and height
   ##
   def calculate_size width, height
-    output = ActiveSupport::HashWithIndifferentAccess.new({ width: width, height: height})
+    output = ActiveSupport::HashWithIndifferentAccess.new({ width: width, height: height })
     scale  = ActiveSupport::HashWithIndifferentAccess.new(render_options.find{|o| o["name"] == "scale"} || { properties: {} })
     s_width  = scale["properties"]["width"]
     s_height = scale["properties"]["height"]
-    if scale["properties"]["maintainRatio"]
+    if scale["properties"]["maintainRatio"] && s_width && s_height
       s_width  = (s_height * (width.to_f / height.to_f)).round
       s_height = (s_width  * (height.to_f / width.to_f)).round
     end
-    crop   = ActiveSupport::HashWithIndifferentAccess.new(render_options.find{|o| o["name"] == "crop"}  || { properties: {} })
+    crop = ActiveSupport::HashWithIndifferentAccess.new(render_options.find{|o| o["name"] == "crop"}  || { properties: {} })
     output["width"]  = [s_width,  crop["properties"]["width"],  width].compact.min
     output["height"] = [s_height, crop["properties"]["height"], height].compact.min
     output

@@ -1,14 +1,21 @@
-class User < ActiveRecord::Base
-  if config = Rails.configuration.database_configuration[Rails.env]["users"]
-    establish_connection(config) if config["host"].present?
-    if table_name = config["table_name"]
-      self.table_name = table_name
-    end
-  end
+class User
+
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include ActiveModel::SecurePassword
+
+  field :username,        type: String
+  field :password_digest, type: String
+  field :is_admin,        type: Boolean, default: false
+
+  validates_presence_of :password, on: :create
 
   has_secure_password
 
   class << self
+    def column_names
+      return ["id", "username", "password_digest", "is_admin"]
+    end
     def authenticate(username, password)
       self.find_by_username(username).try(:authenticate, password)
     end

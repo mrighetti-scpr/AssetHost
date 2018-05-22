@@ -2,6 +2,7 @@ class Asset
   attr_accessor :image, :file, :request
 
   include Mongoid::Document
+  include Mongoid::Timestamps
   
   field :title,              type: String
   field :caption,            type: String
@@ -20,8 +21,6 @@ class Asset
   field :image_height,       type: Integer
   field :image_file_size,    type: Integer
   field :image_taken,        type: DateTime
-  field :created_at,         type: DateTime
-  field :updated_at,         type: DateTime
   field :keywords,           type: String
   field :version,            type: Integer, default: 2
 
@@ -172,13 +171,13 @@ class Asset
   def image_url(style)
     return if !self.image_fingerprint
     style = style.to_sym
-    ext = case style
-          when :original
-            file_extension
-          else
-            rendering = self.outputs.where(name: style).first_or_initialize.file_extension 
-            rendering || file_extension || "jpg"
-          end
+    ext   = case style
+            when :original
+              file_extension
+            else
+              rendering = self.outputs.where(name: style).first_or_initialize.file_extension 
+              rendering || file_extension || "jpg"
+            end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
 

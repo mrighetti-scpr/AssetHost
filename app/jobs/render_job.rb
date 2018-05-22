@@ -1,4 +1,4 @@
-class RenderJob < ApplicationJob
+class RenderJob < ActiveJob::Base
   queue_as Rails.application.config.resque_queue
 
   def perform asset_id, output_name, file=nil
@@ -7,11 +7,11 @@ class RenderJob < ApplicationJob
     return if !asset || !output
     # Retrieve the original asset
     unless file
-      original_filename  = asset.file_key("original")
-      file               = PHOTOGRAPHIC_MEMORY_CLIENT.get original_filename
+      original_filename = asset.file_key("original")
+      file              = PHOTOGRAPHIC_MEMORY_CLIENT.get original_filename
     end
     content_type = output.content_type || asset.image_content_type
-    image_data = PHOTOGRAPHIC_MEMORY_CLIENT.put({
+    image_data   = PHOTOGRAPHIC_MEMORY_CLIENT.put({
       file:            file,
       id:              asset.id,
       convert_options: output.convert_arguments,

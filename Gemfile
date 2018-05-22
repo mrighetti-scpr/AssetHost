@@ -5,7 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem "activerecord", "~> 5.2.0"
+# gem "activerecord", "~> 5.2.0"
 gem "actionpack", "~> 5.2.0"
 gem "actionview", "~> 5.2.0"
 gem "activejob", "~> 5.2.0"
@@ -32,7 +32,6 @@ gem "brightcove-api", "~> 1.0.12"
 gem "aws-sdk", "~> 2"
 
 gem "knock"
-gem "jbuilder", "~> 2.5"
 gem "jwt", "~> 1.5"
 gem "responders", "~> 2.4.0"
 gem "kaminari", "~> 1.1.1"

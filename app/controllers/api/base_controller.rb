@@ -6,10 +6,25 @@ class Api::BaseController < ActionController::API
 
   respond_to :json
 
+  def deny_access
+    render nothing: true, status: 401
+  end
+
   private
   
+  # def authenticate_user
+  #   t = Knock::AuthToken.new(token: token).entity_for(User)
+  #   if !t
+  #     render nothing: true, status: 401
+  #     return
+  #   end
+  #   t
+  # rescue Knock.not_found_exception_class, JWT::DecodeError
+  #   render nothing: true, status: 401
+  # end
+
   def authenticate_user
-    # Knock::AuthToken.new(token: token).entity_for(User)
+    Knock::AuthToken.new(token: token).entity_for(User)
   rescue Knock.not_found_exception_class, JWT::DecodeError
     render nothing: true, status: 401
   end
@@ -20,14 +35,12 @@ class Api::BaseController < ActionController::API
 
   def refresh_bearer_auth_header
     authenticate_user
-    if current_user
-      headers['Authorization'] = Knock::AuthToken.new(payload: { sub: current_user.id }).token
-    end
+    return if !current_user
+    headers['Authorization'] = Knock::AuthToken.new(payload: { sub: current_user.id }).token
   end
   
   def set_access_control_headers
-    response.headers['Access-Control-Allow-Origin'] =
-      request.env['HTTP_ORIGIN'] || "*"
+    response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
   end
 
 end

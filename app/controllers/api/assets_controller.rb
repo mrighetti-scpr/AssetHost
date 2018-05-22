@@ -11,17 +11,18 @@ class Api::AssetsController < Api::BaseController
 
   def index
     if params[:q].present?
-      @assets = Asset.es_search(params[:q],page:params[:page]||1)
+      results = Asset.es_search(params[:q], page: params[:page] || 1)
     else
-      @assets = Asset.order("updated_at desc")
-                      .page(params[:page])
-                      .per(20)
+      results = Asset.order("updated_at desc")
+                     .page(params[:page])
+                     .per(20)
     end
 
-    @assets.map {|a| a.request = request}
+    @assets = results.to_a
+    @assets.each {|a| a.request = request }
 
-    response.headers['X-Next-Page']       = (@assets.last_page? ? nil : @assets.current_page + 1).to_s
-    response.headers['X-Total-Entries']   = @assets.total_count.to_s
+    response.headers['X-Next-Page']     = (results.last_page? ? nil : results.current_page + 1).to_s
+    response.headers['X-Total-Entries'] = results.total_count.to_s
 
     respond_with @assets.to_json
   end

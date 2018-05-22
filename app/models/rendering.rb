@@ -1,6 +1,7 @@
 class Rendering
 
   include Mongoid::Document
+  include Mongoid::Timestamps
 
   field :name,             type: String
   field :fingerprint,      type: String
@@ -8,8 +9,6 @@ class Rendering
   field :height,           type: Integer
   field :should_prerender, type: Boolean
   field :content_type,     type: String, default: "image/jpeg"
-  field :created_at,       type: DateTime
-  field :updated_at,       type: DateTime
 
   validates :name, uniqueness: true, presence: true
 

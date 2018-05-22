@@ -15,7 +15,7 @@ GIT
 PATH
   remote: ../photographic_memory
   specs:
-    photographic_memory (0.0.1)
+    photographic_memory (0.0.2)
       aws-sdk (~> 2)
       mini_exiftool (~> 2.8.0)
       rack (~> 2.0.3)
@@ -156,9 +156,6 @@ GEM
     httpclient (2.8.3)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
-    jbuilder (2.7.0)
-      activesupport (>= 4.2.0)
-      multi_json (>= 1.2)
     jmespath (1.4.0)
     json (2.1.0)
     jwt (1.5.6)
@@ -368,7 +365,6 @@ DEPENDENCIES
   actionpack (~> 5.2.0)
   actionview (~> 5.2.0)
   activejob (~> 5.2.0)
-  activerecord (~> 5.2.0)
   activesupport (~> 5.2.0)
   aws-sdk (~> 2)
   bcrypt (~> 3.1.7)
@@ -383,7 +379,6 @@ DEPENDENCIES
   faraday (~> 0.9.2)
   faraday_middleware (~> 0.9.0)
   google-api-client (~> 0.21.1)
-  jbuilder (~> 2.5)
   jwt (~> 1.5)
   kaminari (~> 1.1.1)
   kaminari-mongoid
