@@ -34,6 +34,8 @@ module AssetHost
     # initialize our config hash
     config.assethost = ActiveSupport::OrderedOptions.new
 
+    config.elasticsearch_index = "assethost-assets"
+
     config.active_job.queue_adapter = :resque
     config.resque_queue             = ENV['ASSETHOST_RESQUE_QUEUE'] || :assets
 

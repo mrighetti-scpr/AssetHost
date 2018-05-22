@@ -43,7 +43,6 @@ group :development, :test do
   ## These are grouped here because, theoretically,
   ## your assets should already be precompiled when
   ## deploying or running in production mode.
-  gem "uglifier", ">= 1.3.0"
   gem "byebug", platform: :mri
   gem "dotenv-rails", require: false
 end
