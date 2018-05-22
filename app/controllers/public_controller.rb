@@ -4,11 +4,16 @@ class PublicController < ActionController::API
   # If so, redirect to the image file. If not, fire off a render process for
   # the style.
   def image
+    
     asset = Asset.find_by(id: params[:id])
 
     return head(404) if !asset
 
-    head(304) and return if request.headers['If-None-Match'] == asset.image_fingerprint
+    if request.headers['If-None-Match']
+      a_id, a_print, r_print = request.headers['If-None-Match'].split(":")
+      rendering = asset.outputs.where(fingerprint: r_print)
+      head(304) and return if rendering && a_id == asset.id
+    end
 
     asset.request = request
 
@@ -40,7 +45,7 @@ class PublicController < ActionController::API
       if rendering.fingerprint.present?
         path = asset.file_key(rendering.name)
         response.headers['Cache-Control'] = "public, max-age=31536000"
-        response.headers['ETag']          = asset.image_fingerprint
+        response.headers['ETag']          = "#{asset.id}:#{asset.image_fingerprint}:#{rendering.fingerprint}"
         _send_file(path) and return
       else
         # nope... sleep!
