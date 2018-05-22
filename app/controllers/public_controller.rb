@@ -8,16 +8,9 @@ class PublicController < ActionController::API
 
     return head(404) if !asset
 
-    asset.request = request
+    head(304) and return if request.headers['If-None-Match'] == asset.image_fingerprint
 
-    # 🚨 See if we can do away with this and
-    #    instead rely on the "original" output object.
-    # Special case for "original"
-    # This isn't a "style", just someone has requested
-    # the raw image file.
-    if params[:aprint] == "original"
-      _send_file(asset.file_key("original")) and return
-    end
+    asset.request = request
 
     # valid style?
     output = Output.find_by(name: params[:style])
@@ -36,7 +29,7 @@ class PublicController < ActionController::API
     # do we have a rendered output for this style?
     # if not then create a new one.
     rendering = asset.outputs.where(name: output.name)
-                                .first_or_create(should_prerender: output.prerender?)
+                             .first_or_create(should_prerender: output.prerender?)
     rendering.render
 
     # if a new rendering gets created, it should automatically
@@ -46,6 +39,8 @@ class PublicController < ActionController::API
       rendering = asset.outputs.find_by(name: output.name)
       if rendering.fingerprint.present?
         path = asset.file_key(rendering.name)
+        response.headers['Cache-Control'] = "public, max-age=31536000"
+        response.headers['ETag']          = asset.image_fingerprint
         _send_file(path) and return
       else
         # nope... sleep!
