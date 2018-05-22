@@ -23,7 +23,6 @@ gem "searchkick", "~> 2.5.0"
 gem "cocaine", "0.5.8"
 
 gem "photographic_memory", path: "~/workspace/photographic_memory"
-gem "paperclip", "5.2.1"
 gem "mini_exiftool", "~> 2.8.0"
 gem "faraday", "~> 0.9.2"
 gem "faraday_middleware", "~> 0.9.0"
@@ -44,7 +43,6 @@ group :development, :test do
   ## These are grouped here because, theoretically,
   ## your assets should already be precompiled when
   ## deploying or running in production mode.
-  gem "sass-rails", "~> 5.0"
   gem "uglifier", ">= 1.3.0"
   gem "byebug", platform: :mri
   gem "dotenv-rails", require: false

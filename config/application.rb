@@ -34,21 +34,8 @@ module AssetHost
     # initialize our config hash
     config.assethost = ActiveSupport::OrderedOptions.new
 
-    config.elasticsearch_index = "assethost-assets"
-
     config.active_job.queue_adapter = :resque
     config.resque_queue             = ENV['ASSETHOST_RESQUE_QUEUE'] || :assets
-
-    config.host_name     = ENV['ASSETHOST_HOST_NAME']     || 'localhost'
-    config.host_port     = ENV['ASSETHOST_HOST_PORT']     || '3000'
-    config.host_protocol = ENV['ASSETHOST_HOST_PROTOCOL'] || 'https'
-    config.host          = "#{config.host_name}" + ((config.host_port == '80') ? "" : ":#{config.host_port}")
-    ## ^^ This is necessary for URL generation.
-    ##    🚨 ☝️ Or *is* it? 🤔
-
-    config.thumb_size           = "lsquare"
-    config.modal_size           = "small"
-    config.detail_size          = "eight"
 
     config.action_dispatch.default_headers.clear
 
