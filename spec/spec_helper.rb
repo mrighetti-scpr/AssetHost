@@ -6,10 +6,12 @@ require 'bundler/setup'
 require 'rspec/rails'
 require 'factory_girl'
 require 'fakeweb'
+require 'database_cleaner'
 load 'factories.rb'
 
-FakeWeb.allow_net_connect = false
+DatabaseCleaner.strategy = :truncation
 
+FakeWeb.allow_net_connect = false
 
 Dir["#{SPEC_ROOT}/support/**/*.rb"].each { |f| require f }
 
@@ -38,6 +40,23 @@ RSpec.configure do |config|
     # ...rather than:
     #     # => "be bigger than 2"
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
+
+  # config.before(:each, altering_database: true) do
+  #   DatabaseCleaner.strategy = :truncation
+  # end
+
+  config.before(:suite) do
+    DatabaseCleaner[:mongoid].strategy = :truncation
+    # load Rails.root + "db/seeds.rb"
+  end
+
+  config.before(:each) do
+    DatabaseCleaner[:mongoid].start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner[:mongoid].clean
   end
 
   # rspec-mocks config goes here. You can use an alternate test double

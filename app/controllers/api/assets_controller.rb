@@ -24,14 +24,13 @@ class Api::AssetsController < Api::BaseController
     response.headers['X-Next-Page']     = (results.last_page? ? nil : results.current_page + 1).to_s
     response.headers['X-Total-Entries'] = results.total_count.to_s
 
-    respond_with @assets.to_json
+    render json: @assets.to_json
   end
 
 
   def show
-    respond_with @asset
+    render json: @asset.as_json
   end
-
 
   def update
     if @file
@@ -48,9 +47,9 @@ class Api::AssetsController < Api::BaseController
       return
     end
     if @asset.update_attributes(asset_params)
-      respond_with @asset
+      render json: @asset.as_json
     else
-      respond_with @asset.errors.full_messages, :status => :error
+      render json: @asset.errors.full_messages, status: :error
     end
 
   end
@@ -65,14 +64,15 @@ class Api::AssetsController < Api::BaseController
         asset.request = request
         render json: asset.as_json
       else
-        render nothing: true, status: 400
+        head 400
       end
       return
     end
 
-    if !params[:url]
-      render_bad_request(message: "Must provide an image or an asset URL")
-    end
+    # if !params[:url]
+    head 400 and return if !params[:url]
+      # render_bad_request(message: "Must provide an image or an asset URL")
+    # end
 
     # see if we have a loader for this URL
     if asset = AssetHostCore.as_asset(params[:url])
@@ -81,21 +81,21 @@ class Api::AssetsController < Api::BaseController
       end
 
       asset.request     = request
-      asset.is_hidden   = params[:hidden].present?
       asset.caption     = params[:caption] if params[:caption].present?
       asset.owner       = params[:owner] if params[:owner].present?
       asset.title       = params[:title] if params[:title].present?
 
       asset.save
-      respond_with asset, location: asset_path(asset)
-
+      render json: asset.as_json
     else
       # render_not_found(message: "Unable to find or load an asset at " \
       #                           "the URL #{params[:url]}")
-      render nothing: true, status: 404
+      # render nothing: true, status: 404
+      head 404
     end
   rescue URI::InvalidURIError
-    render_bad_request(message: "The URL provided is not valid.")
+    # render_bad_request(message: "The URL provided is not valid.")
+    head 400
   end
 
 

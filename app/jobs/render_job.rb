@@ -2,7 +2,11 @@ class RenderJob < ActiveJob::Base
   queue_as Rails.application.config.resque_queue
 
   def perform asset_id, output_name, file=nil
-    output = Output.find_by(name: output_name)
+    if output_name == "original"
+      output = Output.find_or_create_by(name: "original")
+    else
+      output = Output.find_by(name: output_name)
+    end
     asset  = Asset.find(asset_id)
     return if !asset || !output
     # Retrieve the original asset
