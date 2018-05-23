@@ -1,11 +1,10 @@
 require "resque/server"
 
 Rails.application.routes.draw do
-  post '/api/authenticate' => 'api/user_token#create'
+  post '/api/authenticate'         => 'api/user_token#create'
+  post '/api/authenticate/refresh' => 'api/user_token#update'
   
   match '/i/:aprint/:id-:style.:extension', to: 'public#image', constraints: { id: /[a-z0-9]+/, style: /[^\.]+/}, via: :all, as: :image
-
-  # root to: "application#home"
 
   resque_constraint = ->(request) do
     # 🚨 New authentication system needs to be applied here.

@@ -11,7 +11,7 @@ load 'factories.rb'
 FakeWeb.allow_net_connect = false
 
 
-Dir["#{SPEC_ROOT}/support/**/*.rb"].each { |f|require f }
+Dir["#{SPEC_ROOT}/support/**/*.rb"].each { |f| require f }
 
 
 RSpec.configure do |config|

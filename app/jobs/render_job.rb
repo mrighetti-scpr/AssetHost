@@ -18,13 +18,14 @@ class RenderJob < ActiveJob::Base
       style_name:      output.name, 
       content_type:    content_type
     })
-    asset.outputs.find_or_create_by(name: output.name).update({
+    rendering    = asset.outputs.find_or_create_by(name: output.name)
+    rendering.update({
       fingerprint:  output.name == "original" ? "original" : image_data[:fingerprint],
       width:        image_data[:metadata].ImageWidth,
       height:       image_data[:metadata].ImageHeight,
       content_type: content_type
     })
-   image_data
+    image_data
   rescue Aws::S3::Errors::NoSuchKey => e
     puts e.message
   end

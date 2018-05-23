@@ -8,4 +8,10 @@ class Api::UserTokenController < Knock::AuthTokenController
       headers['Authorization'] = JSON.parse(json)["jwt"]
     end
   end
+  def update
+    authenticate_user
+    return if !current_user
+    headers['Authorization'] = Knock::AuthToken.new(payload: { sub: current_user.id }).token
+  end
 end
+

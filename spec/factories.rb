@@ -1,19 +1,10 @@
 FactoryGirl.define do
-  # factory :user do
-  #   username "bricker"
-  #   password "secret"
-  #   password_confirmation "secret"
-  #   is_admin false
-  # end
-
-  # factory :api_user, class: "ApiUser" do
-  #   name "Bryan"
-  #   email "bricker@scpr.org"
-  #   is_active true
-  # end
-
-  # factory :permission, class: "Permission" do
-  # end
+  factory :user do
+    username "bricker"
+    password "secret"
+    password_confirmation "secret"
+    is_admin false
+  end
 
   factory :asset, class: "Asset" do
     title "Asset"
@@ -27,10 +18,24 @@ FactoryGirl.define do
     image_file_size 1000
   end
 
-
   factory :output, class: "Output" do
-    code "thumb"
-    size "88x88#"
+    name "thumb"
     prerender 0
+    render_options [
+      {
+        name: "scale",
+        properties: {
+          width:  88,
+          height: 88
+        }
+      },
+      {
+        name: "crop",
+        properties: {
+          width: 88,
+          height: 88
+        }
+      }
+    ]
   end
 end

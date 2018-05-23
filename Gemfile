@@ -61,9 +61,9 @@ group :test do
   gem "factory_girl", "~> 4.8.0"
   gem "fakeweb", "~> 1.3.0"
   gem "launchy", ">= 2.1.1"
-  gem "rspec", ">= 3.6.0.beta2"
-  gem "rspec-rails", ">= 3.6.0.beta2"
-  gem "rails-controller-testing"
+  gem "rspec", ">= 3.7.0"
+  gem "rspec-rails", ">= 3.7.2"
+  gem "rails-controller-testing", "~> 1.0.2"
   gem "rspec-its", "~> 1.2.0"
 end
 

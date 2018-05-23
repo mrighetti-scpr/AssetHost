@@ -1,35 +1,35 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::AssetsController, type: :controller do
-#   before do
-#     @api_user = create :api_user
-#   end
+  before do
+    @user = create :user
+  end
 
-#   describe 'GET show' do
-#     before do
-#       @api_user.permissions.create(
-#         :resource   => "Asset",
-#         :ability    => "read"
-#       )
-#     end
+  before(:each) do
+    token = Knock::AuthToken.new({payload: { sub: @user.id }}).token
+    request.env["HTTP_AUTHORIZATION"] = "Bearer #{token}"
+  end
 
-#     it 'returns the asset as json' do
-#       asset = create :asset
-#       get :show, params: api_request_params(id: asset.id)
-#       JSON.parse(response.body)["id"].should eq asset.id
-#     end
+  describe "GET show" do
 
-#     it 'renders an unauthorized error if there is no auth token provided' do
-#       get :show, params: api_request_params(id: 1).except(:auth_token)
-#       response.status.should eq 401
-#     end
+    it "returns the asset as json" do
+      asset = create :asset
+      get :show, params: api_request_params(id: asset.id) 
+      JSON.parse(response.body)["id"].should eq asset.id.to_s
+    end
 
-#     it 'renders a forbidden error if user does not have read permission for assets' do
-#       @api_user.permissions.clear
-#       get :show, params: api_request_params(id: 1)
-#       response.status.should eq 403
-#     end
-#   end
+    it 'renders an unauthorized error if there is no auth token provided' do
+      request.env["HTTP_AUTHORIZATION"] = ""
+      get :show, params: api_request_params(id: 1)
+      response.status.should eq 401
+    end
+
+    # it 'renders a forbidden error if user does not have read permission for assets' do
+    #   @api_user.permissions.clear
+    #   get :show, params: api_request_params(id: 1)
+    #   response.status.should eq 403
+    # end
+  end
 
 #   describe 'POST create' do
 #     before do
@@ -134,5 +134,5 @@ describe Api::AssetsController, type: :controller do
 #       put :update, params: api_request_params(id: 0)
 #       response.status.should eq 403
 #     end
-#   end
+  end
 end

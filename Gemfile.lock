@@ -365,13 +365,13 @@ DEPENDENCIES
   mysql2 (>= 0.3.18, < 0.5)
   photographic_memory!
   puma
-  rails-controller-testing
+  rails-controller-testing (~> 1.0.2)
   railties (~> 5.2.0)
   responders (~> 2.4.0)
   resque (~> 1.27.2)
-  rspec (>= 3.6.0.beta2)
+  rspec (>= 3.7.0)
   rspec-its (~> 1.2.0)
-  rspec-rails (>= 3.6.0.beta2)
+  rspec-rails (>= 3.7.2)
   searchkick (~> 2.5.0)
   sinatra!
   spring (~> 2.0.1)

@@ -31,9 +31,6 @@ export default Controller.extend(MousewheelFix, {
     this.send('getPage');
   }),
   actions: {
-    didTransition(){
-      debugger
-    },
     getPage(){
       const page  = this.get('page');
       if(!(page > 0)) return;
