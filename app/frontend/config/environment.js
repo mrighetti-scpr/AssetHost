@@ -21,6 +21,9 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+      // usingCors: true,
+      // corsWithCreds: true,
+      // apiURL: null
     },
     'ember-simple-auth': {
       authenticationRoute: 'login',
@@ -28,13 +31,13 @@ module.exports = function(environment) {
       routeIfAlreadyAuthenticated: 'index'
     },
     'ember-simple-auth-token': {
-      serverTokenEndpoint: '/api/authenticate/',
+      serverTokenEndpoint: 'http://localhost:3000/api/authenticate/',
       identificationField: 'username',
       passwordField: 'password',
       tokenPropertyName: 'jwt',
       refreshTokenPropertyName: 'jwt',
       refreshAccessTokens: true,
-      serverTokenRefreshEndpoint: '/api/authenticate/refresh',
+      serverTokenRefreshEndpoint: 'http://localhost:3000/api/authenticate/refresh',
       tokenExpireName: 'exp',
       refreshLeeway: 0,
       authorizationPrefix: 'Bearer ',

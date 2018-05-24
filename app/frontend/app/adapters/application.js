@@ -4,6 +4,7 @@ import DataAdapterMixin from 'ember-simple-auth/mixins/data-adapter-mixin';
 
 export default DS.RESTAdapter.extend(DataAdapterMixin, {
   namespace: 'api',
+  host: 'http://localhost:3000',
   session: service(),
   authorize(xhr) {
     const { jwt } = this.get('session.data.authenticated');

@@ -15,7 +15,12 @@ module.exports = function(defaults) {
     'esw-index': {
       excludeScope: [/\/i(\/.*)?$/, /\/api(\/.*)?$/],
     },
-    sassVariables: 'app/styles/vars.sass'
+    sassVariables: 'app/styles/vars.sass',
+    babel: {
+      plugins: [
+        'transform-object-rest-spread'
+      ]
+    }
   });
 
   // Use `app.import` to add additional libraries to the generated

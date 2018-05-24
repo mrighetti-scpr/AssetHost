@@ -1,0 +1,45 @@
+<div id="chooser__pane" class="application-pane">
+  <div id="chooser__asset-selector" class="chooser__asset-selector">
+    <h3>Selected Assets:</h3>
+    {{#paper-button raised=true primary=true}}Save and Close{{/paper-button}}
+
+    {{#drag-sort-list 
+      tagName="ul" 
+      id="chooser__asset-bucket"
+      class="asset-bucket" 
+      childClass="asset-bucket__item"
+      group="assets"
+      items=model 
+      dragEndAction=(action 'dragEnd')
+      as |asset|}}
+
+        {{#paper-card as |card|}}
+          {{#card.title as |title|}}
+            {{#title.text as |text|}}
+              {{#text.headline}}{{asset.title}}{{/text.headline}}
+              {{#text.subhead}}Medium{{/text.subhead}}
+            {{/title.text}}
+            {{#title.media size="md"}}
+              <div class="card-media"></div>
+            {{/title.media}}
+          {{/card.title}}
+          {{#card.actions}}
+            {{#paper-button}}Action 1{{/paper-button}}
+            {{#paper-button}}Action 2{{/paper-button}}
+          {{/card.actions}}
+        {{/paper-card}}
+  
+    {{/drag-sort-list}}
+
+  </div>
+
+  {{asset-list 
+    id="chooser__asset-list" 
+    class="chooser__asset-list" 
+    draggingEnabled=true
+    dragEndAction=(action 'dragEnd')
+    assets=results
+    message=message
+  }}
+</div>
+

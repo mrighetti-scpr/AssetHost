@@ -2,7 +2,6 @@ import   Controller           from '@ember/controller';
 import { computed, observer } from '@ember/object';
 import { inject as service }  from '@ember/service';
 import { htmlSafe }           from '@ember/string';
-import { run }                from '@ember/runloop';
 
 export default Controller.extend({
   init(){

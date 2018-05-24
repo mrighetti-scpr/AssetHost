@@ -1,7 +1,19 @@
-{{#each (sort-by "created_at:desc" assets) as |asset|}}
-  <li class="asset-list__item" style={{asset.style}}>
+{{#each (sort-by "created_at:desc" assets) as |asset index|}}
+
+  {{#asset-list-item
+    item                           = asset
+    index                          = index
+    items                          = assets
+    group                          = "assets"
+    class                          = "asset-list__item"
+    tagName                        = "li"
+    draggingEnabled                = true
+    dragEndAction                  = dragEndAction
+    determineForeignPositionAction = determineForeignPositionAction
+    style                          = asset.style
+  }}
     {{#if asset.isUploading}}
-      {{paper-progress-circular warn=true class="md-hue-3 asset-list__item-progress" diameter=70}}
+      {{paper-progress-circular primary=true class="md-hue-3 asset-list__item-progress" diameter=70}}
     {{/if}}
     {{#paper-tooltip position="top"}}
       {{asset.id}}: {{asset.title}} {{asset.owner}}  {{asset.taken_at}} {{asset.size}}
@@ -9,7 +21,7 @@
     {{#if asset.id}}
       {{#link-to 'asset' asset.id class="asset-list__item-link"}} {{/link-to}}
     {{/if}}
-  </li>
+  {{/asset-list-item}}
 {{/each}}
 
 <li class="asset-list__spacer"></li>
@@ -21,4 +33,3 @@
 {{#if message}}
   <p class="asset-list__message">{{message}}</p>
 {{/if}}
-

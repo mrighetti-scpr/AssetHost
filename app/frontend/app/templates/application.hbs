@@ -1,13 +1,16 @@
-{{application-progress id="application__progress"}}
+{{!-- {{application-progress id="application__progress"}} --}}
 
 {{paper-toaster}}
 
 {{#paper-sidenav-container class="toolbar-component__sidenav-container inner-sidenav"}}
 
-{{#paper-toolbar id="application__toolbar" class="toolbar-component" as |toolbar|}}
-   {{#toolbar.tools}}
+{{#paper-toolbar 
+  id="application__toolbar" 
+  class=toolbarClass
+  as |toolbar|}}
+   {{#toolbar.tools class="toolbar-component__tools"}}
      <h2>AssetHost</h2>
-     {{#if session.isAuthenticated}}
+     {{#unless hasSimplifiedToolbar}}{{#if session.isAuthenticated}}
       <div class="toolbar-component__search-box">
         {{paper-input 
             class="toolbar-component__search-box" 
@@ -25,7 +28,7 @@
           API Users
         {{/paper-button}}
       </div>
-    {{/if}}
+    {{/if}}{{/unless}}
      <span class="flex"></span>
     {{#if session.isAuthenticated}}
       <div class="toolbar-component__buttons">
@@ -48,18 +51,19 @@
    {{/toolbar.tools}}
  {{/paper-toolbar}}
 
-  {{#if session.isAuthenticated}}
-    {{#paper-sidenav
-      class="application__side-menu md-whiteframe-z2"
-      name="right"
-      position="right"
-      open=rightSideBarOpen
-      lockedOpen=false
-      onToggle=(action (mut rightSideBarOpen))}}
-      {{#paper-toolbar as |toolbar|}}
-        {{#paper-toolbar-tools}}Menu{{/paper-toolbar-tools}}
-      {{/paper-toolbar}}
-      {{#paper-list}}
+{{#if session.isAuthenticated}}
+  {{#paper-sidenav
+    class="application__side-menu md-whiteframe-z2"
+    name="right"
+    position="right"
+    open=rightSideBarOpen
+    lockedOpen=false
+    onToggle=(action (mut rightSideBarOpen))}}
+    {{#paper-toolbar as |toolbar|}}
+      {{#paper-toolbar-tools}}Menu{{/paper-toolbar-tools}}
+    {{/paper-toolbar}}
+    {{#paper-list}}
+      {{#unless hasSimplifiedToolbar}}
         {{#paper-item href=(href-to "index")}}
           <p>Assets</p>
         {{/paper-item}}
@@ -69,12 +73,13 @@
         {{#paper-item href="index"}}
           <p>API Users</p>
         {{/paper-item}}
-        {{#paper-item onClick=(action "invalidateSession")}}
-          <p>Log out</p>
-        {{/paper-item}}
-      {{/paper-list}}
-    {{/paper-sidenav}}
-  {{/if}}
+      {{/unless}}
+      {{#paper-item onClick=(action "invalidateSession")}}
+        <p>Log out</p>
+      {{/paper-item}}
+    {{/paper-list}}
+  {{/paper-sidenav}}
+{{/if}}
 
 {{/paper-sidenav-container}}
 <div id="application__content-box" class="content-box">

@@ -1,7 +1,8 @@
-import   Controller          from '@ember/controller';
-import { inject as service } from '@ember/service';
-import { observer }          from '@ember/object';
-import { run }               from '@ember/runloop';
+import   Controller           from '@ember/controller';
+import { inject as service }  from '@ember/service';
+import { computed, observer } from '@ember/object';
+import { run }                from '@ember/runloop';
+import { alias }              from '@ember/object/computed';
 
 const { debounce } = run;
 
@@ -10,8 +11,17 @@ export default Controller.extend({
     this._super(...arguments);
     this.set('query', '');
     this.get('connectionStatus.offline');
+    this.set('simplified', false);
   },
   search: service(),
+  toolbar:  service(),
+  hasSimplifiedToolbar: alias('toolbar.isSimplified'),
+  toolbarClass: computed('toolbar.isSimplified', function(){
+    const isSimplified = this.get('toolbar.isSimplified');
+    let   output       = "toolbar-component";
+    if(isSimplified) output = output += " toolbar-component--simplified";
+    return output;
+  }),
   computeQuery: observer('query', function(){
     debounce(this, this.onQuery, 300);
   }),

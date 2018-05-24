@@ -1,0 +1,26 @@
+#chooser__pane
+  display:       flex
+  padding-left:  pixels($margin)
+  padding-right: pixels($margin)
+
+#chooser__asset-selector
+  flex-shrink:  0
+  height:       pixels(300)
+  margin-right: pixels($gutter)
+  max-height:   100vh
+  width:        pixels(375)
+
+#chooser__asset-list
+  @include asset-list--chooser
+  background: initial
+  flex-shrink: 0
+  padding-top: 0
+  width:       pixels(650)
+
+#chooser__asset-bucket
+  height: 100%
+
+@media (max-width: 1120px)
+  #chooser__asset-list
+    flex-shrink: 1
+

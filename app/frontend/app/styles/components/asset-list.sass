@@ -35,6 +35,14 @@
   height: 100%
   width:  100%
 
+.asset-list.dragSortList.-isExpanded.-isDraggingOver:before, .asset-list__item.dragSortItem.-placeholderAbove:before, .asset-list__item.dragSortItem.-placeholderBelow:before
+  display:   none
+  line-ight: initial
+
+.asset-list__item.dragSortItem.-placeholderAbove, .asset-list__item.dragSortItem.-placeholderBelow
+  padding-top:    0
+  padding-bottom: 0
+
 .asset-list__spacer
   height: 0
 
@@ -48,4 +56,10 @@
   .asset-list__item
     height: width(5)
     width:  width(6)
+
+@mixin asset-list--chooser
+  .asset-list__item
+    height: width(2)
+    width:  width(2)
+
 

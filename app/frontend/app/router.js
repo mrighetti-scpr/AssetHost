@@ -11,6 +11,7 @@ Router.map(function() {
   this.route('index', { path: '/' });
   this.route('asset', { path: '/assets/:id' });
   this.route('login');
+  this.route('chooser');
 });
 
 export default Router;
