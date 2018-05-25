@@ -18,11 +18,11 @@ export default Controller.extend({
       [ "Bottom Left",      "SouthWest" ],
       [ "Bottom Right",     "SouthEast" ]
     ]);
-    this.get('search.query');
+    this.get('search.debouncedQuery');
   },
   progress: service(),
   search:   service(),
-  onQuery:  observer('search.query', function(){
+  onQuery:  observer('search.debouncedQuery', function(){
     this.transitionToRoute('index');
   }),
   imageURL: computed('model.id', 'selectedOutput', function(){

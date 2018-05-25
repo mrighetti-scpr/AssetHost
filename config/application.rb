@@ -6,7 +6,7 @@ require "active_model/railtie"
 require "active_job/railtie"
 # require "active_record/railtie"
 require "action_controller/railtie"
-require "action_view/railtie"
+# require "action_view/railtie"
 require "sprockets/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -45,6 +45,13 @@ module AssetHost
 
     config.middleware.delete ActionDispatch::Cookies
     config.middleware.delete ActionDispatch::Session::CookieStore
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '*', headers: :any, methods: [:get, :post, :put, :patch, :options]
+      end
+    end
 
   end
 end

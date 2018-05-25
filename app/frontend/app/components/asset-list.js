@@ -9,10 +9,10 @@ export default DragSortList.extend({
     getAssets(){
       // this.sendAction('getPage');
     },
-    // dragStart(e){
-    //   const node = e.currentTarget.cloneNode(true);
-    //   document.body.appendChild(node);
-    //   e.dataTransfer.setDragImage(node, 0, 0);
-    // }
+    onClick(){
+      const action = this.get('onClick');
+      if(typeof action === 'function') action(...arguments);
+    }
   }
 });
+

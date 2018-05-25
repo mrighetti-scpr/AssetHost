@@ -19,7 +19,11 @@
       {{asset.id}}: {{asset.title}} {{asset.owner}}  {{asset.taken_at}} {{asset.size}}
     {{/paper-tooltip}}
     {{#if asset.id}}
-      {{#link-to 'asset' asset.id class="asset-list__item-link"}} {{/link-to}}
+      {{#unless onClick}}
+        {{#link-to 'asset' asset.id class="asset-list__item-link"}} {{/link-to}}
+      {{else}}
+        <div class="asset-list__item-link" {{action 'onClick' asset}}></div>
+      {{/unless}}
     {{/if}}
   {{/asset-list-item}}
 {{/each}}

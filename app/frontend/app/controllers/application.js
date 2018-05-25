@@ -1,15 +1,12 @@
 import   Controller           from '@ember/controller';
 import { inject as service }  from '@ember/service';
 import { computed, observer } from '@ember/object';
-import { run }                from '@ember/runloop';
 import { alias }              from '@ember/object/computed';
 
-const { debounce } = run;
 
 export default Controller.extend({
   init(){
     this._super(...arguments);
-    this.set('query', '');
     this.get('connectionStatus.offline');
     this.set('simplified', false);
   },
@@ -22,12 +19,6 @@ export default Controller.extend({
     if(isSimplified) output = output += " toolbar-component--simplified";
     return output;
   }),
-  computeQuery: observer('query', function(){
-    debounce(this, this.onQuery, 300);
-  }),
-  onQuery(){
-    this.set('search.query', this.get('query'));
-  },
   showOffline: observer('connectionStatus.offline', function(){
     const isOffline = this.get('connectionStatus.offline');
     if(isOffline){

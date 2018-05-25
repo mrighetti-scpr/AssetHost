@@ -14,13 +14,15 @@ gem "railties", "~> 5.2.0"
 gem "sprockets-rails", "~> 3.2.0"
 gem "sinatra", github: "sinatra/sinatra", branch: "master", require: false, ref: "34521720b6028c2fa696cf85109345a89f306c99"
 # ^^ we need this for the resque interface to work, sadly
-gem "ember-cli-rails"
+gem "ember-cli-rails", github: "thoughtbot/ember-cli-rails", ref: "390163394199147201b1d67057c86557b643492d"
 
 gem "mysql2", ">= 0.3.18", "< 0.5"
 gem 'mongoid', "~> 7.0.1"
 gem "resque", "~> 1.27.2"
 gem "searchkick", "~> 2.5.0"
 gem "cocaine", "0.5.8"
+gem "rack-cors", require: "rack/cors"
+
 
 gem "photographic_memory", path: "~/workspace/photographic_memory"
 gem "mini_exiftool", "~> 2.8.0"

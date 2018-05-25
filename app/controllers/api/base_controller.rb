@@ -10,6 +10,12 @@ class Api::BaseController < ActionController::API
     render nothing: true, status: 401
   end
 
+  def okey_dokey
+    set_access_control_headers
+    response.headers.delete("Authorization")
+    head 200
+  end
+
   private
 
   def authenticate_user
@@ -29,7 +35,10 @@ class Api::BaseController < ActionController::API
   # end
   
   def set_access_control_headers
-    response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN'] || "*"
+    # response.headers['Access-Control-Allow-Origin']      = request.env['HTTP_ORIGIN'] || "*"
+    # response.headers['Access-Control-Allow-Credentials'] = true
+    # response.headers['Access-Control-Allow-Methods']     = "GET, POST, PATCH, DELETE, OPTIONS" 
+    # response.headers['Access-Control-Allow-Headers']     = "Authorization, X-CSRF-Token"
   end
 
 end

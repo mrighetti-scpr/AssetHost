@@ -33,4 +33,5 @@ Rails.application.routes.draw do
   end
 
   mount_ember_app :frontend, to: "/"
+
 end

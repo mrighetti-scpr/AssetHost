@@ -1,8 +1,10 @@
 class ApplicationController < ActionController::Base
 
-  def home
-    render html: "", layout: "application"
-  end
+  # include EmberRailsHelper
+
+  # def home
+  #   render_ember_app :frontend
+  # end
   
 end
 

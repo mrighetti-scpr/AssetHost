@@ -15,8 +15,8 @@
         {{paper-input 
             class="toolbar-component__search-box" 
             iconRight="search" 
-            value=query 
-            onChange=(action (mut query))
+            value=search.query 
+            onChange=(action (mut search.query))
         }}
       </div>
       <div class="toolbar-component__buttons">

@@ -5,16 +5,22 @@
 
 #chooser__asset-selector
   flex-shrink:  0
-  height:       pixels(300)
+  // height:       pixels(300)
   margin-right: pixels($gutter)
-  max-height:   100vh
+  min-height:   pixels(300)
   width:        pixels(375)
+
+#chooser__search-box
+  float: right
+  
 
 #chooser__asset-list
   @include asset-list--chooser
+  align-self: flex-start
   background: initial
   flex-shrink: 0
-  padding-top: 0
+  padding-top: 5px
+  transform:   translateY(-30px) // This and the padding compensate for the top tiles being cut off.
   width:       pixels(650)
 
 #chooser__asset-bucket

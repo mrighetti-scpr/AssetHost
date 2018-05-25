@@ -10,36 +10,119 @@
       childClass="asset-bucket__item"
       group="assets"
       items=model 
-      dragEndAction=(action 'dragEnd')
+      dragEndAction=(action 'sort')
       as |asset|}}
 
         {{#paper-card as |card|}}
-          {{#card.title as |title|}}
-            {{#title.text as |text|}}
-              {{#text.headline}}{{asset.title}}{{/text.headline}}
-              {{#text.subhead}}Medium{{/text.subhead}}
-            {{/title.text}}
-            {{#title.media size="md"}}
-              <div class="card-media"></div>
-            {{/title.media}}
-          {{/card.title}}
-          {{#card.actions}}
-            {{#paper-button}}Action 1{{/paper-button}}
-            {{#paper-button}}Action 2{{/paper-button}}
-          {{/card.actions}}
+          <div {{action 'editAsset' asset}}>
+            {{#card.actions class="asset-bucket__actions"}}
+              {{#paper-button warn=true iconButton=true}}
+                {{paper-icon "close"}}
+              {{/paper-button}}
+            {{/card.actions}}
+            {{#card.title as |title|}}
+              {{#title.media size="md"}}
+                <div class="asset-bucket__item-thumb card-media" style={{image-background-style asset.urls.lsquare asset.image_gravity}}>
+                </div>
+              {{/title.media}}
+              {{#title.text class="asset-bucket__text" as |text|}}
+                <h3>{{or asset.title 'Untitled Asset'}}</h3>
+                {{#text.subhead}}{{asset.caption}}{{/text.subhead}}
+              {{/title.text}}
+            {{/card.title}}
+          </div>
         {{/paper-card}}
   
     {{/drag-sort-list}}
 
   </div>
 
-  {{asset-list 
-    id="chooser__asset-list" 
-    class="chooser__asset-list" 
-    draggingEnabled=true
-    dragEndAction=(action 'dragEnd')
-    assets=results
-    message=message
-  }}
+
+
+  <div id="chooser__browser">
+    {{paper-input
+        id="chooser__search-box"
+        class="search-box" 
+        iconRight="search" 
+        value=search.query
+        onChange=(action (mut search.query))
+    }}
+    {{asset-list 
+      id="chooser__asset-list" 
+      class="chooser__asset-list" 
+      draggingEnabled=true
+      dragEndAction=(action 'dragEnd')
+      assets=search.results
+      message=message
+      onClick=(action "showAsset")
+    }}
+  </div>
+
 </div>
 
+{{#if showEditorDialog}}
+  {{#paper-dialog id="chooser__editor-dialog" class="editor-dialog flex-80" onClose=(action "closeEditorDialog" "cancel") clickOutsideToClose=true}}
+    {{#paper-dialog-content}}
+      <div class="layout-row">
+        <figure class="editor-dialog__figure">
+          <img class="editor-dialog__image" src={{selectedAsset.urls.small}}>
+          <figcaption>What a wonderful world</figcaption>
+        </figure>
+        <div class="editor-dialog__form">
+          {{paper-button raised=true label="View in Admin"}}
+          <h2>Asset Metadata (Global)</h2>
+          {{paper-input class="editor-dialog__input flex-100" label="Title" value=selectedAsset.title onChange=(action (mut selectedAsset.title))}}
+          {{paper-input class="editor-dialog__input flex-100" label="Credit" value=selectedAsset.credit onChange=(action (mut selectedAsset.credit))}}
+          {{paper-input 
+            class="editor-dialog__input"
+            textarea=true 
+            block=true 
+            label="Notes" 
+            maxlength=150 
+            passThru=(hash rows=5 maxRows=5) 
+            value=selectedAsset.notes 
+            onChange=(action (mut selectedAsset.notes))
+          }}
+        </div>
+      </div>
+      <div class="layout-row">
+        <div class="editor-dialog__form">
+          <h2 class="editor-dialog__subsequent-heading">Story Caption:</h2>
+          {{paper-input 
+            textarea=true 
+            block=true 
+            label="Caption" 
+            maxlength=150 
+            passThru=(hash rows=5 maxRows=5) 
+            value=selectedAsset.caption
+            onChange=(action (mut selectedAsset.caption))
+          }}
+        </div>
+      </div>
+    {{/paper-dialog-content}}
+    {{#paper-dialog-actions class="layout-row"}}
+      {{#paper-button onClick=(action "closeEditorDialog" "saveCaption")}}Save Caption{{/paper-button}}
+      <span class="flex"></span>
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+{{/if}}
+
+
+{{#if showAssetDialog}}
+  {{#paper-dialog onClose=(action "closeAssetDialog" "cancel")}}
+    {{#paper-dialog-content}}
+      <h2 class="md-title">{{or selectedAsset.title 'Untitled Asset'}}</h2>
+      <p>{{selectedAsset.credit}}</p>
+      <p>{{selectedAsset.size}}</p>
+      <p>{{or selectedAsset.caption 'No caption.'}}</p>
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "closeAssetDialog" "cancel")}}View in Admin{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "closeAssetDialog" "ok" dogName)}}Select Asset{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "closeAssetDialog" "ok" dogName)}}Close{{/paper-button}}
+    {{/paper-dialog-actions}}
+
+  {{/paper-dialog}}
+{{/if}}
