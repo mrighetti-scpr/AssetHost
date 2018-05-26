@@ -7,6 +7,7 @@ class User
   field :username,        type: String
   field :password_digest, type: String
   field :is_admin,        type: Boolean, default: false
+  field :permissions,     type: Hash, default: {"assets" => "write"}
 
   validates_presence_of :password, on: :create
 
@@ -36,5 +37,16 @@ class User
   #   #   self.find payload["sub"]
   #   byebug
   # end
+
+  def can? resource, ability
+    return true if self.is_admin
+    _resource = ActiveSupport::HashWithIndifferentAccess.new(self.permissions || {})[resource]
+    return false if !_resource
+    _ability  = ActiveSupport::HashWithIndifferentAccess.new(_resource || {})[ability]
+    return false if !_ability
+    return true if ability == _ability
+    return true if (ability == "read" && _ability == "write")
+    false
+  end
 
 end

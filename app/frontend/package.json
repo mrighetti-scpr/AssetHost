@@ -17,6 +17,7 @@
     "test": "ember test"
   },
   "devDependencies": {
+    "@zestia/ember-simple-infinite-scroller": "^2.0.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "broccoli-asset-rev": "^2.4.5",
     "ember-ajax": "^3.0.0",
@@ -56,14 +57,15 @@
     "ember-service-worker-index": "^0.6.6",
     "ember-simple-auth": "^1.6.0",
     "ember-simple-auth-token": "^3.0.0",
-    "ember-simple-infinite-scroller": "^1.0.12",
     "ember-source": "~3.1.0",
     "ember-truth-helpers": "^2.0.0",
     "ember-web-app": "^2.3.0",
     "ember-welcome-page": "^3.0.0",
+    "ember-window-messenger": "^1.2.2",
     "eslint-plugin-ember": "^5.0.0",
     "loader.js": "^4.2.3",
-    "normalize.css": "^8.0.0"
+    "normalize.css": "^8.0.0",
+    "paper-data-table": "^0.1.4"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"

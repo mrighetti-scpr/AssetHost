@@ -1,7 +1,7 @@
 <div id="chooser__pane" class="application-pane">
   <div id="chooser__asset-selector" class="chooser__asset-selector">
     <h3>Selected Assets:</h3>
-    {{#paper-button raised=true primary=true}}Save and Close{{/paper-button}}
+    {{#paper-button onClick=(route-action 'saveAndClose') raised=true primary=true}}Save and Close{{/paper-button}}
 
     {{#drag-sort-list 
       tagName="ul" 
@@ -16,7 +16,7 @@
         {{#paper-card as |card|}}
           <div {{action 'editAsset' asset}}>
             {{#card.actions class="asset-bucket__actions"}}
-              {{#paper-button warn=true iconButton=true}}
+              {{#paper-button warn=true iconButton=true onClick=(action "removeAsset" asset)}}
                 {{paper-icon "close"}}
               {{/paper-button}}
             {{/card.actions}}
@@ -47,64 +47,22 @@
         value=search.query
         onChange=(action (mut search.query))
     }}
-    {{asset-list 
-      id="chooser__asset-list" 
-      class="chooser__asset-list" 
-      draggingEnabled=true
-      dragEndAction=(action 'dragEnd')
-      assets=search.results
-      message=message
-      onClick=(action "showAsset")
-    }}
+    {{#infinite-scroller id="chooser__infinite-scroller" use-element="#chooser__asset-list" trigger-at="100%" on-load-more=(action 'getPage')}}
+      {{asset-list 
+        id="chooser__asset-list" 
+        draggingEnabled=true
+        dragEndAction=(action 'dragEnd')
+        assets=search.results
+        message=message
+        onClick=(action "showAsset")
+      }}
+    {{/infinite-scroller}}
   </div>
 
 </div>
 
 {{#if showEditorDialog}}
-  {{#paper-dialog id="chooser__editor-dialog" class="editor-dialog flex-80" onClose=(action "closeEditorDialog" "cancel") clickOutsideToClose=true}}
-    {{#paper-dialog-content}}
-      <div class="layout-row">
-        <figure class="editor-dialog__figure">
-          <img class="editor-dialog__image" src={{selectedAsset.urls.small}}>
-          <figcaption>What a wonderful world</figcaption>
-        </figure>
-        <div class="editor-dialog__form">
-          {{paper-button raised=true label="View in Admin"}}
-          <h2>Asset Metadata (Global)</h2>
-          {{paper-input class="editor-dialog__input flex-100" label="Title" value=selectedAsset.title onChange=(action (mut selectedAsset.title))}}
-          {{paper-input class="editor-dialog__input flex-100" label="Credit" value=selectedAsset.credit onChange=(action (mut selectedAsset.credit))}}
-          {{paper-input 
-            class="editor-dialog__input"
-            textarea=true 
-            block=true 
-            label="Notes" 
-            maxlength=150 
-            passThru=(hash rows=5 maxRows=5) 
-            value=selectedAsset.notes 
-            onChange=(action (mut selectedAsset.notes))
-          }}
-        </div>
-      </div>
-      <div class="layout-row">
-        <div class="editor-dialog__form">
-          <h2 class="editor-dialog__subsequent-heading">Story Caption:</h2>
-          {{paper-input 
-            textarea=true 
-            block=true 
-            label="Caption" 
-            maxlength=150 
-            passThru=(hash rows=5 maxRows=5) 
-            value=selectedAsset.caption
-            onChange=(action (mut selectedAsset.caption))
-          }}
-        </div>
-      </div>
-    {{/paper-dialog-content}}
-    {{#paper-dialog-actions class="layout-row"}}
-      {{#paper-button onClick=(action "closeEditorDialog" "saveCaption")}}Save Caption{{/paper-button}}
-      <span class="flex"></span>
-    {{/paper-dialog-actions}}
-  {{/paper-dialog}}
+  {{editor-dialog asset=selectedAsset id="chooser__editor-dialog" class="flex-80" onClose=(action "closeEditorDialog" "cancel") clickOutsideToClose=true}}
 {{/if}}
 
 

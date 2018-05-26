@@ -10,23 +10,36 @@
   min-height:   pixels(300)
   width:        pixels(375)
 
+#chooser__browser
+  // display:        flex
+  // flex-direction: column
+
 #chooser__search-box
   float: right
-  
+
+#chooser__infinite-scroller
+  clear: both
 
 #chooser__asset-list
   @include asset-list--chooser
   align-self: flex-start
   background: initial
   flex-shrink: 0
+  max-height:  555px
+  overflow-y:  auto
   padding-top: 5px
   transform:   translateY(-30px) // This and the padding compensate for the top tiles being cut off.
-  width:       pixels(650)
+  // width:       pixels(650)
+
+#chooser__asset-list-pad
+  height: pixels(500)
+  width:  100%
 
 #chooser__asset-bucket
-  height: 100%
+  min-height: 500px
+  overflow: hidden
 
 @media (max-width: 1120px)
-  #chooser__asset-list
+  #chooser__browser
     flex-shrink: 1
 

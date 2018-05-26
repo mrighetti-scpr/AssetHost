@@ -1,0 +1,64 @@
+<div id="output__pane" class="application-pane output-pane">
+  <h2>Edit Output: {{model.name}}</h2>
+  <div id="output__editor" class="output-editor">
+    {{paper-input label="Name" value=model.name onChange=(action (mut model.name))}}
+    {{#paper-select
+      label="Content Type"
+      options=contentTypes
+      selected=model.content_type
+      onChange=(action (mut model.content_type))
+      as |contentType|}}
+      {{contentType}}
+    {{/paper-select}}
+
+    {{#paper-checkbox value=model.is_rich onChange=(action (mut model.is_rich))}}
+      Rich?
+    {{/paper-checkbox}}
+    {{#paper-checkbox value=model.prerender onChange=(action (mut model.prerender))}}
+      Prerender?
+    {{/paper-checkbox}}
+
+    <h3>Render Options</h3>
+    {{paper-button raised=true label="Add option" onClick=(action "addRenderOption")}}
+    {{#drag-sort-list 
+      tagName="ul" 
+      id="output__render-editor"
+      class="render-editor" 
+      childClass="render-editor__item"
+      group="render-options"
+      items=model.render_options
+      dragEndAction=(action 'sort')
+      as |renderOption|}}
+
+        {{#paper-card as |card|}}
+          {{#card.actions class="render-editor__actions"}}
+            {{#paper-button warn=true iconButton=true onClick=(action "destroyRenderOption" renderOption)}}
+              {{paper-icon "close"}}
+            {{/paper-button}}
+          {{/card.actions}}
+          {{#card.content}}
+            {{paper-input label="Option Name" value=renderOption.name onChange=(action (mut renderOption.name))}}
+            {{paper-button raised=true label="Add property" onClick=(action "addOptionProperty" renderOption)}}
+            {{#paper-list}}
+              {{#paper-subheader}}Properties{{/paper-subheader}}
+              {{#each renderOption.properties as |property|}}
+                {{#paper-item class="md-2-line"}}
+                  {{#paper-button warn=true iconButton=true onClick=(action "destroyOptionProperty" renderOption.properties property)}}
+                    {{paper-icon "close"}}
+                  {{/paper-button}}
+                  {{paper-input label="Name"  value=property.name onChange=(action (mut property.name))}}
+                  {{paper-input label="Value" value=property.value onChange=(action (mut property.value))}}
+                {{/paper-item}}
+              {{/each}}
+            {{/paper-list}}
+            
+          {{/card.content}}
+        {{/paper-card}}
+  
+    {{/drag-sort-list}}
+  </div>
+  <br>
+  {{#paper-button raised=true onClick=(action "saveOutput")}}Update Output{{/paper-button}}
+  {{#paper-button raised=true warn=true}}Delete{{/paper-button}}
+</div>
+

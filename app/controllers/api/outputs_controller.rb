@@ -1,7 +1,7 @@
 class Api::OutputsController < Api::BaseController
   before_action :authenticate_user
   
-  before_action :get_output, only: [:show, :destroy]
+  before_action :get_output, only: [:show, :update, :destroy]
 
   def index
     @outputs = Output.all
@@ -17,6 +17,12 @@ class Api::OutputsController < Api::BaseController
     respond_with @output
   end
 
+  def update
+    @output.assign_attributes(outputs_params)
+    @output.save
+    respond_with @output
+  end
+
   def destroy
     @output.destroy
     render nothing: true, status: 200
@@ -25,7 +31,8 @@ class Api::OutputsController < Api::BaseController
   private
 
   def outputs_params
-    params.require(:output).permit(:name, :render_options, :extension, :prerender)
+    # 🚨 Remember to add support for is_rich
+    params.require(:output).permit(:name, :render_options, :content_type, :prerender)
   end
 
   def get_output

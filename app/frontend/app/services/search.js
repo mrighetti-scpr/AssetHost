@@ -1,6 +1,7 @@
 import Service, { inject as service } from '@ember/service';
 import { observer }                   from '@ember/object';
 import { run }                        from '@ember/runloop';
+import { resolve }                    from 'rsvp';
 
 const { debounce } = run;
 
@@ -25,7 +26,7 @@ export default Service.extend({
   },
   getPage(){
     const page  = this.get('page');
-    if(!(page > 0)) return;
+    if(!(page > 0)) return resolve();
     this.set('isLoadingPage', true);
     const query  = this.getWithDefault('query', ''),
           q      = query.length ? query : undefined,

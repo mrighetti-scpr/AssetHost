@@ -1,0 +1,25 @@
+<div id="outputs__pane" class="application-pane outputs-pane">
+  <h2>Outputs</h2>
+  {{#paper-data-table sortProp="name" sortDir="desc" as |table|}}
+    {{#table.head as |head|}}
+      {{#head.column}}Edit{{/head.column}}
+      {{#head.column}}Name{{/head.column}}
+      {{#head.column}}Size{{/head.column}}
+      {{#head.column}}Pre-rendered?{{/head.column}}
+      {{#head.column}}Rich?{{/head.column}}
+      {{#head.column}}# Rendered{{/head.column}}
+    {{/table.head}}
+    {{#table.body as |body|}}
+      {{#each model as |output|}}
+        {{#body.row edit=true as |row|}}
+          {{#row.cell}}{{paper-button label="Edit" raised=true href=(href-to "output" output)}}{{/row.cell}}
+          {{#row.cell}}{{output.name}}{{/row.cell}}
+          {{#row.cell}}{{output.size}}{{/row.cell}}
+          {{#row.cell}}{{output.prerender}}{{/row.cell}}
+          {{#row.cell}}{{output.is_rich}}{{/row.cell}}
+          {{#row.cell}}{{/row.cell}}
+        {{/body.row}}
+      {{/each}}
+    {{/table.body}}
+  {{/paper-data-table}}
+</div>

@@ -1,0 +1,46 @@
+{{#paper-dialog clickOutsideToClose=true onClose=onClose}}
+  {{#paper-dialog-content}}
+    <div class="layout-row">
+      <figure class="editor-dialog__figure">
+        <img class="editor-dialog__image" src={{asset.urls.small}}>
+        {{#if asset.size}}
+        <figcaption>Uploaded at: {{asset.size}}</figcaption>
+        {{/if}}
+      </figure>
+      <div class="editor-dialog__form">
+        {{paper-button raised=true label="View in Admin"}}
+        <h2>Asset Metadata (Global)</h2>
+        {{paper-input class="editor-dialog__input flex-100" label="Title" value=title onChange=(action (mut title))}}
+        {{paper-input class="editor-dialog__input flex-100" label="Credit" value=credit onChange=(action (mut credit))}}
+        {{paper-input 
+          class="editor-dialog__input"
+          textarea=true 
+          block=true 
+          label="Notes" 
+          maxlength=150 
+          passThru=(hash rows=5 maxRows=5) 
+          value=notes 
+          onChange=(action (mut notes))
+        }}
+      </div>
+    </div>
+    <div class="layout-row">
+      <div class="editor-dialog__form">
+        <h2 class="editor-dialog__subsequent-heading">Story Caption:</h2>
+        {{paper-input 
+          textarea=true 
+          block=true 
+          label="Caption" 
+          maxlength=150 
+          passThru=(hash rows=5 maxRows=5) 
+          value=caption
+          onChange=(action (mut caption))
+        }}
+      </div>
+    </div>
+  {{/paper-dialog-content}}
+  {{#paper-dialog-actions class="layout-row"}}
+    {{#paper-button onClick=(action "saveAndClose")}}Save Caption{{/paper-button}}
+    <span class="flex"></span>
+  {{/paper-dialog-actions}}
+{{/paper-dialog}}
