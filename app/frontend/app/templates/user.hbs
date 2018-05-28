@@ -1,0 +1,63 @@
+<div id="user__pane" class="application-pane">
+  <h2>Edit User: {{model.username}}</h2>
+  <div id="user__editor" class="user-editor">
+    {{paper-input label="Username" value=model.username onChange=(action (mut model.username))}}
+    <br>
+    {{#paper-checkbox value=model.is_active onChange=(action (mut model.is_active))}}
+      Active?
+    {{/paper-checkbox}}
+    {{#paper-checkbox value=model.is_admin onChange=(action (mut model.is_admin))}}
+      Admin?
+    {{/paper-checkbox}}
+    <br><br>
+    {{#unless model.isNew}}
+      {{paper-button label="Generate API Token" raised=true onClick=(action "generateToken")}}
+    {{/unless}}
+    {{#if model.apiToken}}
+      <br>
+      {{paper-input label="API Token" value=model.apiToken onChange=null}}
+    {{/if}}
+    <h3>Permissions</h3>
+    {{paper-button raised=true label="Add permission" onClick=(action "addPermission")}}
+    {{#drag-sort-list 
+      tagName="ul" 
+      id="user__permissions"
+      class="user-permissions" 
+      childClass="user-permissions__item"
+      group="user-permissions"
+      items=model.permissions
+      dragEndAction=(action 'sort')
+      as |permission|}}
+        {{#paper-card as |card|}}
+          {{#card.actions class="user-permissions__actions"}}
+            {{#paper-button warn=true iconButton=true onClick=(action "destroyPermission" permission)}}
+              {{paper-icon "close"}}
+            {{/paper-button}}
+          {{/card.actions}}
+          {{#card.content}}
+            {{#paper-select
+              label="Resource"
+              options=resources
+              selected=permission.resource
+              onChange=(action (mut permission.resource))
+              as |resource|}}
+              {{resource}}
+            {{/paper-select}}
+            {{#paper-select
+              label="Ability"
+              options=abilities
+              selected=permission.ability
+              onChange=(action (mut permission.ability))
+              as |ability|}}
+              {{ability}}
+            {{/paper-select}}
+          {{/card.content}}
+        {{/paper-card}}
+  
+    {{/drag-sort-list}}
+
+  </div>
+  <br>
+  {{#paper-button raised=true onClick=(action "saveUser")}}Save User{{/paper-button}}
+  {{#paper-button raised=true warn=true}}Delete{{/paper-button}}
+</div>

@@ -11,28 +11,32 @@
    {{#toolbar.tools class="toolbar-component__tools"}}
      <h2>AssetHost</h2>
      {{#unless hasSimplifiedToolbar}}{{#if session.isAuthenticated}}
-      <div class="toolbar-component__search-box">
-        {{paper-input 
-            class="toolbar-component__search-box" 
-            iconRight="search" 
-            value=search.query 
-            onChange=(action (mut search.query))
-        }}
-      </div>
+      {{#if (can user "assets" "read")}}
+        <div class="toolbar-component__search-box">
+          {{paper-input
+              class="toolbar-component__search-box" 
+              iconRight="search" 
+              value=search.query
+              onChange=(action (mut search.query))
+          }}
+        </div>
+      {{/if}}
       <div class="toolbar-component__buttons">
-        {{paper-button label="Assets" href=(href-to "index")}}
-        {{paper-button label="Manage Outputs" href=(href-to "outputs")}}
-        {{#paper-button}}
-          API Users
-        {{/paper-button}}
+        {{#if (can user "assets" "read")}}
+          {{paper-button label="Assets" href=(href-to "index")}}
+        {{/if}}
+        {{#if (can user "outputs" "read")}}
+          {{paper-button label="Manage Outputs" href=(href-to "outputs")}}
+        {{/if}}
+        {{#if (can user "users" "read")}}
+          {{paper-button label="Users" href=(href-to "users")}}
+        {{/if}}
       </div>
     {{/if}}{{/unless}}
      <span class="flex"></span>
     {{#if session.isAuthenticated}}
       <div class="toolbar-component__buttons">
-        <a {{action 'invalidateSession'}}>
-          {{paper-button label="Log out"}}
-        </a>
+        {{paper-button label="Log out" onClick=(action "invalidateSession")}}
       </div>
     {{else}}
       {{#link-to 'login'}}
@@ -65,12 +69,8 @@
         {{#paper-item href=(href-to "index")}}
           <p>Assets</p>
         {{/paper-item}}
-        {{#paper-item href="index"}}
-          <p>Manage Outputs</p>
-        {{/paper-item}}
-        {{#paper-item href="index"}}
-          <p>API Users</p>
-        {{/paper-item}}
+        {{paper-button label="Manage Outputs" href=(href-to "outputs")}}
+        {{paper-button label="Users"          href=(href-to "users")}}
       {{/unless}}
       {{#paper-item onClick=(action "invalidateSession")}}
         <p>Log out</p>

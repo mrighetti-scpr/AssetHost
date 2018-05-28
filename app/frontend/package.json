@@ -20,6 +20,7 @@
     "@zestia/ember-simple-infinite-scroller": "^2.0.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "broccoli-asset-rev": "^2.4.5",
+    "bson-objectid": "^1.2.3",
     "ember-ajax": "^3.0.0",
     "ember-browserify": "^1.2.2",
     "ember-cli": "~3.1.2",

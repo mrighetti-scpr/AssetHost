@@ -10,6 +10,8 @@ export default Controller.extend({
     this.get('connectionStatus.offline');
     this.set('simplified', false);
   },
+  currentUser: service(),
+  user:        alias('currentUser.user'),
   search: service(),
   toolbar:  service(),
   hasSimplifiedToolbar: alias('toolbar.isSimplified'),

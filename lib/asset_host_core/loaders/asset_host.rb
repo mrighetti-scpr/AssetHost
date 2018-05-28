@@ -21,7 +21,7 @@ module AssetHostCore
       #--------------
 
       def load
-        Asset.where(id: @id).first!
+        Asset.find(@id)
       end
     end
   end

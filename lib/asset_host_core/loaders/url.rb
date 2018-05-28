@@ -7,12 +7,10 @@ module AssetHostCore
     class URL < Base
       SOURCE = "URL"
 
-      #-----------
-
       def self.build_from_url(url)
         uri = URI.parse(url)
         return nil unless uri.is_a?(URI::HTTP)
-
+        # 🚨 This thing doesn't follow redirects!
         response  = Net::HTTP.get_response(uri)
 
         # Check that it's actually an image we're grabbing
@@ -22,8 +20,6 @@ module AssetHostCore
           nil
         end
       end
-
-      #----------
 
       def load
         filename = File.basename(@url)
@@ -39,8 +35,6 @@ module AssetHostCore
         asset.save!
         asset
       end
-
-      #----------
 
       private
 

@@ -1,5 +1,9 @@
 <div id="output__pane" class="application-pane output-pane">
-  <h2>Edit Output: {{model.name}}</h2>
+  {{#if model.isNew}}
+    <h2>New Output:</h2>
+  {{else}}
+    <h2>Edit Output: {{model.name}}</h2>
+  {{/if}}
   <div id="output__editor" class="output-editor">
     {{paper-input label="Name" value=model.name onChange=(action (mut model.name))}}
     {{#paper-select
@@ -58,7 +62,7 @@
     {{/drag-sort-list}}
   </div>
   <br>
-  {{#paper-button raised=true onClick=(action "saveOutput")}}Update Output{{/paper-button}}
+  {{#paper-button raised=true onClick=(action "saveOutput")}}Save Output{{/paper-button}}
   {{#paper-button raised=true warn=true}}Delete{{/paper-button}}
 </div>
 

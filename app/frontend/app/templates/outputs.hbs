@@ -1,8 +1,8 @@
 <div id="outputs__pane" class="application-pane outputs-pane">
   <h2>Outputs</h2>
+  {{paper-button raised=true label="New Output" onClick=(route-action "newOutput")}}
   {{#paper-data-table sortProp="name" sortDir="desc" as |table|}}
     {{#table.head as |head|}}
-      {{#head.column}}Edit{{/head.column}}
       {{#head.column}}Name{{/head.column}}
       {{#head.column}}Size{{/head.column}}
       {{#head.column}}Pre-rendered?{{/head.column}}
@@ -11,8 +11,7 @@
     {{/table.head}}
     {{#table.body as |body|}}
       {{#each model as |output|}}
-        {{#body.row edit=true as |row|}}
-          {{#row.cell}}{{paper-button label="Edit" raised=true href=(href-to "output" output)}}{{/row.cell}}
+        {{#body.row onClick=(route-action "editOutput" output) edit=true as |row|}}
           {{#row.cell}}{{output.name}}{{/row.cell}}
           {{#row.cell}}{{output.size}}{{/row.cell}}
           {{#row.cell}}{{output.prerender}}{{/row.cell}}
@@ -23,3 +22,4 @@
     {{/table.body}}
   {{/paper-data-table}}
 </div>
+

@@ -8,6 +8,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
     return this.get('store').findRecord('asset', id);
   },
   beforeModel(){
+    this._super(...arguments);
     this.get('progress').start(10);
   },
   afterModel(){

@@ -31,7 +31,8 @@ class Output
     args = []
     (self.render_options || []).each do |o|
       operation  = OpenStruct.new(o)
-      properties = OpenStruct.new(operation.properties || {})
+      properties = operation.properties.is_a?(Hash) ? operation.properties : (operation.properties || []).inject({}){|result, p| result[p[0]] = p[1]; result; }
+      properties = OpenStruct.new(properties)
       if operation.name == "scale"
         args << "-scale #{properties.width}x#{properties.height}^"
       end

@@ -8,13 +8,15 @@ const Router = EmberRouter.extend(RouterScroll, {
 });
 
 Router.map(function() {
-  this.route('index', { path: '/' });
-  this.route('asset', { path: '/assets/:id' });
+  this.route('index',   { path: '/' });
+  this.route('asset',   { path: '/assets/:id' });
   this.route('login');
   this.route('chooser');
   this.route('chooser', { path: '/a/chooser' });
   this.route('outputs');
-  this.route('output', { path: '/outputs/:id' });
+  this.route('output',  { path: '/outputs/:id' });
+  this.route('users');
+  this.route('user',    { path: '/users/:id' });
 });
 
 export default Router;

@@ -7,7 +7,8 @@ class User
   field :username,        type: String
   field :password_digest, type: String
   field :is_admin,        type: Boolean, default: false
-  field :permissions,     type: Hash, default: {"assets" => "write"}
+  field :is_active,       type: Boolean, default: true
+  field :permissions,     type: Array, default: [{resource: "assets", ability: "write"}]
 
   validates_presence_of :password, on: :create
 
@@ -27,7 +28,7 @@ class User
   end
 
   def self.from_token_request request
-    username = request.params["user_token"] && request.params["user_token"]["username"]
+    username = request.params["user_token"] && request.params["user_token"]["identification"] || request.params["user_token"]["username"]
     self.where(username: username).first
   end
   
@@ -38,11 +39,28 @@ class User
   #   byebug
   # end
 
+  def as_json *args
+    json = super
+    json.delete("_id")
+    json.delete("password_digest")
+    json["id"] = self.id.to_s
+    json
+  end
+
+  def to_token_payload
+    json   = as_json
+    output = {}
+    output["sub"] = json["id"]
+    json.delete("id")
+    output["data"] = json
+    output
+  end
+
   def can? resource, ability
     return true if self.is_admin
-    _resource = ActiveSupport::HashWithIndifferentAccess.new(self.permissions || {})[resource]
+    _resource = (self.permissions || []).find{|p| ActiveSupport::HashWithIndifferentAccess.new(p)[:resource] == resource}
     return false if !_resource
-    _ability  = ActiveSupport::HashWithIndifferentAccess.new(_resource || {})[ability]
+    _ability  = ActiveSupport::HashWithIndifferentAccess.new(_resource)[:ability]
     return false if !_ability
     return true if ability == _ability
     return true if (ability == "read" && _ability == "write")

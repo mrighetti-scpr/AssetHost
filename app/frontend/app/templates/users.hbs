@@ -1,0 +1,19 @@
+<div id="users__pane" class="application-pane">
+  <h2>Users</h2>
+  {{paper-button label="New User" raised=true onClick=(route-action "newUser")}}
+  {{#paper-data-table sortProp="username" sortDir="desc" as |table|}}
+    {{#table.head as |head|}}
+      {{#head.column}}Username{{/head.column}}
+      {{#head.column}}Active?{{/head.column}}
+    {{/table.head}}
+    {{#table.body as |body|}}
+      {{#each model as |user|}}
+        {{#body.row onClick=(route-action "editUser" user) edit=true as |row|}}
+          {{#row.cell}}{{user.username}}{{/row.cell}}
+          {{#row.cell}}{{user.is_active}}{{/row.cell}}
+          {{#row.cell}}{{/row.cell}}
+        {{/body.row}}
+      {{/each}}
+    {{/table.body}}
+  {{/paper-data-table}}
+</div>

@@ -25,7 +25,7 @@
   </div>
 {{/file-dropzone}}
 
-{{asset-list class="application-pane" assets=search.results message=message}}
+{{asset-list id="index__list" class="application-pane" assets=search.results message=message}}
 
 {{#infinite-scroller use-document=true trigger-at="75%" on-load-more=(action 'getPage')}}
 {{/infinite-scroller}}
