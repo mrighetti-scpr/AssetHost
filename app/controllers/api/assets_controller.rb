@@ -1,8 +1,9 @@
 class Api::AssetsController < Api::BaseController
   
-  before_action :authenticate_user
+  before_action :authenticate_from_token
+  # before_action :
 
-  before_action :set_access_control_headers
+  # before_action :set_access_control_headers
 
   before_action :get_asset, only: [:show, :update, :tag]
 

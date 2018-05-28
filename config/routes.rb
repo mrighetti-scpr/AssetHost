@@ -1,9 +1,9 @@
 require "resque/server"
 
 Rails.application.routes.draw do
-  post '/api/authenticate'         => 'api/user_token#create'
-  get  '/api/authenticate/:id'     => 'api/user_token#generate'
-  post '/api/authenticate/refresh' => 'api/user_token#update'
+  post '/api/authenticate'         => 'api/authentication#create'
+  get  '/api/authenticate/:id'     => 'api/authentication#generate'
+  post '/api/authenticate/refresh' => 'api/authentication#update'
   
   match '/i/:aprint/:id-:style.:extension', to: 'public#image', constraints: { id: /[a-z0-9]+/, style: /[^\.]+/}, via: :all, as: :image
 

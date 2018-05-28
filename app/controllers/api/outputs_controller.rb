@@ -1,5 +1,5 @@
 class Api::OutputsController < Api::BaseController
-  before_action :authenticate_user
+  before_action :authenticate_from_token
   
   before_action :get_output, only: [:show, :update, :destroy]
 
