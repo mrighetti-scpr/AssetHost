@@ -1,11 +1,15 @@
 require 'spec_helper'
 
 describe Api::OutputsController, type: :controller do
-  before do
-    @user = create :user
-  end
 
   before(:each) do
+    @user = create :user
+    @user.permissions.clear
+    @user.permissions << {
+      resource: "outputs",
+      ability:  "read"
+    }
+    @user.save
     token = Knock::AuthToken.new({payload: { sub: @user.id }}).token
     request.env["HTTP_AUTHORIZATION"] = "Bearer #{token}"
   end
@@ -18,20 +22,23 @@ describe Api::OutputsController, type: :controller do
       response.body.should match /thumb/
     end
 
-    # it 'returns 403 forbidden if user does not have output read permission' do
-    #   @api_user.permissions.clear
-    #   get :index, params: api_request_params
-    #   response.status.should eq 403
-    # end
+    it 'returns 403 forbidden if user does not have output read permission' do
+      @user.permissions.clear
+      @user.save
+      get :index, params: api_request_params
+      response.status.should eq 403
+    end
   end
 
   describe 'GET show' do
-    # before do
-    #   @api_user.permissions.create(
-    #     :resource => "Output",
-    #     :ability  => "read"
-    #   )
-    # end
+    before(:each) do
+      @user.permissions.clear
+      @user.permissions << {
+        "resource" => "outputs",
+        "ability"  => "read"
+      }
+      @user.save
+    end
 
     it 'returns the requested output' do
       output = create :output, name: "large"
@@ -40,11 +47,43 @@ describe Api::OutputsController, type: :controller do
       response.body.should match /large/
     end
 
-    # it 'returns 403 forbidden if user does not have output read permission' do
-    #   @api_user.permissions.clear
-    #   get :show, params: api_request_params(id: "lol")
-    #   response.status.should eq 403
-    # end
+    it 'returns 403 forbidden if user does not have output read permission' do
+      @user.permissions.clear
+      @user.save
+      get :show, params: api_request_params(id: "lol")
+      response.status.should eq 403
+    end
   end
+
+  describe 'POST create' do
+    before(:each) do
+      @user.permissions.clear
+      @user.permissions << {
+        "resource" => "outputs",
+        "ability"  => "write"
+      }
+      @user.save
+    end
+    it 'returns a 401 if no auth token is provided' do
+      request.env["HTTP_AUTHORIZATION"] = ""
+      post :create, params: api_request_params(name: "somename")
+      response.status.should eq 401
+    end
+
+    it 'returns a 403 if user does not have output write permission' do
+      @user.permissions.clear
+      @user.save
+      post :create, params: api_request_params(name: "somename")
+      response.status.should eq 403
+    end
+
+    it 'responds with a 422 if error in output creation' do
+      post :create, params: api_request_params(name: nil)
+      response.status.should eq 422
+    end
+
+  end
+
+
 end
 

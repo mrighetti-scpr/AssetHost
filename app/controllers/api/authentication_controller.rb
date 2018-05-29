@@ -15,6 +15,8 @@ class Api::AuthenticationController < Api::BaseController
   def create
     authenticate_from_credentials
     render json: {jwt: auth_token}, status: :created
+  rescue Mongoid::Errors::DocumentNotFound
+    head 422
   end
 
   def update

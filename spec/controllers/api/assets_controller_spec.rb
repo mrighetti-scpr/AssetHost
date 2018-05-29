@@ -1,11 +1,9 @@
 require "spec_helper"
 
 describe Api::AssetsController, type: :controller do
-  before do
-    @user = create :user
-  end
 
   before(:each) do
+    @user = create :user
     token = Knock::AuthToken.new({payload: { sub: @user.id }}).token
     request.env["HTTP_AUTHORIZATION"] = "Bearer #{token}"
   end
@@ -24,11 +22,12 @@ describe Api::AssetsController, type: :controller do
       response.status.should eq 401
     end
 
-    # it 'renders a forbidden error if user does not have read permission for assets' do
-    #   @api_user.permissions.clear
-    #   get :show, params: api_request_params(id: 1)
-    #   response.status.should eq 403
-    # end
+    it 'renders a forbidden error if user does not have read permission for assets' do
+      @user.permissions.clear
+      @user.save
+      get :show, params: api_request_params(id: 1)
+      response.status.should eq 403
+    end
   end
 
   describe 'POST create' do
@@ -48,15 +47,16 @@ describe Api::AssetsController, type: :controller do
       response.status.should eq 401
     end
 
-    # it 'returns a 403 if user does not have asset write permission' do
-    #   @api_user.permissions.clear
-    #   post :create, params: api_request_params(url: "http://url.com/img.png")
-    #   response.status.should eq 403
-    # end
+    it 'returns a 403 if user does not have asset write permission' do
+      @user.permissions.clear
+      @user.save
+      post :create, params: api_request_params(url: "http://url.com/img.png")
+      response.status.should eq 403
+    end
 
-    it 'responds with a 404 and returns asset if no asset is found' do
+    it 'responds with a 400 if error in asset uploading' do
       post :create, params: api_request_params(url: "nogoodbro")
-      response.status.should eq 404
+      response.status.should eq 400
       # response.body["error"].should be_present
     end
 
@@ -119,10 +119,11 @@ describe Api::AssetsController, type: :controller do
       response.status.should eq 401
     end
 
-    # it 'returns a 403 if user does not have asset write permission' do
-    #   @api_user.permissions.clear
-    #   put :update, params: api_request_params(id: 0)
-    #   response.status.should eq 403
-    # end
+    it 'returns a 403 if user does not have asset write permission' do
+      @user.permissions.clear
+      @user.save
+      put :update, params: api_request_params(id: 0)
+      response.status.should eq 403
+    end
   end
 end

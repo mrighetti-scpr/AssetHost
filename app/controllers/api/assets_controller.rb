@@ -35,11 +35,51 @@ class Api::AssetsController < Api::BaseController
   end
 
   def create
-    ingest Asset.new(upload_params)
+    if @file
+      asset = Asset.new(upload_params)
+      asset.file               = @file
+      asset.image_file_name    = @file.original_filename
+      asset.image_content_type = @file.content_type
+    elsif params[:url]
+      asset = AssetHostCore.as_asset(params[:url])
+    end
+    return head(400) if !asset
+    if params[:note].present?
+      asset.notes += "\n#{params[:note]}"
+    end
+    asset.request     = request
+    asset.caption     = params[:caption] if params[:caption].present?
+    asset.owner       = params[:owner]   if params[:owner].present?
+    asset.title       = params[:title]   if params[:title].present?
+    if asset.update_attributes(upload_params)
+      render json: asset.as_json
+    else
+      render json: asset.errors.full_messages, status: :error
+    end
+  rescue URI::InvalidURIError
+    head 400
   end
 
   def update
-    ingest @asset
+    return head(404) if !@asset
+    if @file
+      @asset.file               = @file
+      @asset.image_file_name    = @file.original_filename
+      @asset.image_content_type = @file.content_type
+    end
+    # 🚨 Implement updating an asset with a new image from a URL
+    if params[:note].present?
+      asset.notes += "\n#{params[:note]}"
+    end
+    @asset.request     = request
+    @asset.caption     = params[:caption] if params[:caption].present?
+    @asset.owner       = params[:owner]   if params[:owner].present?
+    @asset.title       = params[:title]   if params[:title].present?
+    if @asset.update_attributes(upload_params)
+      render json: @asset.as_json
+    else
+      render json: @asset.errors.full_messages, status: :error
+    end
   end
 
   def tag
@@ -60,42 +100,6 @@ class Api::AssetsController < Api::BaseController
 
 
   private
-
-  def ingest asset
-    if @file
-      asset.file               = @file
-      asset.image_file_name    = @file.original_filename
-      asset.image_content_type = @file.content_type
-      if asset.save
-        asset.request = request
-        render json: asset.as_json
-      else
-        render json: aasset.errors.full_messages, status: 400
-      end
-      return
-    end
-
-    head 400 and return if !params[:url]
-
-    # see if we have a loader for this URL
-    if asset = AssetHostCore.as_asset(params[:url])
-      if params[:note].present?
-        asset.notes += "\n#{params[:note]}"
-      end
-
-      asset.request     = request
-      asset.caption     = params[:caption] if params[:caption].present?
-      asset.owner       = params[:owner] if params[:owner].present?
-      asset.title       = params[:title] if params[:title].present?
-
-      asset.save
-      render json: asset.as_json
-    else
-      head 404
-    end
-  rescue URI::InvalidURIError
-    head 400
-  end
 
   def authorize_reads
     authorize current_user, "assets", "read"
