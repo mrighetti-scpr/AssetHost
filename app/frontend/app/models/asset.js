@@ -9,6 +9,7 @@ export default DS.Model.extend({
   owner:           attr('string'),
   size:            attr('string'),
   image_gravity:   attr('string'),
+  image_fingerprint: attr('string'),
   tags:            attr(),
   keywords:        attr('string'),
   notes:           attr('string'),

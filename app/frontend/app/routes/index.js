@@ -12,20 +12,20 @@ function onPaste({clipboardData}){
 }
 
 export default Route.extend(AuthenticatedRouteMixin, {
-  queryParams: {
-    q: {
-      replace: true,
-      refreshModel: false
-    }
-  },
+  // queryParams: {
+  //   q: {
+  //     replace: true,
+  //     refreshModel: false
+  //   }
+  // },
   assetUpload: service(),
   upload:      alias('assetUpload.upload'),
+  search:      service(),
   activate(){
     this._super(...arguments);
     this.set('onPaste', bind(this, onPaste));
     if(typeof window === 'object') window.addEventListener('paste', this.get('onPaste'));
-    const search = this.get('controller.search');
-    if(!search) return;
+    const search = this.get('search');
     search.set('page', 1);
     search.getPage();
   },

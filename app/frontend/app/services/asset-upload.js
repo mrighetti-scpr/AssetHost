@@ -1,10 +1,7 @@
 import Service       from '@ember/service';
 import { task }      from 'ember-concurrency';
-// import { get }       from '@ember/object';
 import { bind } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-
-// const { later } = run;
 
 function uploadURL(asset, url){
   asset.set('localFileURL', url);
@@ -27,6 +24,30 @@ function uploadFile(asset, file){
   asset.setProperties(response.body);
   return response;
 }
+
+function replaceFile(asset, file){
+  file.readAsDataURL().then(function (url) {
+    asset.set('localFileURL', url);
+  });
+  const { jwt } = this.get('session.data.authenticated');
+  const response = this.get('API').upload(`assets/${asset.id}`, file, {
+    fileKey: 'image',
+    headers: {
+      'Authorization': `Bearer ${jwt}`
+    },
+    method: 'PUT'
+  });
+  asset.setProperties(response.body);
+  return response;
+}
+
+function replaceURL(asset, url){
+  asset.set('localFileURL', url);
+  const API = this.get('API');
+  return API.put(`assets/${asset.id}`, { data: { url } })
+            .then(resp => asset.setProperties(resp));
+}
+
 
 export default Service.extend({
   store:   service(),
@@ -55,5 +76,18 @@ export default Service.extend({
       // }), 5000);
     }
   }).maxConcurrency(3).enqueue(),
+  replace: task(function * (file, asset) {
+    asset.set('isReplacing', true);
+    try {
+      if(typeof file === 'string'){
+        yield bind(this, replaceURL)(asset, file);
+      } else {
+        yield bind(this, replaceFile)(asset, file);
+      }
+      asset.set('isReplacing', false);
+    } catch (e) {
+      asset.set('isReplacing', false);
+    }
+  }).maxConcurrency(1).enqueue()
 });
 

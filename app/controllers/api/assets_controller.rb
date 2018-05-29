@@ -1,9 +1,6 @@
 class Api::AssetsController < Api::BaseController
   
   before_action :authenticate_from_token
-  # before_action :
-
-  # before_action :set_access_control_headers
 
   before_action :get_asset, only: [:show, :update, :tag]
 
@@ -33,72 +30,13 @@ class Api::AssetsController < Api::BaseController
     render json: @asset.as_json
   end
 
-  def update
-    if @file
-      @asset.file               = @file
-      @asset.image_file_name    = @file.original_filename
-      @asset.image_content_type = @file.content_type
-      @asset.assign_attributes(upload_params)
-      if @asset.save
-        @asset.request = request
-        render json: @asset.as_json
-      else
-        render nothing: true, status: 400
-      end
-      return
-    end
-    if @asset.update_attributes(asset_params)
-      render json: @asset.as_json
-    else
-      render json: @asset.errors.full_messages, status: :error
-    end
-
-  end
-
   def create
-    if @file
-      asset = Asset.new(upload_params)
-      asset.file               = @file
-      asset.image_file_name    = @file.original_filename
-      asset.image_content_type = @file.content_type
-      if asset.save
-        asset.request = request
-        render json: asset.as_json
-      else
-        head 400
-      end
-      return
-    end
-
-    # if !params[:url]
-    head 400 and return if !params[:url]
-      # render_bad_request(message: "Must provide an image or an asset URL")
-    # end
-
-    # see if we have a loader for this URL
-    if asset = AssetHostCore.as_asset(params[:url])
-      if params[:note].present?
-        asset.notes += "\n#{params[:note]}"
-      end
-
-      asset.request     = request
-      asset.caption     = params[:caption] if params[:caption].present?
-      asset.owner       = params[:owner] if params[:owner].present?
-      asset.title       = params[:title] if params[:title].present?
-
-      asset.save
-      render json: asset.as_json
-    else
-      # render_not_found(message: "Unable to find or load an asset at " \
-      #                           "the URL #{params[:url]}")
-      # render nothing: true, status: 404
-      head 404
-    end
-  rescue URI::InvalidURIError
-    # render_bad_request(message: "The URL provided is not valid.")
-    head 400
+    ingest Asset.new(upload_params)
   end
 
+  def update
+    ingest @asset
+  end
 
   def tag
     output  = Output.find_by(name: params[:style]) || raise(Mongoid::Errors::DocumentNotFound)
@@ -118,6 +56,42 @@ class Api::AssetsController < Api::BaseController
 
 
   private
+
+  def ingest asset
+    if @file
+      asset.file               = @file
+      asset.image_file_name    = @file.original_filename
+      asset.image_content_type = @file.content_type
+      if asset.save
+        asset.request = request
+        render json: asset.as_json
+      else
+        render json: aasset.errors.full_messages, status: 400
+      end
+      return
+    end
+
+    head 400 and return if !params[:url]
+
+    # see if we have a loader for this URL
+    if asset = AssetHostCore.as_asset(params[:url])
+      if params[:note].present?
+        asset.notes += "\n#{params[:note]}"
+      end
+
+      asset.request     = request
+      asset.caption     = params[:caption] if params[:caption].present?
+      asset.owner       = params[:owner] if params[:owner].present?
+      asset.title       = params[:title] if params[:title].present?
+
+      asset.save
+      render json: asset.as_json
+    else
+      head 404
+    end
+  rescue URI::InvalidURIError
+    head 400
+  end
 
   def asset_params
     params.require(:asset).permit(:title, :caption, :keywords, :owner, :url, :notes, :creator_id, :image, :image_taken, :native, :image_gravity)

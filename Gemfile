@@ -23,7 +23,6 @@ gem "searchkick", "~> 2.5.0"
 gem "cocaine", "0.5.8"
 gem "rack-cors", require: "rack/cors"
 
-
 gem "photographic_memory", path: "~/workspace/photographic_memory"
 gem "mini_exiftool", "~> 2.8.0"
 gem "faraday", "~> 0.9.2"
@@ -37,6 +36,7 @@ gem "jwt", "~> 1.5"
 gem "responders", "~> 2.4.0"
 gem "kaminari", "~> 1.1.1"
 gem "kaminari-mongoid"
+gem "nori", "~> 2.6"
 
 # Use ActiveModel has_secure_password
 gem "bcrypt", "~> 3.1.7"

@@ -1,6 +1,7 @@
 <img class="image-box__placeholder">
-<img class="image-box__image" src="{{url}}">
+{{!-- 🚨 Uh, yeah... find a better way to do that 👇 --}}
+<img class="image-box__image" src="{{url}}?cachebust={{digest}}">
 {{#if isLoadingImage}}
-  {{paper-progress-circular warn=true class="image-box__loading-circle"}}
+  {{paper-progress-circular primary=true class="image-box__loading-circle"}}
 {{/if}}
 

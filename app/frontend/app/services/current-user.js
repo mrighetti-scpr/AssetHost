@@ -5,7 +5,7 @@ import { computed } from '@ember/object';
 export default Service.extend({
   session: service(),
   store:   service(),
-  user: computed('session.data.authenticated.jwt', function(){
+  user:    computed('session.data.authenticated.jwt', function(){
     const token = this.get('session.data.authenticated.jwt');
     if(!token) return;
     const payload   = token.split('.')[1],

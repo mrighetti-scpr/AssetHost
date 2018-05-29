@@ -61,6 +61,7 @@ class Asset
       :owner              => self.owner,
       :size               => [self.image_width, self.image_height].join('x'),
       :image_gravity      => self.image_gravity,
+      :image_fingerprint  => self.image_fingerprint,
       :tags               => self.tags,
       :keywords           => self.keywords,
       :notes              => self.notes,

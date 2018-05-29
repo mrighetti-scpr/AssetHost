@@ -12,6 +12,9 @@ export default Component.extend({
     this.showPlaceholder();
     this.waitForLoad();
   },
+  refreshImage: observer('digest', function(){
+    this.rerender();
+  }),
   showPlaceholder: observer('height', 'width', function(){
     const height = this.get('height'),
           width  = this.get('width'),

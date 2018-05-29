@@ -2,6 +2,8 @@ import   Controller           from '@ember/controller';
 import { computed, observer } from '@ember/object';
 import { inject as service }  from '@ember/service';
 import { htmlSafe }           from '@ember/string';
+import { alias }              from '@ember/object/computed';
+
 
 export default Controller.extend({
   init(){
@@ -20,34 +22,39 @@ export default Controller.extend({
     ]);
     this.get('search.debouncedQuery');
   },
+  asset:    alias('model.asset'),
+  outputs:  alias('model.outputs'),
   progress: service(),
   search:   service(),
+  API:      service('api'),
   onQuery:  observer('search.debouncedQuery', function(){
     this.transitionToRoute('index');
   }),
-  imageURL: computed('model.id', 'selectedOutput', function(){
+  imageURL: computed('asset.{id,fingerprint}', 'selectedOutput', function(){
     const selectedOutput = this.get('selectedOutput');
-    return this.get(`model.urls.${selectedOutput}`);
+    return this.get(`asset.urls.${selectedOutput}`);
   }),
-  imageTag: computed('model.id', 'selectedOutput', function(){
+  imageTag: computed('asset.{id,fingerprint}', 'selectedOutput', function(){
     const selectedOutput = this.get('selectedOutput');
-    return this.get(`model.tags.${selectedOutput}`);
+    return this.get(`asset.tags.${selectedOutput}`);
   }),
-  imageSize: computed('model.sizes', 'selectedOutput', function(){
+  imageSize: computed('asset.sizes', 'selectedOutput', function(){
     const selectedOutput = this.get('selectedOutput');
-    return this.get(`model.sizes.${selectedOutput}`);
+    return this.get(`asset.sizes.${selectedOutput}`);
   }),
   imageBoxSize: computed('imageSize', function(){
     const imageSize = this.get('imageSize');
     return htmlSafe(`min-height: 100%; width: 100%; max-height: ${imageSize.height}px; max-width: ${imageSize.width}px;`);
   }),
-  imageGravity: computed('model.image_gravity', function(){
+  imageGravity: computed('asset.image_gravity', function(){
     const gravities  = this.getWithDefault('gravities', []),
-          geoGravity = this.getWithDefault('model.image_gravity', 'Center'),
+          geoGravity = this.getWithDefault('asset.image_gravity', 'Center'),
           gravity    = gravities.find(g => g[1] === geoGravity) || gravities[0];
     return gravity;
   }),
   paperToaster: service(),
+  assetUpload:  service(),
+  replace:      alias('assetUpload.replace'),
   actions: {
     saveAsset(){
       this.get('model')
@@ -59,6 +66,18 @@ export default Controller.extend({
           this.get('paperToaster').show('Asset failed to save.',     { toastClass: 'application-toast' });
         });
     },
+    replace(files){
+      const file  = files[0],
+            asset = this.get('asset');
+      if(!file) return;
+      this.set('isReplacing', true);
+      this.get('replace')
+          .perform(file, asset)
+          .then(() => {
+            asset.reload();
+            this.set('isReplacing', false);
+          });
+    },
     selectOutput(outputName){
       const previous = this.get('selectedOutput');
       if(previous !== outputName) this.set('isLoadingImage', true);
@@ -66,19 +85,19 @@ export default Controller.extend({
       this.set('selectedOutput', outputName);
     },
     addKeyword(keyword){
-      const keywords = this.getWithDefault('model.keywords', ''),
+      const keywords = this.getWithDefault('asset.keywords', ''),
             output   = keywords.split(/\s*,\s*/g).map(k => k.trim()).concat([keyword]).join(', ');
-      this.set('model.keywords', output);
+      this.set('asset.keywords', output);
     },
     removeKeyword(keyword){
-      const keywords = this.getWithDefault('model.keywords', '').split(/\s*,\s*/g),
+      const keywords = this.getWithDefault('asset.keywords', '').split(/\s*,\s*/g),
             idx      = keywords.indexOf(keyword);
       keywords.splice(idx, 1);
       const output   = keywords.join(', ');
-      this.set('model.keywords', output);
+      this.set('asset.keywords', output);
     },
     setGravity(gravity){
-      this.set('model.image_gravity', gravity[1]);
+      this.set('asset.image_gravity', gravity[1]);
     }
   }
 });

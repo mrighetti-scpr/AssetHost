@@ -3,34 +3,26 @@
   <h1 id="asset__title" class="asset-editor__title">
     {{ember-inline-edit
       class="asset-editor__title-editor"
-      value=(readonly model.title)
-      onSave=(action (mut model.title))
+      value=(readonly asset.title)
+      onSave=(action (mut asset.title))
       placeholder="Untitled asset"
       showSaveButton=false
       showCancelButton=false 
     }}
   </h1>
 
-  {{!-- <div id="asset__editor-row-1"> --}}
   <div class="layout-row">
     <div id="asset__left-col">
-      {{!-- <div id="asset__image-box" class="asset-editor__image-box">
-        <img id="asset__image" 
-             class="asset-editor__image {{if isLoadingImage 'asset-editor__image--loading'}}"
-             src="{{imageURL}}">
-        {{#if isLoadingImage}}
-          {{paper-progress-circular warn=true class="asset-editor__image-loading-circle"}}
-        {{/if}}
-      </div> --}}
       {{image-box id="asset__image-box" 
                   url=imageURL 
                   height=imageSize.height 
-                  width=imageSize.width 
+                  width=imageSize.width
+                  digest=asset.image_fingerprint
                   class="asset-editor__image-box"}}
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row"> 
           <div class="asset-editor__attribute-name">Asset Id</div>
-          <div class="asset-editor__attribute-value">{{model.id}}</div>
+          <div class="asset-editor__attribute-value">{{asset.id}}</div>
         </div>
         <div class="asset-editor__attributes-row"> 
           <div class="asset-editor__attribute-name">URL</div>
@@ -45,7 +37,7 @@
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row">
           <div class="asset-editor__attribute-name">Title</div>
-          {{paper-input class="asset-editor__attribute-value" value=model.title onChange=(action (mut model.title))}}
+          {{paper-input class="asset-editor__attribute-value" value=asset.title onChange=(action (mut asset.title))}}
         </div>
         <div class="asset-editor__attributes-row asset-editor__attributes-row--chips">
           <div class="asset-editor__attribute-name">Keywords</div>
@@ -55,21 +47,21 @@
             removeItem=(action "removeKeyword")
             addItem=(action "addKeyword")
             placeholder="Add a keyword"
-            content=model.keywordList as |keyword|}}
+            content=asset.keywordList as |keyword|}}
             <strong>{{keyword}}</strong>
           {{/paper-chips}}
         </div>
         <div class="asset-editor__attributes-row asset-editor__attributes-row--textarea"> 
           <div class="asset-editor__attribute-name">Caption</div>
           {{paper-input class="asset-editor__attribute-value" textarea=true block=true maxlength=150 passThru=(hash rows=5 maxRows=5)
-  value=model.caption onChange=(action (mut model.caption))}}
+  value=asset.caption onChange=(action (mut asset.caption))}}
         </div>
       </div>
       <h2>Rights</h2>
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row">
           <div class="asset-editor__attribute-name">Owner</div>
-          {{paper-input class="asset-editor__attribute-value" value=model.owner onChange=(mut model.owner)}}
+          {{paper-input class="asset-editor__attribute-value" value=asset.owner onChange=(mut asset.owner)}}
         </div>
         <div class="asset-editor__attributes-row">
           <div class="asset-editor__attribute-name">URL</div>
@@ -99,55 +91,60 @@
         <div class="asset-editor__attributes-row asset-editor__attributes-row--textarea">
           <div class="asset-editor__attribute-name">Notes</div>
           {{paper-input class="asset-editor__attribute-value" textarea=true block=true maxlength=150 passThru=(hash rows=5 maxRows=5)
-  value=model.notes onChange=(action (mut model.notes))}}
+  value=asset.notes onChange=(action (mut asset.notes))}}
         </div>
       </div>
       {{#paper-button onClick=(action 'saveAsset') raised=true}}Update Asset{{/paper-button}}
       {{#paper-button raised=true warn=true}}Destroy Asset{{/paper-button}}
     </div>
-    <div id="asset__output-nav" class="asset-editor__output-nav">
-      <h3>Sizes</h3>
-      {{#paper-button raised=true primary=(eq selectedOutput 'thumb')   onClick=(action "selectOutput" "thumb")}}thumb{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'lsquare') onClick=(action "selectOutput" "lsquare")}}lsquare{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'lead')    onClick=(action "selectOutput" "lead")}}lead{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'wide')    onClick=(action "selectOutput" "wide")}}wide{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'full')    onClick=(action "selectOutput" "full")}}full{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'three')   onClick=(action "selectOutput" "three")}}three{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'eight')   onClick=(action "selectOutput" "eight")}}eight{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'four')    onClick=(action "selectOutput" "four")}}four{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'six')     onClick=(action "selectOutput" "six")}}six{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'five')    onClick=(action "selectOutput" "five")}}five{{/paper-button}}
-      {{#paper-button raised=true primary=(eq selectedOutput 'small')   onClick=(action "selectOutput" "small")}}small{{/paper-button}}
+
+    <div id="asset__right-col">
+      <div id="asset__output-nav" class="asset-editor__output-nav">
+        <h3>Sizes</h3>
+        {{#each outputs as |output|}}
+          {{#paper-button raised=true primary=(eq selectedOutput output.name) onClick=(action "selectOutput" output.name)}}
+            {{output.name}}
+          {{/paper-button}}
+        {{/each}}
+      </div>
+
+      {{#file-dropzone id="asset-editor__replace" name="replacement-asset" as |dropzone queue|}}
+        <div class="asset-editor__replace drop-zone {{if dropzone.active 'drop-zone--active'}}">
+          {{#if dropzone.active}}
+            {{#if dropzone.valid}}
+              Drop to upload
+            {{else}}
+              Invalid
+            {{/if}}
+          {{else if queue.files.length}}
+            {{#unless isReplacing}}
+              {{#paper-card}}
+                {{#paper-content}}
+                  {{paper-button raised=true label="Click to Upload" onClick=(action 'replace' queue.files)}}
+                {{/paper-content}}
+              {{/paper-card}}
+            {{else}}
+              Uploading. ({{queue.progress}}%)
+            {{/unless}}
+          {{else}}
+            <h4 class="asset-editor__replace-heading">Replace Asset</h4>
+            <p class="asset-editor__replace-text">
+              {{#if dropzone.supported}}
+                Drop/paste a file here to replace asset
+              {{/if}}
+              {{#file-upload name="replacement-asset"
+                            accept="image/*"
+                            multiple=true}}
+                <a id="upload-image" class="md-default-theme md-button md-raised" tabindex=0>Add an Image.</a>
+              {{/file-upload}}
+            </p>
+          {{/if}}
+        </div>
+      {{/file-dropzone}}
     </div>
+
   </div>
 
-  {{!-- </div> --}}
-  {{!-- <h2>Basics</h2>
-  <div class="asset-editor__attributes">
-    <div class="asset-editor__attributes-row"> 
-      <div>Asset Id</div>
-      <div>{{model.id}}</div>
-    </div>
-    <div class="asset-editor__attributes-row"> 
-      <div>URL</div>
-      <div></div>
-    </div>
-    <div class="asset-editor__attributes-row"> 
-      <div>Tag</div>
-      <div></div>
-    </div>
-  </div> --}}
+
 </div>
 
-{{!-- <div class="layout-row layout-wrap">
-  <div class="flex-6">flex-6</div>
-  <div class="flex-2">flex-2</div>
-</div>
-<div class="layout-row layout-wrap">
-  <div class="flex-6">flex-6</div>
-  <div class="flex-2">flex-2</div>
-</div>
-<div class="layout-row layout-wrap">
-  <div class="flex-8">flex-8</div>
-  <div class="flex-2">flex-2</div>
-</div> --}}

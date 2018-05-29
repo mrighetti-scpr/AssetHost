@@ -5,11 +5,10 @@ import { inject as service }    from '@ember/service';
 import   MousewheelFix          from '../mixins/mousewheel-fix';
 
 export default Controller.extend(MousewheelFix, {
-  queryParams: ['q'],
+  // queryParams: ['q'],
   init() {
     this._super(...arguments);
     this.get('session.session').restore().then(() => {
-      this.get('session.session').restore().then(() => this.send('getPage'));
       this.set('isLoadingPage', false);
       this.get('progress').start(10);
       this.get('session').on('authenticationSucceeded', () => {

@@ -221,6 +221,7 @@ GEM
     nio4r (2.3.1)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
+    nori (2.6.0)
     os (0.9.6)
     public_suffix (3.0.2)
     puma (3.11.4)
@@ -374,6 +375,7 @@ DEPENDENCIES
   mini_exiftool (~> 2.8.0)
   mongoid (~> 7.0.1)
   mysql2 (>= 0.3.18, < 0.5)
+  nori (~> 2.6)
   photographic_memory!
   puma
   rack-cors
