@@ -1,7 +1,7 @@
 require "resque/server"
 
 Rails.application.routes.draw do
-  get '/api/authenticate'          => 'api/authentication#show'
+  get '/api/authenticate/cas'      => 'api/authentication#cas'
   post '/api/authenticate'         => 'api/authentication#create'
   get  '/api/authenticate/:id'     => 'api/authentication#generate'
   post '/api/authenticate/refresh' => 'api/authentication#update'

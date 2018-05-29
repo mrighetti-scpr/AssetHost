@@ -1,10 +1,10 @@
 class Api::AuthenticationController < Api::BaseController
 
-  def show
+  def cas
     return head(404) unless params[:ticket]
     conn = Faraday.new(url: ENV["ASSETHOST_CAS_SERVICE_URL"])
-    current_port = ((request.port === 80) || (request.port === 443)) ? "" : ":#{request.port}"
-    current_host = "#{request.protocol}#{request.host}#{port}"
+    current_port = ((request.port === 80) || (request.port === 443)) ? "" : request.port
+    current_host = "#{request.protocol}#{request.host}:#{current_port}"
     resp = conn.get '/serviceValidate', { ticket: params[:ticket], service: "#{current_host}/api/authenticate" } 
     parser = Nori.new(parser: :rexml)
     xml    = parser.parse(resp.body)
