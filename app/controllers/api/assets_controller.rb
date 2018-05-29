@@ -2,6 +2,10 @@ class Api::AssetsController < Api::BaseController
   
   before_action :authenticate_from_token
 
+  before_action :authorize_reads, only: [:index, :show]
+
+  before_action :authorize_writes, only: [:create, :update, :destroy]
+
   before_action :get_asset, only: [:show, :update, :tag]
 
   before_action :get_uploaded_file, only: [:create, :update]
@@ -91,6 +95,14 @@ class Api::AssetsController < Api::BaseController
     end
   rescue URI::InvalidURIError
     head 400
+  end
+
+  def authorize_reads
+    authorize current_user, "assets", "read"
+  end
+
+  def authorize_writes
+    authorize current_user, "assets", "write"
   end
 
   def asset_params

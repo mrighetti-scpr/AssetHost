@@ -1,5 +1,9 @@
 class Api::UsersController < Api::BaseController
   before_action :authenticate_from_token
+
+  before_action :authorize_reads, only: [:index, :show]
+
+  before_action :authorize_writes, only: [:create, :update, :destroy]
   
   before_action :get_user, only: [:show, :update, :destroy]
 
@@ -29,6 +33,14 @@ class Api::UsersController < Api::BaseController
   end
 
   private
+
+  def authorize_reads
+    authorize current_user, "users", "read"
+  end
+
+  def authorize_writes
+    authorize current_user, "users", "write"
+  end
 
   def user_params
     params.require(:user).permit(:username, :password, :is_admin, :is_active, :permissions)

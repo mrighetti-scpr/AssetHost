@@ -1,5 +1,10 @@
 class Api::OutputsController < Api::BaseController
+  
   before_action :authenticate_from_token
+
+  before_action :authorize_reads, only: [:index, :show]
+
+  before_action :authorize_writes, only: [:create, :update, :destroy]
   
   before_action :get_output, only: [:show, :update, :destroy]
 
@@ -29,6 +34,14 @@ class Api::OutputsController < Api::BaseController
   end
 
   private
+
+  def authorize_reads
+    authorize current_user, "outputs", "read"
+  end
+
+  def authorize_writes
+    authorize current_user, "outputs", "write"
+  end
 
   def outputs_params
     # 🚨 Remember to add support for is_rich
