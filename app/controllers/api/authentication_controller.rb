@@ -2,14 +2,16 @@ class Api::AuthenticationController < Api::BaseController
 
   def show
     return head(404) unless params[:ticket]
-    conn = Faraday.new(url: "https://login.scprdev.org")
-    resp = conn.get '/serviceValidate', { ticket: params[:ticket], service: "http://localhost:3000/api/authenticate" } 
+    conn = Faraday.new(url: ENV["ASSETHOST_CAS_SERVICE_URL"])
+    current_port = ((request.port === 80) || (request.port === 443)) ? "" : ":#{request.port}"
+    current_host = "#{request.protocol}#{request.host}#{port}"
+    resp = conn.get '/serviceValidate', { ticket: params[:ticket], service: "#{current_host}/api/authenticate" } 
     parser = Nori.new(parser: :rexml)
     xml    = parser.parse(resp.body)
     username = xml.dig("cas:serviceResponse", "cas:authenticationSuccess", "cas:user")
     return head(401) unless username
     @entity = User.find_or_create_by(username: username, password: SecureRandom.base64(12))
-    redirect_to "http://localhost:4200/login/?token=#{auth_token}"
+    redirect_to "#{current_host}/login/?token=#{auth_token}"
   end
 
   def create

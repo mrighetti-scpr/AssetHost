@@ -24,13 +24,15 @@ export default Service.extend({
   upload(path, file, options={}){
     const adapter           = this.get('store').adapterFor('application'),
         { host, namespace } = adapter,
-          url               = [host, namespace, path].filter(i => i).join('/');
+          origin            = host || (typeof window === 'object' ? window.location.origin : ""),
+          url               = [origin, namespace, path].filter(i => i).join('/');
     return file.upload(url, options); 
   },
   request(method, path, options={}){
     const adapter           = this.get('store').adapterFor('application'),
         { host, namespace } = adapter,
-          url               = [host, namespace, path].filter(i => i).join('/');
+          origin            = host || (typeof window === 'object' ? window.location.origin : ""),
+          url               = [origin, namespace, path].filter(i => i).join('/');
     return adapter.ajax(url, method, options);
   }
 });

@@ -10,22 +10,22 @@ class Api::OutputsController < Api::BaseController
 
   def index
     @outputs = Output.all
-    respond_with @outputs
+    render json: @outputs.as_json
   end
 
   def show
-    respond_with @output
+    render json: @output.as_json
   end
 
   def create
     @output = Output.create(outputs_params)
-    respond_with @output
+    render json: @output.as_json
   end
 
   def update
     @output.assign_attributes(outputs_params)
     @output.save
-    respond_with @output
+    render json: @output.as_json
   end
 
   def destroy
@@ -45,7 +45,7 @@ class Api::OutputsController < Api::BaseController
 
   def outputs_params
     # 🚨 Remember to add support for is_rich
-    params.require(:output).permit(:name, :render_options, :content_type, :prerender)
+    params.require(:output).permit(:name, :content_type, :prerender, render_options: [ :name, properties: [ :name, :value ] ] )
   rescue ActionController::ParameterMissing
     {}
   end

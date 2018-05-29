@@ -18,8 +18,8 @@ class RenderJob < ActiveJob::Base
     image_data   = PHOTOGRAPHIC_MEMORY_CLIENT.put({
       file:            file,
       id:              asset.id,
-      convert_options: output.convert_arguments,
-      style_name:      output.name, 
+      convert_options: convert_arguments(asset, output),
+      style_name:      output.name,
       content_type:    content_type
     })
     rendering    = asset.outputs.find_or_create_by(name: output.name)
@@ -32,6 +32,48 @@ class RenderJob < ActiveJob::Base
     image_data
   rescue Aws::S3::Errors::NoSuchKey => e
     puts e.message
+  end
+
+  private
+
+  ##
+  # Builds arguments for Imagemagick `convert`
+  ##
+  def convert_arguments asset, output
+    args = []
+    render_options = output.render_options || []
+    ## 🚨 Find a way to make it so that the asset's gravity doesn't always
+    ## override the gravity set in the output (if there is one)
+    if asset.image_gravity
+      render_options.unshift({
+        name: "gravity",
+        properties: [
+          {
+            "name"  => "value",
+            "value" => asset.image_gravity
+          }
+        ]
+      })
+    end
+    render_options.each do |o|
+      operation  = OpenStruct.new(o)
+      properties = operation.properties.is_a?(Hash) ? operation.properties : (operation.properties || []).inject({}){|result, p| result[p["name"]] = p["value"]; result; }
+      properties = OpenStruct.new(properties)
+      if operation.name == "gravity"
+        args << "-gravity #{properties.value}"
+      end
+      if operation.name == "scale"
+        args << "-scale #{properties.width}x#{properties.height}^"
+      end
+      if operation.name == "crop"
+        args << "-crop #{properties.width}x#{properties.height}+#{properties.offsetX || 0}+#{properties.offsetY || 0}"
+      end
+      if operation.name == "quality"
+        args << "-quality #{properties.value}"
+      end
+    end
+    args.push("-quality 95") ## 🚨 Find a better place to put this!
+    args.join(" ")
   end
 end
 

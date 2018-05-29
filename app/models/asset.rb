@@ -80,6 +80,7 @@ class Asset
   alias :json :as_json
 
   def sizes
+    return {} if self.image_width.nil? || self.image_height.nil?
     Output.all.inject({}) do |result, output|
       code = output.name.to_sym
       result[code] = output.calculate_size(self.image_width, self.image_height)

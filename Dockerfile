@@ -35,14 +35,14 @@ ENV PATH="${HOME}/bin:${PATH}"
 
 RUN bundle install
 
-RUN cp config/templates/secrets.yml.template config/secrets.yml
+# RUN cp config/templates/secrets.yml.template config/secrets.yml
+
+# to work around a bug on my end
+RUN rm -rf tmp/* && rm -rf log/*
 
 RUN bundle exec rake resources:precompile RAILS_ENV=production
 
 RUN cp nginx.conf /etc/nginx/nginx.conf
-
-# to work around a bug on my end
-RUN rm -rf tmp/* && rm -rf log/*
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
