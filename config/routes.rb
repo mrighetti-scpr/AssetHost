@@ -39,4 +39,6 @@ Rails.application.routes.draw do
 
   # mount_ember_app :frontend, to: "/"
 
+  match '*path', to: static("index.html"), via: :all
+
 end

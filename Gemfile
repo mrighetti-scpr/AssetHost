@@ -8,14 +8,14 @@ end
 gem "rake", "~> 12.3.1"
 # gem "activerecord", "~> 5.2.0"
 gem "actionpack", "~> 5.2.0"
-gem "actionview", "~> 5.2.0"
+# gem "actionview", "~> 5.2.0"
 gem "activejob", "~> 5.2.0"
 gem "activesupport", "~> 5.2.0"
 gem "railties", "~> 5.2.0"
 gem "sprockets-rails", "~> 3.2.0"
 gem "sinatra", github: "sinatra/sinatra", branch: "master", require: false, ref: "34521720b6028c2fa696cf85109345a89f306c99"
 # ^^ we need this for the resque interface to work, sadly
-gem "ember-cli-rails", github: "thoughtbot/ember-cli-rails", ref: "390163394199147201b1d67057c86557b643492d"
+# gem "ember-cli-rails", github: "thoughtbot/ember-cli-rails", ref: "390163394199147201b1d67057c86557b643492d"
 
 gem 'mongoid', "~> 7.0.1"
 gem "resque", "~> 1.27.2"

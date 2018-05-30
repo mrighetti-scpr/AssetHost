@@ -6,8 +6,8 @@ export default Controller.extend({
   session:      service(),
   paperToaster: service(),
   ssoURL:       computed(function(){
-    // const origin    = (typeof location === "object") ? location.origin : "http://localhost:3000",
-    const origin = "http://localhost:3000",
+    const origin    = (typeof location === "object") ? location.origin : "http://localhost:3000",
+    // const origin = "http://localhost:3000",
           callback  = encodeURIComponent(`${origin}/api/authenticate/cas`);
     return `https://login.scprdev.org/login?service=${callback}&renew=false`;
   }),

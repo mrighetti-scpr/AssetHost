@@ -31,13 +31,13 @@ module.exports = function(environment) {
       routeIfAlreadyAuthenticated: 'index'
     },
     'ember-simple-auth-token': {
-      serverTokenEndpoint: 'http://localhost:3000/api/authenticate/',
+      serverTokenEndpoint: '/api/authenticate/',
       identificationField: 'username',
       passwordField: 'password',
       tokenPropertyName: 'jwt',
       refreshTokenPropertyName: 'jwt',
       refreshAccessTokens: true,
-      serverTokenRefreshEndpoint: 'http://localhost:3000/api/authenticate/refresh',
+      serverTokenRefreshEndpoint: '/api/authenticate/refresh',
       tokenExpireName: 'exp',
       refreshLeeway: 0,
       authorizationPrefix: 'Bearer ',
