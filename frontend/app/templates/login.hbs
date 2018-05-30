@@ -1,4 +1,4 @@
-<div id="login" class="application-pane login-pane">
+<form id="login" class="application-pane login-pane" {{action 'authenticate' model.username model.password on="submit"}}>
   <h1>Login</h1>
   <div id="login__form" class="login-pane__form">
     {{paper-input class="login-pane__form-field" label="Username" value=model.username onChange=(action (mut model.username))}}
@@ -7,9 +7,9 @@
       class="login-pane__form-submit"
       raised=true
       label="Submit"
-      onClick=(action 'authenticate' model.username model.password)
+      type="submit"
     }}
     {{paper-button label="SSO Login" href=ssoURL tagName="a"}}
   </div>
-</div>
+</form>
 

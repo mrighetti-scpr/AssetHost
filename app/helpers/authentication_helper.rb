@@ -41,7 +41,7 @@ module AuthenticationHelper
   end
 
   def request_token
-    params[:token] || token_from_request_headers
+    params[:token] || params["jwt"] || token_from_request_headers
   end
 
   def token_from_request_headers

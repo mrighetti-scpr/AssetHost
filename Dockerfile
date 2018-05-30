@@ -33,33 +33,24 @@ COPY . .
 
 ENV PATH="${HOME}/bin:${PATH}"
 
-RUN bundle install
-
-# RUN cp config/templates/secrets.yml.template config/secrets.yml
-
-# to work around a bug on my end
-RUN rm -rf tmp/* && rm -rf log/*
-
-RUN bundle exec rake resources:precompile RAILS_ENV=production
-
-RUN cp nginx.conf /etc/nginx/nginx.conf
-
-# forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-  && ln -sf /dev/stderr /var/log/nginx/error.log \
-  && ln -sf /dev/stdout log/access.log \
-  && ln -sf /dev/stderr log/error.log \
-  && touch log/development.log \
-  && touch log/production.log \
-  && ln -sf /dev/stdout log/development.log \
-  && ln -sf /dev/stdout log/production.log
-
-RUN chown -R assethost:assethost tmp
-RUN chmod -R u+X tmp
-RUN chown -R assethost:assethost log
-RUN chmod -R u+X tmp
-RUN chown -R assethost:assethost db
-RUN chmod -R u+X db
+RUN bundle install \
+    && bundle exec rake resources:precompile RAILS_ENV=production \
+    && cp nginx.conf /etc/nginx/nginx.conf \
+    && rm -rf tmp/* && rm -rf log/* \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log \
+    && ln -sf /dev/stdout log/access.log \
+    && ln -sf /dev/stderr log/error.log \
+    && touch log/development.log \
+    && touch log/production.log \
+    && ln -sf /dev/stdout log/development.log \
+    && ln -sf /dev/stdout log/production.log \
+    && chown -R assethost:assethost tmp \
+    && chmod -R u+X tmp \
+    && chown -R assethost:assethost log \
+    && chmod -R u+X tmp \
+    && chown -R assethost:assethost db \
+    && chmod -R u+X db
 
 USER assethost
 

@@ -9,7 +9,7 @@ class Api::UsersController < Api::BaseController
 
   def index
     @users = User.all
-    respond_with @users
+    render json: @users.as_json
   end
 
   def show

@@ -9,7 +9,11 @@
     {{#table.body as |body|}}
       {{#each model as |user|}}
         {{#body.row onClick=(route-action "editUser" user) edit=true as |row|}}
-          {{#row.cell}}{{user.username}}{{/row.cell}}
+          {{#row.cell}}
+            <b>
+              {{user.username}}
+            </b>
+          {{/row.cell}}
           {{#row.cell}}{{user.is_active}}{{/row.cell}}
           {{#row.cell}}{{/row.cell}}
         {{/body.row}}

@@ -5,6 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem "rake", "~> 12.3.1"
 # gem "activerecord", "~> 5.2.0"
 gem "actionpack", "~> 5.2.0"
 gem "actionview", "~> 5.2.0"
@@ -16,14 +17,13 @@ gem "sinatra", github: "sinatra/sinatra", branch: "master", require: false, ref:
 # ^^ we need this for the resque interface to work, sadly
 gem "ember-cli-rails", github: "thoughtbot/ember-cli-rails", ref: "390163394199147201b1d67057c86557b643492d"
 
-gem "mysql2", ">= 0.3.18", "< 0.5"
 gem 'mongoid', "~> 7.0.1"
 gem "resque", "~> 1.27.2"
 gem "searchkick", "~> 2.5.0"
 gem "cocaine", "0.5.8"
 gem "rack-cors", require: "rack/cors"
 
-gem "photographic_memory", path: "~/workspace/photographic_memory"
+gem "photographic_memory", "=0.0.3"
 gem "mini_exiftool", "~> 2.8.0"
 gem "faraday", "~> 0.9.2"
 gem "faraday_middleware", "~> 0.9.0"
@@ -41,12 +41,13 @@ gem "nori", "~> 2.6"
 # Use ActiveModel has_secure_password
 gem "bcrypt", "~> 3.1.7"
 
+gem "dotenv-rails", require: false
+
 group :development, :test do
   ## These are grouped here because, theoretically,
   ## your assets should already be precompiled when
   ## deploying or running in production mode.
   gem "byebug", platform: :mri
-  gem "dotenv-rails", require: false
 end
 
 group :development do

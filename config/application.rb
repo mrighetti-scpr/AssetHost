@@ -41,7 +41,7 @@ module AssetHost
 
     config.action_dispatch.default_headers.clear
 
-    ENV["ELASTICSEARCH_URL"]  ||= Rails.application.secrets.elasticsearch['host']
+    ENV["ELASTICSEARCH_URL"] ||= Rails.application.secrets.elasticsearch[:host]
 
     config.middleware.delete ActionDispatch::Cookies
     config.middleware.delete ActionDispatch::Session::CookieStore

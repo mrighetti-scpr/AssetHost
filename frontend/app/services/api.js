@@ -26,7 +26,7 @@ export default Service.extend({
         { host, namespace } = adapter,
           origin            = host || (typeof window === 'object' ? window.location.origin : ""),
           url               = [origin, namespace, path].filter(i => i).join('/');
-    return file.upload(url, options); 
+    return file.upload(url, options);
   },
   request(method, path, options={}){
     const adapter           = this.get('store').adapterFor('application'),

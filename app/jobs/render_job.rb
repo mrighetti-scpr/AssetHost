@@ -12,10 +12,10 @@ class RenderJob < ActiveJob::Base
     # Retrieve the original asset
     unless file
       original_filename = asset.file_key("original")
-      file              = PHOTOGRAPHIC_MEMORY_CLIENT.get original_filename
+      file              = PhotographicMemory.create.get original_filename
     end
     content_type = output.content_type || asset.image_content_type
-    image_data   = PHOTOGRAPHIC_MEMORY_CLIENT.put({
+    image_data   = PhotographicMemory.create.put({
       file:            file,
       id:              asset.id,
       convert_options: convert_arguments(asset, output),

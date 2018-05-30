@@ -11,8 +11,6 @@
 # Ignore Byebug command history file.
 .byebug_history
 
-
-config/secrets.yml
 .env*
 .production-env
 .DS_Store
@@ -20,3 +18,7 @@ config/secrets.yml
 # We don't need the git repo to be
 # a part of the image.
 .git
+
+frontend/node_modules/
+frontend/tmp/*
+tmp/*

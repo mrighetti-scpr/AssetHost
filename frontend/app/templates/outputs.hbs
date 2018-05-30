@@ -12,7 +12,11 @@
     {{#table.body as |body|}}
       {{#each model as |output|}}
         {{#body.row onClick=(route-action "editOutput" output) edit=true as |row|}}
-          {{#row.cell}}{{output.name}}{{/row.cell}}
+          {{#row.cell}}
+            <b>
+              {{output.name}}
+            </b>
+          {{/row.cell}}
           {{#row.cell}}{{output.size}}{{/row.cell}}
           {{#row.cell}}{{output.prerender}}{{/row.cell}}
           {{#row.cell}}{{output.is_rich}}{{/row.cell}}

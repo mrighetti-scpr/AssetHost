@@ -6,10 +6,8 @@ export default Controller.extend({
   session:      service(),
   paperToaster: service(),
   ssoURL:       computed(function(){
-    // const routing = this.get('routing'),
-    //       params  = Object.values(transition.params).filter(param => Object.values(param).length),
-    //       url     = routing.generateURL(transition.targetName, params, transition.queryParams);
-    const origin    = (typeof location === "object") ? location.origin : "http://localhost:3000",
+    // const origin    = (typeof location === "object") ? location.origin : "http://localhost:3000",
+    const origin = "http://localhost:3000",
           callback  = encodeURIComponent(`${origin}/api/authenticate/cas`);
     return `https://login.scprdev.org/login?service=${callback}&renew=false`;
   }),

@@ -15,14 +15,14 @@ function uploadFile(asset, file){
     asset.set('localFileURL', url);
   });
   const { jwt } = this.get('session.data.authenticated');
-  const response = this.get('API').upload('assets', file, {
+  return this.get('API').upload('assets', file, {
     fileKey: 'image',
     headers: {
       'Authorization': `Bearer ${jwt}`
     }
+  }).then(response => {
+    asset.setProperties(response.body);
   });
-  asset.setProperties(response.body);
-  return response;
 }
 
 function replaceFile(asset, file){

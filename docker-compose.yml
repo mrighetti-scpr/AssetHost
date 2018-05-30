@@ -3,7 +3,7 @@ version: '3'
 services:
 
   assethost: &main
-    image: scprdev/assethost
+    image: scprdev/assethost-maverick
     container_name: assethost
     ports:
       - 8080:8080/tcp
@@ -12,12 +12,11 @@ services:
     stdin_open: true
     tty: true
     networks:
-      assethost-network:
+      laist-assethost-network:
         aliases:
           - assethost
     depends_on:
       - mongodb
-      - mysql
       - elasticsearch
       - redis
       - s3
@@ -27,7 +26,7 @@ services:
     container_name: worker
     command: worker
     networks:
-      assethost-network:
+      laist-assethost-network:
         aliases:
           - worker
     ports: []
@@ -37,7 +36,7 @@ services:
   mongodb:
     image: bitnami/mongodb:3.6.4
     networks:
-      assethost-network:
+      laist-assethost-network:
         aliases:
           - mongodb
     ports:
@@ -45,30 +44,13 @@ services:
     volumes:
       - mongodb-data:/bitnami
 
-  mysql: &defaults
-    image: mysql:5.7.21
-    container_name: assethost-mysql
-    ports:
-      - 3200:3200/tcp
-      - 3306:3306/tcp
-    restart: always
-    command: $DEPLOYBOT_TOKEN
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      assethost-network:
-        aliases:
-         - mysql
-
   redis:
     image: redis:4.0.1-alpine
     container_name: assethost-redis
     ports:
       - 6379:6379/tcp
     networks:
-      assethost-network:
+      laist-assethost-network:
         aliases:
          - redis
 
@@ -81,7 +63,7 @@ services:
     volumes:
       - elasticsearch-data:/var/lib/elasticsearch
     networks:
-      assethost-network:
+      laist-assethost-network:
         aliases:
          - elasticsearch
 
@@ -93,7 +75,7 @@ services:
     volumes:
       - s3-data:/fakes3_data:rw
     networks:
-      assethost-network:
+      laist-assethost-network:
         aliases:
           - s3
 
@@ -104,5 +86,5 @@ volumes:
   s3-data:
 
 networks:
-  assethost-network:
+  laist-assethost-network:
 

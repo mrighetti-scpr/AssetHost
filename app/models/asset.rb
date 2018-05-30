@@ -244,7 +244,7 @@ class Asset
     @reloading = true
     # pulls the original image from storage
     rendering = self.outputs.first_or_create(name: "original")
-    self.file = PHOTOGRAPHIC_MEMORY_CLIENT.get self.file_key(rendering.name)
+    self.file = PhotographicMemory.create.get self.file_key(rendering.name)
   end
 
 end

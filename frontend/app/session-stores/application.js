@@ -10,10 +10,19 @@ export default AdaptiveStore.extend({
     if(typeof location !== 'object') return this._super(...arguments);
     const query = queryString.parse(location.search),
           token = query.token;
+    if(!token) return this._super(...arguments);
+    let tokenData;
+    try {
+      const payload         = token.split('.')[1],
+            tokenDataString = decodeURIComponent(window.escape(atob(payload.replace (/-/g, '+').replace(/_/g, '/'))));
+      tokenData = JSON.parse(tokenDataString);
+    } catch (error) {
+      tokenData = {};
+    }
     if(token) return RSVP.resolve({
       authenticated: {
         authenticator: 'authenticator:jwt',
-        exp: 1527633408,
+        exp: tokenData.exp,
         jwt: token
       }
     });

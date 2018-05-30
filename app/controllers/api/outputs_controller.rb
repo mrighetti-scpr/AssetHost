@@ -2,7 +2,7 @@ class Api::OutputsController < Api::BaseController
   
   before_action :authenticate_from_token
 
-  before_action :authorize_reads, only: [:index, :show]
+  before_action :authorize_reads, only: [:show]
 
   before_action :authorize_writes, only: [:create, :update, :destroy]
   
