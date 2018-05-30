@@ -26,6 +26,9 @@ export default Route.extend(AuthenticatedRouteMixin, {
     this.set('onPaste', bind(this, onPaste));
     if(typeof window === 'object') window.addEventListener('paste', this.get('onPaste'));
     const search = this.get('search');
+    this.store.unloadAll('asset'); 
+    // 🚨 Inserted this to prevent weird duplicates issue when navigating back to index.
+    //    Solve that problem instead of unloading assets every time.
     search.set('page', 1);
     search.getPage();
   },
