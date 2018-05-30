@@ -33,7 +33,6 @@ gem "aws-sdk", "~> 2"
 
 gem "knock"
 gem "jwt", "~> 1.5"
-gem "responders", "~> 2.4.0"
 gem "kaminari", "~> 1.1.1"
 gem "kaminari-mongoid"
 gem "nori", "~> 2.6"

@@ -95,7 +95,7 @@ class Api::AssetsController < Api::BaseController
       :height       => ao.try(:height)
     }
 
-    respond_with tag
+    render json: tag.as_json
   end
 
 

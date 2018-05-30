@@ -72,6 +72,7 @@ class RenderJob < ActiveJob::Base
         args << "-quality #{properties.value}"
       end
     end
+    # args.push("-auto-orient")
     args.push("-quality 95") ## 🚨 Find a better place to put this!
     args.join(" ")
   end
