@@ -7,7 +7,7 @@ require "active_job/railtie"
 # require "active_record/railtie"
 require "action_controller/railtie"
 # require "action_view/railtie"
-require "sprockets/railtie"
+# require "sprockets/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -29,7 +29,7 @@ module AssetHost
     # frontend resources like scripts, stylesheets, and other goodies.
     # Because we want a route called "assets" for our asset model, we
     # have to name this route prefix to something else.
-    config.assets.prefix = "/resources"
+    # config.assets.prefix = "/resources"
 
     # initialize our config hash
     config.assethost = ActiveSupport::OrderedOptions.new

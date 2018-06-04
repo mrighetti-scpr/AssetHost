@@ -16,8 +16,6 @@ module AssetHostCore
         end
       end
 
-      #----------
-
       # Brightcove videos don't have URL's
       def load
         brightcove = ::Brightcove::API.new(Rails.application.secrets.brightcove_api_key)
@@ -25,10 +23,11 @@ module AssetHostCore
         # get our video info
         response = brightcove.get("find_video_by_id", { video_id: @id }).parsed_response
 
-        native = BrightcoveVideo.new(
-          :videoid  => response['id'],
-          :length   => response['length']
-        )
+        native = {
+          "type" =>       "brightcove",
+          "content_id" => response["id"],
+          "duration" =>   response["length"]
+        }
 
         @image_url = response['videoStillURL']
 
@@ -43,14 +42,11 @@ module AssetHostCore
           :native         => native
         )
 
-
         asset.save!
         image_file.close(true)
         asset
       end
 
-
-      #----------
 
       private
 

@@ -2,7 +2,7 @@ class Api::OutputsController < Api::BaseController
   
   before_action :authenticate_from_token
 
-  before_action :authorize_reads, only: [:show]
+  before_action :authorize_reads, only: [:show, :index]
 
   before_action :authorize_writes, only: [:create, :update, :destroy]
   
@@ -18,25 +18,25 @@ class Api::OutputsController < Api::BaseController
   end
 
   def create
-    @output = Output.create(outputs_params)
+    @output = Output.create!(outputs_params)
     render json: @output.as_json
   end
 
   def update
     @output.assign_attributes(outputs_params)
-    @output.save
+    @output.save!
     render json: @output.as_json
   end
 
   def destroy
-    @output.destroy
+    @output.destroy!
     render nothing: true, status: 200
   end
 
   private
 
   def authorize_reads
-    authorize current_user, "outputs", "read"
+    authorize current_user, ["outputs", "assets"], "read"
   end
 
   def authorize_writes

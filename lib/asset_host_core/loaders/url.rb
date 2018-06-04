@@ -14,11 +14,7 @@ module AssetHostCore
         response  = Net::HTTP.get_response(uri)
 
         # Check that it's actually an image we're grabbing
-        if response.content_type.match(/image/)
-          self.new(url: url, id: url)
-        else
-          nil
-        end
+        self.new(url: url, id: url) if response.content_type.match(/image/)
       end
 
       def load

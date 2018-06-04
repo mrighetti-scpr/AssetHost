@@ -18,8 +18,6 @@ module AssetHostCore
         end
       end
 
-      #--------------
-
       def load
         Asset.find(@id)
       end

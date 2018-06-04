@@ -35,7 +35,7 @@ describe AssetHostCore::Loaders::YouTube do
 
     it 'sets the native to be a youtube video' do
       asset  = @loader.load
-      asset.native.should be_a YoutubeVideo
+      asset.native["type"].should eq "youtube"
     end
 
     it 'sets the owner' do

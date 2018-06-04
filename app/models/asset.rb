@@ -3,6 +3,7 @@ class Asset
 
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Attributes::Dynamic
   
   field :title,              type: String
   field :caption,            type: String
@@ -23,10 +24,9 @@ class Asset
   field :image_taken,        type: DateTime
   field :keywords,           type: String
   field :version,            type: Integer, default: 2
+  field :native,             type: Hash
 
   embeds_many :outputs, class_name: "Rendering"
-
-  embeds_one :native
 
   searchkick index_name: Rails.application.config.elasticsearch_index
 

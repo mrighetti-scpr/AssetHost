@@ -81,7 +81,6 @@ services:
 
 volumes:
   mongodb-data:
-  mysql-data:
   elasticsearch-data:
   s3-data:
 

@@ -27,44 +27,6 @@ class Output
     self.all.map(&:name)
   end
 
-  ##
-  # Predicts the size of a rendered image for the output with a given width and height
-  # 🚨 Work on making this less flimsy!
-  ##
-  # def calculate_size width, height
-  #   return {"width" => width, "height" => height} if self.name == "original"
-  #   result = ActiveSupport::HashWithIndifferentAccess.new({ width: width, height: height })
-
-  #   crop = ActiveSupport::HashWithIndifferentAccess.new(render_options.find{|o| o["name"] == "crop"}  || { properties: [] })
-  #   c_properties = (crop["properties"] || [])
-  #   c_width  = (c_properties.find{|p| p["name"] == "width"}  || {})["value"]
-  #   c_height = (c_properties.find{|p| p["name"] == "height"} || {})["value"]
-
-  #   return {"width": c_width.to_f, "height": c_height.to_f} if c_width && c_height
-
-  #   scale  = ActiveSupport::HashWithIndifferentAccess.new(self.render_options.find{|o| o["name"] == "scale"} || { properties: [] })
-  #   s_properties = (scale["properties"] || [])
-  #   s__width  = (s_properties.find{|p| p["name"] == "width" } || {})["value"].to_f
-  #   s__height = (s_properties.find{|p| p["name"] == "height"} || {})["value"].to_f
-  #   maintain_ratio = (s_properties.find{|p| p["name"] == "maintainRatio"} || {})["value"]
-  #   if maintain_ratio && s__width && s__height
-  #     s_width  = (s__height * (width.to_f / height.to_f)).round
-  #     s_height = (s__width  * (height.to_f / width.to_f)).round
-  #   else
-  #     s_width  = s__width
-  #     s_height = s__height
-  #   end
-
-  #   return {"width" => s_width, "height" => s_height}
-
-
-  #   result["width"]  = [s_width,  c_width,  width] .reject{|x| x.nil? || x <= 0 }.min.to_i
-  #   result["height"] = [s_height, c_height, height].reject{|x| x.nil? || x <= 0 }.min.to_i
-  #   result
-  # rescue FloatDomainError => e
-  #   byebug
-  # end
-
   def calculate_size width, height
     result = ActiveSupport::HashWithIndifferentAccess.new({ width: width, height: height })
 

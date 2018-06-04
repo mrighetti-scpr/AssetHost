@@ -29,7 +29,7 @@ describe AssetHostCore::Loaders::Brightcove do
     end
 
     it 'sets the native to be a vimeo video' do
-      @asset.native.should be_a BrightcoveVideo
+      @asset.native["type"].should eq "brightcove"
     end
 
     it 'sets the owner' do

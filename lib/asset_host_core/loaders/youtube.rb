@@ -3,8 +3,6 @@ module AssetHostCore
     class YouTube < Base
       SOURCE = "YouTube"
 
-      #----------------
-
       def self.build_from_url(url)
         return nil if Rails.application.secrets.google_api_key.blank?
 
@@ -13,36 +11,35 @@ module AssetHostCore
         end
       end
 
-      #----------------
-
       def load
-        data = fetch_data
+        video = Yt::Video.new id: @id
 
-        video = data["items"][0]
-        return nil if !video
+        return if !video
 
-        snippet = video["snippet"]
-        return nil if !snippet
+        snippet = video.snippet
+        return if !snippet
 
-        native = YoutubeVideo.new(
-          :videoid => video["id"]
-        )
+        native = {
+          "type"       => "youtube",
+          "content_id" => video.id
+        }
 
-        thumbnail = snippet["thumbnails"]["maxres"] ||
-                    snippet["thumbnails"]["high"]
+        thumbnail = snippet.thumbnails["high"] ||
+                    snippet.thumbnails["default"]
 
         @image_url = thumbnail["url"]
 
         asset = Asset.new(
           :file           => image_file,
-          :title          => snippet["title"],
-          :caption        => snippet["description"],
+          :title          => snippet.title,
+          :caption        => snippet.description,
           :url            => @url,
-          :owner          => "#{snippet["channelTitle"]} (via YouTube)",
+          :owner          => "#{snippet.channel_title} (via YouTube)",
           :notes          => "Imported from YouTube: #{@url}",
-          :image_taken    => snippet["publishedAt"],
+          :image_taken    => snippet.published_at,
           :image_content_type => image_file.content_type,
-          :native         => native
+          :native         => native,
+          :keywords       => snippet.tags.join(", ")
         )
 
         asset.save!
@@ -55,38 +52,12 @@ module AssetHostCore
         asset
       end
 
-      #----------------
-
-      def fetch_data
-        response = client.execute!(
-          :api_method => youtube.videos.list,
-          :parameters => {
-            :id   => @id,
-            :part => 'id,snippet,contentDetails,player'
-          }
-        )
-
-        JSON.parse(response.body)
-      end
-
-      #----------------
-
       private
 
       def image_file
         @image_file ||= open(@image_url)
       end
 
-      def client
-        @client ||= Google::APIClient.new(
-          :key              => Rails.application.secrets.google_api_key,
-          :authorization    => nil
-        )
-      end
-
-      def youtube
-        @youtube ||= client.discovered_api('youtube', 'v3')
-      end
     end
   end
 end

@@ -13,18 +13,18 @@ class Api::UsersController < Api::BaseController
   end
 
   def show
-    rrender json: @user.as_json
+    render json: @user.as_json
   end
 
   def create
     @user = User.create(user_params)
-    rrender json: @user.as_json
+    render json: @user.as_json
   end
 
   def update
     @user.assign_attributes(user_params)
     @user.save
-    rrender json: @user.as_json
+    render json: @user.as_json
   end
 
   def destroy

@@ -6,19 +6,15 @@ git_source(:github) do |repo_name|
 end
 
 gem "rake", "~> 12.3.1"
-# gem "activerecord", "~> 5.2.0"
 gem "actionpack", "~> 5.2.0"
-# gem "actionview", "~> 5.2.0"
 gem "activejob", "~> 5.2.0"
 gem "activesupport", "~> 5.2.0"
 gem "railties", "~> 5.2.0"
-gem "sprockets-rails", "~> 3.2.0"
 gem "sinatra", github: "sinatra/sinatra", branch: "master", require: false, ref: "34521720b6028c2fa696cf85109345a89f306c99"
 # ^^ we need this for the resque interface to work, sadly
-# gem "ember-cli-rails", github: "thoughtbot/ember-cli-rails", ref: "390163394199147201b1d67057c86557b643492d"
 
-gem 'mongoid', "~> 7.0.1"
-gem "resque", "~> 1.27.2"
+gem "mongoid", "~> 7.0.1"
+gem "resque",  "~> 1.27.2"
 gem "searchkick", "~> 2.5.0"
 gem "cocaine", "0.5.8"
 gem "rack-cors", require: "rack/cors"
@@ -27,7 +23,8 @@ gem "photographic_memory", "=0.0.3"
 gem "mini_exiftool", "~> 2.8.0"
 gem "faraday", "~> 0.9.2"
 gem "faraday_middleware", "~> 0.9.0"
-gem "google-api-client", "~> 0.21.1"
+# gem "google-api-client", "~> 0.21.1"
+gem "yt", "~> 0.28.0"
 gem "brightcove-api", "~> 1.0.12"
 gem "aws-sdk", "~> 2"
 

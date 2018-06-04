@@ -3,8 +3,6 @@ module AssetHostCore
     class Vimeo < Base
       SOURCE = "Vimeo"
 
-      #----------------
-
       def self.build_from_url(url)
         # Don't need a key just to read from the public API
         url.match(/vimeo\.com\/(?<id>\d+)/i) do |m|
@@ -12,15 +10,17 @@ module AssetHostCore
         end
       end
 
-      #----------------
-
       def load
         data = fetch_data
 
         video = data[0]
         return nil if !video
 
-        native = VimeoVideo.new(videoid: video["id"])
+        native = {
+          "type"       => "vimeo",
+          "content_id" => video["id"]
+        }
+
         @image_url = video["thumbnail_large"]
 
         asset = Asset.new(
@@ -39,8 +39,6 @@ module AssetHostCore
         image_file.close(true)
         asset
       end
-
-      #----------------
 
       def fetch_data
         response = connection.get do |request|

@@ -29,7 +29,7 @@ describe AssetHostCore::Loaders::Vimeo do
     end
 
     it 'sets the native to be a vimeo video' do
-      @asset.native.should be_a VimeoVideo
+      @asset.native["type"].should eq "vimeo"
     end
 
     it 'sets the owner' do

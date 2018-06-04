@@ -24,8 +24,6 @@ module AssetHostCore
         end
       end
 
-      #----------
-
       def load
         return nil if Rails.application.secrets.flickr_api_key.blank?
 
@@ -62,8 +60,6 @@ module AssetHostCore
         asset
       end
 
-
-      #----------
 
       private
 

@@ -4,7 +4,7 @@ class Api::BaseController < ActionController::API
 
   rescue_from AuthorizationHelper::UnauthorizedError, with: :forbidden
 
-  respond_to :json
+  rescue_from Mongoid::Errors::Validations, with: :validation_error 
 
   private
 
@@ -18,6 +18,10 @@ class Api::BaseController < ActionController::API
 
   def forbidden
     head 403
+  end
+
+  def validation_error err
+    render json: {error: {message: err.summary}}, status: 422
   end
 
   include AuthenticationHelper
