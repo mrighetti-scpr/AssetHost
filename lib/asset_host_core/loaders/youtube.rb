@@ -4,7 +4,7 @@ module AssetHostCore
       SOURCE = "YouTube"
 
       def self.build_from_url(url)
-        return nil if Rails.application.secrets.google_api_key.blank?
+        return nil if ENV["ASSETHOST_GOOGLE_API_KEY"].blank?
 
         url.match(/youtube\.com\/watch\?.*v=(?<id>[\w-]+)/i) do |m|
           self.new(url: url, id: m[:id])

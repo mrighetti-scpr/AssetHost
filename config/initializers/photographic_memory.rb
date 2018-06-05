@@ -2,14 +2,14 @@ class PhotographicMemory
   def self.create
     PhotographicMemory.new({
       environment:                   Rails.env,
-      s3_bucket:                     Rails.application.secrets.s3[:bucket],
-      s3_region:                     Rails.application.secrets.s3[:region],
-      s3_endpoint:                   Rails.application.secrets.s3[:endpoint],
-      s3_access_key_id:              Rails.application.secrets.s3[:access_key_id],
-      s3_secret_access_key:          Rails.application.secrets.s3[:secret_access_key],
-      rekognition_region:            Rails.application.secrets.rekognition[:region],
-      rekognition_access_key_id:     Rails.application.secrets.rekognition[:access_key_id],
-      rekognition_secret_access_key: Rails.application.secrets.rekognition[:secret_access_key]
+      s3_bucket:                     ENV["ASSETHOST_S3_BUCKET"],
+      s3_region:                     ENV["ASSETHOST_S3_REGION"],
+      s3_endpoint:                   ENV["ASSETHOST_S3_ENDPOINT"],
+      s3_access_key_id:              ENV["ASSETHOST_S3_ACCESS_KEY_ID"],
+      s3_secret_access_key:          ENV["ASSETHOST_S3_SECRET_ACCESS_KEY"],
+      rekognition_region:            ENV["ASSETHOST_REKOGNITION_REGION"],
+      rekognition_access_key_id:     ENV["ASSETHOST_REKOGNITION_ACCESS_KEY_ID"],
+      rekognition_secret_access_key: ENV["ASSETHOST_REKOGNITION_SECRET_ACCESS_KEY"]
     })
   end
 end

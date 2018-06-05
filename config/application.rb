@@ -25,6 +25,8 @@ module AssetHost
     # -- all .rb files in that directory are automatically loaded.
     config.filter_parameters += [:password]
 
+    # config.secret_key_base = ENV["ASSETHOST_SECRET_KEY_BASE"] || SecureRandom.hex(64)
+
     # This is not referring to assets as in the asset model, but the
     # frontend resources like scripts, stylesheets, and other goodies.
     # Because we want a route called "assets" for our asset model, we
@@ -41,7 +43,7 @@ module AssetHost
 
     config.action_dispatch.default_headers.clear
 
-    ENV["ELASTICSEARCH_URL"] ||= Rails.application.secrets.elasticsearch[:host]
+    ENV["ELASTICSEARCH_URL"] ||= ENV["ASSETHOST_ELASTICSEARCH_HOST"]
 
     config.middleware.delete ActionDispatch::Cookies
     config.middleware.delete ActionDispatch::Session::CookieStore

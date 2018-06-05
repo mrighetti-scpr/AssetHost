@@ -1,6 +1,6 @@
 unless Rails.env.test?
   # might be better to spin up a short-lived Redis instance
-  Resque.redis = "#{Rails.application.secrets.resque['host']}:#{Rails.application.secrets.resque['port']}/assethost-#{Rails.env}"
+  Resque.redis = "#{ENV["ASSETHOST_RESQUE_HOST"]}:#{ENV["ASSETHOST_RESQUE_PORT"]}/assethost-#{Rails.env}"
 end
 
 # Every time a job is started, make sure the connection

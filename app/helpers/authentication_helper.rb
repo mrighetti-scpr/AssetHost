@@ -1,4 +1,6 @@
 module AuthenticationHelper
+  class AuthenticationError < StandardError
+  end
   def bearer_auth_header_present
     request.env["HTTP_AUTHORIZATION"] =~ /Bearer/
   end
@@ -28,6 +30,8 @@ module AuthenticationHelper
   end
 
   def authenticate_from_token
+    return if !request_token
+    # raise AuthenticationError if !request_token
     @current_entity = Knock::AuthToken.new(token: request_token).entity_for(User)
   end
 

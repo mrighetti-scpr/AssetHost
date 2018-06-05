@@ -9,7 +9,7 @@ module AssetHostCore
       # Since brightcove videos don't have canoncial URL's,
       # we have to make-up a way to import them
       def self.build_from_url(url)
-        return nil if Rails.application.secrets.brightcove_api_key.blank?
+        return nil if ENV["ASSETHOST_BRIGHTCOVE_API_KEY"].blank?
 
         url.match(/brightcove:(?<id>\d+)/) do |m|
           self.new(url: nil, id: m[:id])
@@ -18,7 +18,7 @@ module AssetHostCore
 
       # Brightcove videos don't have URL's
       def load
-        brightcove = ::Brightcove::API.new(Rails.application.secrets.brightcove_api_key)
+        brightcove = ::Brightcove::API.new(ENV["ASSETHOST_BRIGHTCOVE_API_KEY"])
 
         # get our video info
         response = brightcove.get("find_video_by_id", { video_id: @id }).parsed_response

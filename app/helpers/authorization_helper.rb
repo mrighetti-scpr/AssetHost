@@ -6,7 +6,8 @@ module AuthorizationHelper
   # depending on whether those values match a permission defined on the user.
   ##
   def can? user, resource, ability
-    return true if user.is_admin
+    return false if user.nil?
+    return true  if user.is_admin
     permissions = user.permissions || []
     permission  = permissions.find{|p| Array(resource).any?{|r| r == p["resource"]} }
     return false if !permission || !permission["ability"]

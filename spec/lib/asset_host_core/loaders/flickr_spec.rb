@@ -18,9 +18,10 @@ describe AssetHostCore::Loaders::Flickr do
     end
 
     it 'returns nil if flickr key is not set' do
-      Rails.application.secrets.stub(:flickr_api_key) { nil }
+      original_key = ENV["ASSETHOST_FLICKR_API_KEY"]
+      ENV["ASSETHOST_FLICKR_API_KEY"] = nil
       loader = AssetHostCore::Loaders::Flickr.build_from_url("http://staticflickr.com/999/456_abc")
-
+      ENV["ASSETHOST_FLICKR_API_KEY"] = original_key
       loader.should eq nil
     end
   end

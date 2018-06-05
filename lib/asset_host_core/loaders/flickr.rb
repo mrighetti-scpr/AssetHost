@@ -8,7 +8,7 @@ module AssetHostCore
       SOURCE = "Flickr"
 
       def self.build_from_url(url)
-        return nil if Rails.application.secrets.flickr_api_key.blank?
+        return nil if ENV["ASSETHOST_FLICKR_API_KEY"].blank?
 
         matches = [
           %r{flickr\.com/photos/[\w@]+/(?<id>\d+)},
@@ -25,7 +25,7 @@ module AssetHostCore
       end
 
       def load
-        return nil if Rails.application.secrets.flickr_api_key.blank?
+        return nil if ENV["ASSETHOST_FLICKR_API_KEY"].blank?
 
         flickr = MiniFlickr.new
 
@@ -79,7 +79,7 @@ module AssetHostCore
       def call(method, params = {})
         parameters = params.dup
 
-        parameters[:api_key]          = Rails.application.secrets.flickr_api_key
+        parameters[:api_key]          = ENV["ASSETHOST_FLICKR_API_KEY"]
         parameters[:method]           = method
         parameters[:format]           = "json"
         parameters[:nojsoncallback]   = 1
