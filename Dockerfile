@@ -19,11 +19,10 @@ RUN apk update && apk add --no-cache \
   libxslt-dev \
   tzdata \
   yaml-dev \
-  nginx \
+  caddy \
   openrc \
-  nodejs
-
-RUN addgroup -S assethost && adduser -S -g assethost assethost 
+  nodejs \
+  && addgroup -S assethost && adduser -S -g assethost assethost 
 
 ENV HOME /home/assethost
 
@@ -35,10 +34,7 @@ ENV PATH="${HOME}/bin:${PATH}"
 
 RUN bundle install \
     && bundle exec rake resources:precompile RAILS_ENV=production \
-    && cp nginx.conf /etc/nginx/nginx.conf \
     && rm -rf tmp/* && rm -rf log/* \
-    && ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log \
     && ln -sf /dev/stdout log/access.log \
     && ln -sf /dev/stderr log/error.log \
     && touch log/development.log \
@@ -54,7 +50,7 @@ RUN bundle install \
 
 USER assethost
 
-EXPOSE 8080
+EXPOSE 2015
 
 CMD server
 

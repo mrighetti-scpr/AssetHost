@@ -4,7 +4,7 @@
 
 # Output.find_or_create_by(name: "original")
 
-Output.create(name: "thumb", prerender: false, render_options: [
+Output.find_or_create_by(name: "thumb").update(prerender: false, render_options: [
   {
     name: "scale",
     properties: [
@@ -37,7 +37,7 @@ Output.create(name: "thumb", prerender: false, render_options: [
   }
 ])
 
-Output.create(name: "lsquare", prerender: true, render_options: [
+Output.find_or_create_by(name: "lsquare").update(prerender: true, render_options: [
   {
     name: "scale",
     properties: [
@@ -70,7 +70,7 @@ Output.create(name: "lsquare", prerender: true, render_options: [
   }
 ])
 
-Output.create(name: "lead", prerender: false, render_options: [
+Output.find_or_create_by(name: "lead").update(prerender: false, render_options: [
   {
     name: "scale",
     properties: [
@@ -90,7 +90,7 @@ Output.create(name: "lead", prerender: false, render_options: [
   }
 ])
 
-Output.create(name: "wide", prerender: false, render_options: [
+Output.find_or_create_by(name: "wide").update(prerender: false, render_options: [
   {
     name: "scale",
     properties: [
@@ -110,7 +110,7 @@ Output.create(name: "wide", prerender: false, render_options: [
   }
 ])
 
-Output.create(name: "full", prerender: true, render_options: [
+Output.find_or_create_by(name: "full").update(prerender: true, render_options: [
   {
     name: "scale",
     properties: [
@@ -130,7 +130,7 @@ Output.create(name: "full", prerender: true, render_options: [
   }
 ])
 
-Output.create(name: "three", prerender: false, render_options: [
+Output.find_or_create_by(name: "three").update(prerender: false, render_options: [
   {
     name: "scale",
     properties: [
@@ -151,7 +151,7 @@ Output.create(name: "three", prerender: false, render_options: [
 ])
 
 
-Output.create(name: "eight", prerender: true, render_options: [
+Output.find_or_create_by(name: "eight").update(prerender: true, render_options: [
   {
     name: "scale",
     properties: [
@@ -172,7 +172,7 @@ Output.create(name: "eight", prerender: true, render_options: [
 ])
 
 
-Output.create(name: "four", prerender: false, render_options: [
+Output.find_or_create_by(name: "four").update(prerender: false, render_options: [
   {
     name: "scale",
     properties: [
@@ -192,7 +192,7 @@ Output.create(name: "four", prerender: false, render_options: [
   }
 ])
 
-Output.create(name: "six", prerender: false, render_options: [
+Output.find_or_create_by(name: "six").update(prerender: false, render_options: [
   {
     name: "scale",
     properties: [
@@ -212,7 +212,7 @@ Output.create(name: "six", prerender: false, render_options: [
   }
 ])
 
-Output.create(name: "five", prerender: false, render_options: [
+Output.find_or_create_by(name: "five").update(prerender: false, render_options: [
   {
     name: "scale",
     properties: [
@@ -232,7 +232,7 @@ Output.create(name: "five", prerender: false, render_options: [
   }
 ])
 
-Output.create(name: "small", prerender: true, render_options: [
+Output.find_or_create_by(name: "small").update(prerender: true, render_options: [
   {
     name: "scale",
     properties: [

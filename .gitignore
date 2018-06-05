@@ -32,3 +32,8 @@ public/resources
 public/resources/*
 
 .DS_Store
+
+.ash_history
+.config/
+.gem/
+.npm/

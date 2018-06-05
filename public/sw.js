@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '1527701420188|0.39075363271367447';
+  var VERSION = '1528219747341|0.9743768900081486';
   self.CACHE_BUSTER = VERSION;
   self.addEventListener('install', function installEventListenerCallback(event) {
     return self.skipWaiting();

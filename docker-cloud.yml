@@ -2,62 +2,53 @@ version: '3'
 
 services:
 
-  ruby: &main
-    build:
-      context: .
-      dockerfile: Dockerfile.development
-    container_name: ruby
+  assethost: &main
+    image: scprdev/assethost
+    container_name: assethost
     ports:
       - 2015:2015/tcp
     env_file:
-      - .env.development
-    working_dir: /home/assethost
+      - .env.development.docker
     stdin_open: true
     tty: true
     networks:
       assethost-network:
         aliases:
-          - ruby
-    volumes:
-      - ./:/home/assethost
-      - ruby-bundle:/usr/local/bundle
-      - ruby-gems:/usr/local/lib/ruby/gems/
+          - assethost
     depends_on:
-      - mongodb
+      - mysql
       - elasticsearch
       - redis
       - s3
-
-
-  # worker:
-  #   <<: *main
-  #   container_name: worker
-  #   command: worker
-  #   restart: always
-  #   networks:
-  #     assethost-network:
-  #       aliases:
-  #         - worker
-  #   ports: []
-  #   depends_on:
-  #     - ruby
-  #   volumes: []
-  #   volumes_from:
-  #     - ruby
-
-
-  mongodb:
-    image: bitnami/mongodb:3.6.4
-    container_name: assethost-mongodb
+  
+  worker:
+    <<: *main
+    container_name: worker
+    command: worker
     networks:
       assethost-network:
         aliases:
-          - mongodb
-    ports:
-      - 27017:27017/tcp
-    volumes:
-      - mongodb-data:/bitnami
+          - worker
+    ports: []
+    depends_on:
+      - assethost
 
+  mysql: &defaults
+    image: mysql:5.7.21
+    container_name: assethost-mysql
+    ports:
+      - 3200:3200/tcp
+      - 3306:3306/tcp
+    restart: always
+    command: $DEPLOYBOT_TOKEN
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      assethost-network:
+        aliases:
+         - mysql
 
   redis:
     image: redis:4.0.1-alpine
@@ -68,7 +59,6 @@ services:
       assethost-network:
         aliases:
          - redis
-
 
   elasticsearch:
     image: elasticsearch:1.7-alpine
@@ -83,7 +73,6 @@ services:
         aliases:
          - elasticsearch
 
-
   s3:
     image: fingershock/fakes3:0.2.4
     container_name: assethost-s3
@@ -96,15 +85,10 @@ services:
         aliases:
           - s3
 
-
 volumes:
-  ruby-bundle:
-  ruby-gems:
-  mongodb-data:
+  mysql-data:
   elasticsearch-data:
   s3-data:
 
-
 networks:
   assethost-network:
-

@@ -25,7 +25,7 @@ module AssetHost
     # -- all .rb files in that directory are automatically loaded.
     config.filter_parameters += [:password]
 
-    # config.secret_key_base = ENV["ASSETHOST_SECRET_KEY_BASE"] || SecureRandom.hex(64)
+    config.secret_key_base = ENV["ASSETHOST_SECRET_KEY_BASE"] || SecureRandom.hex(64)
 
     # This is not referring to assets as in the asset model, but the
     # frontend resources like scripts, stylesheets, and other goodies.
@@ -39,9 +39,11 @@ module AssetHost
     config.elasticsearch_index = "assethost-assets"
 
     config.active_job.queue_adapter = :resque
-    config.resque_queue             = ENV['ASSETHOST_RESQUE_QUEUE'] || :assets
+    config.resque_queue             = ENV["ASSETHOST_RESQUE_QUEUE"] || :assets
 
     config.action_dispatch.default_headers.clear
+
+    config.web_console.whitelisted_ips = ["127.0.0.1","172.21.0.1"]
 
     ENV["ELASTICSEARCH_URL"] ||= ENV["ASSETHOST_ELASTICSEARCH_HOST"]
 
@@ -50,8 +52,8 @@ module AssetHost
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins '*'
-        resource '*', headers: :any, methods: [:get, :post, :put, :patch, :options]
+        origins "*"
+        resource "*", headers: :any, methods: [:get, :post, :put, :patch, :options]
       end
     end
 
