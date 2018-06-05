@@ -17,11 +17,12 @@ chdir APP_ROOT do
   puts '== Installing dependencies =='
   system! 'gem install bundler --conservative'
   system('bundle check') || system!('bundle install')
+  system! 'npm install --prefix ./frontend'
 
-  puts "\n== Copying sample files =="
-  unless File.exist?('config/secrets.yml')
-    cp 'config/templates/secrets.yml.template', 'config/secrets.yml'
-  end
+  # puts "\n== Copying sample files =="
+  # unless File.exist?('config/secrets.yml')
+  #   cp 'config/templates/secrets.yml.template', 'config/secrets.yml'
+  # end
   # unless File.exist?('config/database.yml')
   #   cp 'config/database.yml.sample', 'config/database.yml'
   # end
