@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '1528219747341|0.9743768900081486';
+  var VERSION = '1528248095593|0.6671963106455059';
   self.CACHE_BUSTER = VERSION;
   self.addEventListener('install', function installEventListenerCallback(event) {
     return self.skipWaiting();
@@ -177,6 +177,8 @@
   var INDEX_INCLUDE_SCOPE = [];
   self.INDEX_FILE_HASH = '22e2e63b00663150d35fcb821e2b65ca';
 
+  var _this = this;
+
   var CACHE_KEY_PREFIX$2 = 'esw-index';
   var CACHE_NAME$2 = CACHE_KEY_PREFIX$2 + '-' + VERSION$3;
 
@@ -205,7 +207,22 @@
     var isTests = url.pathname === '/tests' && ENVIRONMENT === 'development';
 
     if (!isTests && isGETRequest && isHTMLRequest && isLocal && scopeIncluded && !scopeExcluded) {
-      event.respondWith(caches.match(INDEX_HTML_URL, { cacheName: CACHE_NAME$2 }));
+      event.respondWith((function callee$1$0() {
+        return regeneratorRuntime.async(function callee$1$0$(context$2$0) {
+          while (1) switch (context$2$0.prev = context$2$0.next) {
+            case 0:
+              context$2$0.next = 2;
+              return regeneratorRuntime.awrap(caches.match(INDEX_HTML_URL, { cacheName: CACHE_NAME$2 }));
+
+            case 2:
+              return context$2$0.abrupt('return', context$2$0.sent);
+
+            case 3:
+            case 'end':
+              return context$2$0.stop();
+          }
+        }, null, _this);
+      })());
     }
   });
 
