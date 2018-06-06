@@ -26,6 +26,8 @@
 #
 # they should only be built before deploying
 # or building a Docker container
+public/
+public/*
 public/assets
 public/assets/*
 public/resources
