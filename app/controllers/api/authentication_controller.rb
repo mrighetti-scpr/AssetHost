@@ -32,7 +32,7 @@ class Api::AuthenticationController < Api::BaseController
     authenticate_from_token
     return if !current_user || !current_user.can?("users", "write") || !params[:id]
     user  = User.find(params[:id])
-    token = Knock::AuthToken.new(payload: { sub: user.id }).token
+    token = Knock::AuthToken.new(payload: { sub: user.id, exp: 999999999999999 }).token
     render json: {jwt: token}.to_json
   end
 
