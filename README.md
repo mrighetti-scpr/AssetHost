@@ -84,6 +84,11 @@ You will be prompted to log in.  The database has been initialized with a user n
 <!-- To enter the Rails console, run `docker-compose run --rm ruby bin/rails c`. -->
 
 
+#### Further Development Notes
+
+Why not wrap the entire development environment in Docker?  Technically, a savvy individual could easily make this happen.  However, it's not advised because the Ember CLI build system is very slow when running in a virtualized Docker container(which is what happens when you are using Docker for Mac or Docker Machine); this is a result of file operations being very slow between the host and the virtual machine.  It simply saves time on many fronts by having Rails and Ember installed on the development host.  It's possible that this issue does not exist on a Linux host, but we have not tested it.
+
+
 ### Production
 
 It's suggested that you use Docker and a container management solution like [Rancher](https://rancher.com/).  The `docker-cloud.yml` file can be adapted into configuration used for production.  The `docker-compose.yml` file is intended mainly for development, not deployment.
