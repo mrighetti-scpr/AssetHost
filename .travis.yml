@@ -8,11 +8,11 @@ before_install:
 install:
   - bundle install --path vendor/bundle
 
-# before_script:
+before_script:
+  - cp config/templates/.env.template .env.test
 #   - cp config/templates/secrets.yml.template config/secrets.yml
 
 script: 
-  - RAILS_ENV=test bundle exec rake db:schema:load --trace
   - bundle exec rake db:test:prepare
   - bundle exec rspec spec/
 
@@ -28,3 +28,7 @@ rvm:
 env:
   - SH=bash
   - PACKAGE_VERSION="1.0.*"
+
+
+
+
