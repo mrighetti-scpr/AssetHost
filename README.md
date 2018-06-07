@@ -41,67 +41,58 @@ AssetHost is an [Ember](https://emberjs.com/) application running on a [Rails](h
 
 ### Quick Start
 
-The fastest way to get AssetHost up and running is to deploy to [Docker Cloud](https://cloud.docker.com):
+The fastest way to get an instance of AssetHost up and running is to deploy to [Docker Cloud](https://cloud.docker.com):
 
 [![Deploy to Docker Cloud](https://files.cloud.docker.com/images/deploy-to-dockercloud.svg)](https://cloud.docker.com/stack/deploy/?repo=https%3A%2F%2Fgithub.com%2Fscpr%2Fassethost)
 
-For running AssetHost on a dev machine, it's highly recommended to use [Docker](https://www.docker.com/) w/ [Docker Compose](https://docs.docker.com/compose/).  Why, you might ask?  Here's why:
-
-- Docker images are reproducible builds of applications with their environments.  This simplifies setup and reduces the possibility of issues created by differing dependency versions.
-- A developer can easily have the production environment replicated on their machine and manage those simultaneously with other software installed natively or with Docker.
-- Docker and Docker Compose reduce the burden on DevOps, allowing them to focus on maintenance and less on managing dependencies. 
-
-#### Instructions
-
-1. Install [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/).
-2. Clone this repo and enter its directory in your command line terminal.
-3. Build the server context image by running `docker-compose build ruby`.  This will install dependencies such as Ruby, Node.js, Imagemagick, etc.  This can take several minutes.  You'll only have to do this once.
-3. Run `docker-compose up -d`.  This will pull the necessary images and run the containers.
-4. Run `docker-compose run ruby bin/setup`.  This pulls in dependencies for Rails and Ember, and performs other setup procedures.  As with the build step, this may take some time.
-5. Finally, run `docker-compose run --service-ports ruby bin/server`.
-
-The AssetHost web application will be available at http://localhost:8080
-
-You will be prompted to log in.  The database has been initialized with a user named `admin` with `password` as the password.
-
-To enter the Rails console, run `docker-compose run ruby bin/rails c`.
-
-### Native Development
-
-It is, of course, possible to develop the app using natively-installed dependencies.
+For running AssetHost on a dev machine, it's highly recommended to use [Docker](https://www.docker.com/) w/ [Docker Compose](https://docs.docker.com/compose/) to run things like MongoDB, Elasticsearch, and Redis.  This allows the developer to use precise versions of those services so that the production environment can be closely replicated.
 
 #### Prerequisites
 
-Minimum Requirements:
-
-- Ruby >= 2.3
-- MongoDB
-- Redis
-- Elasticsearch
-- Imagemagick
-- Exiftool
+- [Docker](https://www.docker.com/) w/ [Docker Compose](https://docs.docker.com/compose/)
+- [Node.js](https://nodejs.org/) <~ 9.8.0
+- [Ember CLI](https://ember-cli.com/) <~ 3.1.3
+- [Ruby](https://ruby-lang.org) >= 2.5.0
+- [Python](https://www.python.org) >= 2.7.0 (this is required for installing certain Node dependencies)
+- [Imagemagick](https://www.imagemagick.org/)
+- [Exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/)
 - S3-compatible storage medium([Riak CS](https://github.com/basho/riak_cs), [Fake S3](https://github.com/jubos/fake-s3), or [AWS S3](https://aws.amazon.com/s3/) itself.)
 
 #### Instructions
 
-Be sure that MySQL, Elasticsearch, Redis, Imagamagick, Exiftool, and an S3-compatible storage medium are running and available on the host machine.  They can either be available natively or run using Docker; whichever you choose, the result should be the same.
-
-1. If you haven't done so already, install [Bundler](https://bundler.io/) by running `gem install bundler`.
+1. Install your prerequisites if you haven't already done so.
 2. Clone this repo and enter its directory in your command line terminal.
-3. Run `bundle install`.
-4. Copy `templates/.env.development` to the root of your cloned AssetHost directory.  With a standard configuration(services using their standard ports on localhost, etc.), you shouldn't have to change anything in this file out of the box.  The reason you must perform this step is so secrets don't accidentally get committed to source control.
-5. Run `bin/setup`.
+3. Install the Ruby package manager [Bundler](https://bundler.io) by running `gem install bundler`.
+4. Run `docker-compose up -d` to download and run services such as MongoDB, Elasticsearch, and Redis.
+5. Once your database services are up, run `bin/setup`.  This will install dependencies and initialize databases.
+6. If all goes well, run `bin/server` to start the Rails server along with the Ember CLI build server, which will run in the background to rebuild frontend code on changes.
+<!-- 3. Build the server context image by running `docker-compose build ruby`.  This will install dependencies such as Ruby, Node.js, Imagemagick, etc.  This can take several minutes.  You'll only have to do this once.
+4. Run `docker-compose run --rm ruby bin/setup`.  This pulls in dependencies for Rails and Ember, and performs other setup procedures.  As with the build step, this may take some time.
+5. To start the web server, run `docker-compose run --rm --service-ports ruby bin/server`.  The AssetHost web application will be available at http://localhost:8080
+6. In a separate shell, `cd frontend` and run `npm install`. -->
 
-Upon completion of those steps, start the server by running `bundle exec rails s`.
+<!-- The `bin/server` command in step #5 does few things at once: -->
 
-The web application will be available at http://localhost:3000.
+<!-- - Runs the Ember CLI server if the ASSETHOST_EMBER environment variable is set to `true`.  This server detects changes to the frontend code(Ember app inside `frontend/`) and rebuilds the app. -->
+<!-- - Initiates the Rails API server. -->
+<!-- - Runs [Caddy](https://caddyserver.com/) to serve static files so that Rails doesn't have to.  Settings for Caddy can be modified in `Caddyfile` at the root of the project directory. -->
+
+The web application will be available at [localhost:3000](http://localhost:3000).
 
 You will be prompted to log in.  The database has been initialized with a user named **admin** with **password** as the password.
+
+<!-- To enter the Rails console, run `docker-compose run --rm ruby bin/rails c`. -->
 
 
 ### Production
 
 It's suggested that you use Docker and a container management solution like [Rancher](https://rancher.com/).  The `docker-cloud.yml` file can be adapted into configuration used for production.  The `docker-compose.yml` file is intended mainly for development, not deployment.
+
+The first time you run the AssetHost image in a container, you will need to run `bin/setup`.  If you were using Dockeer Compose, the command would be something like the following:
+
+```sh
+docker-compose -f docker-cloud.yml run --rm assethost setup
+```
 
 
 ## API

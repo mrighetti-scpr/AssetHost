@@ -3,12 +3,12 @@ version: '3'
 services:
 
   assethost: &main
-    image: scprdev/assethost
+    image: scprdev/assethost-maverick
     container_name: assethost
     ports:
       - 2015:2015/tcp
     env_file:
-      - .env.development.docker
+      - .env.docker
     stdin_open: true
     tty: true
     networks:
@@ -16,11 +16,12 @@ services:
         aliases:
           - assethost
     depends_on:
-      - mysql
+      - mongodb
       - elasticsearch
       - redis
       - s3
   
+
   worker:
     <<: *main
     container_name: worker
@@ -33,22 +34,19 @@ services:
     depends_on:
       - assethost
 
-  mysql: &defaults
-    image: mysql:5.7.21
-    container_name: assethost-mysql
-    ports:
-      - 3200:3200/tcp
-      - 3306:3306/tcp
-    restart: always
-    command: $DEPLOYBOT_TOKEN
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-    volumes:
-      - mysql-data:/var/lib/mysql
+
+  mongodb:
+    image: bitnami/mongodb:3.6.4
+    container_name: assethost-mongodb
     networks:
       assethost-network:
         aliases:
-         - mysql
+          - mongodb
+    ports:
+      - 27017:27017/tcp
+    volumes:
+      - mongodb-data:/bitnami
+
 
   redis:
     image: redis:4.0.1-alpine
@@ -59,6 +57,7 @@ services:
       assethost-network:
         aliases:
          - redis
+
 
   elasticsearch:
     image: elasticsearch:1.7-alpine
@@ -73,6 +72,7 @@ services:
         aliases:
          - elasticsearch
 
+
   s3:
     image: fingershock/fakes3:0.2.4
     container_name: assethost-s3
@@ -85,8 +85,9 @@ services:
         aliases:
           - s3
 
+
 volumes:
-  mysql-data:
+  mongodb-data:
   elasticsearch-data:
   s3-data:
 

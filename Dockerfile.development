@@ -11,7 +11,6 @@ RUN apk update && apk add --no-cache \
   imagemagick \
   exiftool \
   git \
-  mysql-dev \
   ruby-json \
   yaml \
   zlib-dev \
@@ -19,7 +18,7 @@ RUN apk update && apk add --no-cache \
   libxslt-dev \
   tzdata \
   yaml-dev \
-  python2 \
+  python \
   caddy \
   openrc \
   nodejs

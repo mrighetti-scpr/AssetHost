@@ -6,6 +6,7 @@ module ActionDispatch
 
       def initialize(path)
         self.path = path
+        return unless defined? ActionDispatch::FileHandler
         self.file_handler = ActionDispatch::FileHandler.new(
           Rails.configuration.paths["public"].first
         )

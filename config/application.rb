@@ -43,7 +43,9 @@ module AssetHost
 
     config.action_dispatch.default_headers.clear
 
-    config.web_console.whitelisted_ips = ["127.0.0.1","172.21.0.1"]
+    if Rails.env.development?
+      config.web_console.whitelisted_ips = ["127.0.0.1","172.21.0.1"]
+    end
 
     ENV["ELASTICSEARCH_URL"] ||= ENV["ASSETHOST_ELASTICSEARCH_HOST"]
 

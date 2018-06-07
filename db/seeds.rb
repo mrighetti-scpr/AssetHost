@@ -1,8 +1,12 @@
-# if User.find_by(username: "admin")
+Asset.reindex
+
+# if !User.find_by(username: "admin")
 #   User.create(username: "admin", password: "password", is_admin: true)
 # end
 
-# Output.find_or_create_by(name: "original")
+User.find_or_create_by(username: "admin").update(password: "password", is_admin: true)
+
+Output.find_or_create_by(name: "original")
 
 Output.find_or_create_by(name: "thumb").update(prerender: false, render_options: [
   {

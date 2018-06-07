@@ -1,10 +1,13 @@
-#!/bin/sh
+#!/usr/bin/env ruby
 
-if [ "$RAILS_ENV" = "development" ]; then
-  cd frontend/
-  ../frontend/node_modules/ember-cli/bin/ember s
-  cd ..
-fi
+commands = []
 
-caddy & rails s -b 0.0.0.0
+commands << "cd #{Dir.pwd}/frontend/ && ember s" if ENV["RAILS_ENV"] == "development"
+commands << "caddy" if ENV["RAILS_ENV"] == "production"
+commands << "rails s -b 0.0.0.0"
+
+p_threads = commands.map do |command|
+  Process.detach(Process.spawn(command))
+end
+p_threads.each(&:join)
 

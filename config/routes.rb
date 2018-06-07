@@ -1,4 +1,5 @@
 require "resque/server"
+require_relative "../lib/static_router"
 
 Rails.application.routes.draw do
   get '/api/authenticate/cas'      => 'api/authentication#cas'

@@ -2,31 +2,33 @@ version: '3'
 
 services:
 
-  ruby: &main
-    build:
-      context: .
-      dockerfile: Dockerfile.development
-    container_name: ruby
-    ports:
-      - 2015:2015/tcp
-    env_file:
-      - .env.development
-    working_dir: /home/assethost
-    stdin_open: true
-    tty: true
-    networks:
-      assethost-network:
-        aliases:
-          - ruby
-    volumes:
-      - ./:/home/assethost
-      - ruby-bundle:/usr/local/bundle
-      - ruby-gems:/usr/local/lib/ruby/gems/
-    depends_on:
-      - mongodb
-      - elasticsearch
-      - redis
-      - s3
+  # ruby: &main
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.development
+  #   container_name: ruby
+  #   ports:
+  #     - 2015:2015/tcp
+  #   environment:
+  #     - RAILS_ENV=development
+  #     - ASSETHOST_IS_DOCKER=true
+  #   working_dir: /home/assethost
+  #   stdin_open: true
+  #   tty: true
+  #   networks:
+  #     assethost-network:
+  #       aliases:
+  #         - ruby
+  #   volumes:
+  #     - ./:/home/assethost
+  #     - ruby-bundle:/usr/local/bundle
+  #     - ruby-gems:/usr/local/lib/ruby/gems/
+  #     - ruby-node-modules:/home/assethost/frontend/node_modules/
+  #   depends_on:
+  #     - mongodb
+  #     - elasticsearch
+  #     - redis
+  #     - s3
 
 
   # worker:
@@ -100,9 +102,16 @@ services:
 volumes:
   ruby-bundle:
   ruby-gems:
+  ruby-node-modules:
   mongodb-data:
   elasticsearch-data:
   s3-data:
+  # nfsmount:
+  #   driver: local
+  #   driver_opts:
+  #     type: nfs
+  #     o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+  #     device: ":."
 
 
 networks:

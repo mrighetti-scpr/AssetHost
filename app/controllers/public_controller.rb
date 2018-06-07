@@ -6,7 +6,7 @@ class PublicController < ActionController::API
   def image
     
     asset = Asset.find_by(id: params[:id])
-
+  
     return head(404) if !asset
 
     if request.headers['If-None-Match']
@@ -64,7 +64,7 @@ class PublicController < ActionController::API
   def _send_file(filename)
     file       = PhotographicMemory.create.get(filename)
     send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
-  rescue Aws::S3::Errors::NoSuchKey
+  rescue Aws::S3::Errors::NoSuchKey => e
     head 404
     # It's possible that a requested image won't be available in S3
     # even though we already have a fingerprint.  Sometimes a URL

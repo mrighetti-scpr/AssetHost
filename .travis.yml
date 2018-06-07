@@ -8,9 +8,8 @@ before_install:
 install:
   - bundle install --path vendor/bundle
 
-before_script:
-  - mysql -e 'create database AssetHost_test'
-  - cp config/templates/secrets.yml.template config/secrets.yml
+# before_script:
+#   - cp config/templates/secrets.yml.template config/secrets.yml
 
 script: 
   - RAILS_ENV=test bundle exec rake db:schema:load --trace
@@ -18,7 +17,7 @@ script:
   - bundle exec rspec spec/
 
 services:
-  - mysql
+  - mongodb
   - redis-server
 
 cache: bundler
@@ -27,6 +26,5 @@ rvm:
   - 2.3
 
 env:
-  - ASSETHOST_HOST_PROTOCOL=http
   - SH=bash
   - PACKAGE_VERSION="1.0.*"

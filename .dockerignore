@@ -28,4 +28,5 @@ tmp/*
 .gem/
 .npm/
 
+public/*
 
