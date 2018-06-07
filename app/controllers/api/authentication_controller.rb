@@ -12,7 +12,6 @@ class Api::AuthenticationController < Api::BaseController
     return head(401) unless username
     @entity = User.find_by(username: username) || User.create(username: username, password: SecureRandom.base64(12))
     redirect_to "#{current_host}/login/?token=#{auth_token}"
-    # redirect_to "http://localhost:4200/login/?token=#{auth_token}"
   end
 
   def create

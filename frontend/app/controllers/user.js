@@ -31,8 +31,8 @@ export default Controller.extend({
       if(!user) return;
       const adapter           = this.get('store').adapterFor('application'),
           { host, namespace } = adapter,
-            url               = `${host || '/'}/${namespace}/authenticate/${user.id}`;
-      adapter.ajax(url, 'GET')
+            url               = [ `${location.protocol}//${host || location.host}`, namespace, 'authenticate', user.id  ].filter(x => x).join('/');
+            adapter.ajax(url, 'GET')
              .then(result => {
                user.set('apiToken', result.jwt);
              })
