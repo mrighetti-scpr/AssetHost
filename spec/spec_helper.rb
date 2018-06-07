@@ -15,6 +15,9 @@ FakeWeb.allow_net_connect = false
 
 Dir["#{SPEC_ROOT}/support/**/*.rb"].each { |f| require f }
 
+ENV["ASSETHOST_FLICKR_API_KEY"]     ||= "xxx"
+ENV["ASSETHOST_BRIGHTCOVE_API_KEY"] ||= "xxx"
+ENV["ASSETHOST_GOOGLE_API_KEY"]     ||= "xxx"
 
 RSpec.configure do |config|
   config.filter_run focus: true
