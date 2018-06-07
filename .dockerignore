@@ -20,6 +20,7 @@
 .git
 
 frontend/node_modules/
+frontend/node_modules/*
 frontend/tmp/*
 tmp/*
 
@@ -27,6 +28,4 @@ tmp/*
 .config/
 .gem/
 .npm/
-
-public/*
 
