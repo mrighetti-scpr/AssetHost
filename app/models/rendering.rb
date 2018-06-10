@@ -9,6 +9,7 @@ class Rendering
   field :height,           type: Integer
   field :should_prerender, type: Boolean
   field :content_type,     type: String, default: "image/jpeg"
+  field :file_key,         type: String
 
   validates :name, uniqueness: true, presence: true
 
@@ -21,14 +22,7 @@ class Rendering
   end
 
   def file_extension
-    Rack::Mime::MIME_TYPES.invert[self.content_type || "image/jpeg"].gsub(".", "")
-  end
-
-  def file_key
-    id = self.asset.try(:id)
-    if id && self.fingerprint && self.file_extension
-      "#{id}_#{self.fingerprint}.#{self.file_extension}"
-    end
+    Rack::Mime::MIME_TYPES.invert[self.content_type].try(:gsub, ".", "")
   end
 
   def render
@@ -41,7 +35,7 @@ class Rendering
   end
 
   def delete_file
-    PhotographicMemory.create.delete(file_key)
+    PhotographicMemory.create.delete(file_key) if file_key
   end
 
 end

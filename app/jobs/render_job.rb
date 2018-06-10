@@ -23,6 +23,7 @@ class RenderJob < ActiveJob::Base
     })
     rendering    = asset.renderings.find_or_create_by(name: output.name)
     rendering.update({
+      file_key:     image_data[:filename],
       fingerprint:  image_data[:fingerprint],
       width:        image_data[:metadata].ImageWidth,
       height:       image_data[:metadata].ImageHeight,

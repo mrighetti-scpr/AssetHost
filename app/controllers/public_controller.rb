@@ -43,10 +43,10 @@ class PublicController < ActionController::API
       asset.reload
       rendering = asset.renderings.find_by(name: output.name)
       if rendering.fingerprint.present?
-        path = asset.file_key(rendering.name)
+        file_key = asset.file_key(rendering.name)
         response.headers['Cache-Control'] = "public, max-age=31536000"
         response.headers['ETag']          = "#{asset.id}:#{asset.image_fingerprint}:#{rendering.fingerprint}"
-        _send_file(path) and return
+        _send_file(file_key, rendering.content_type) and return
       else
         # nope... sleep!
         sleep 0.5
@@ -61,9 +61,9 @@ class PublicController < ActionController::API
 
   private
 
-  def _send_file(filename)
-    file       = PhotographicMemory.create.get(filename)
-    send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
+  def _send_file file_key, content_type
+    file = PhotographicMemory.create.get(file_key)
+    send_data file.read, type: content_type, disposition: 'inline'
   rescue Aws::S3::Errors::NoSuchKey => e
     head 404
     # It's possible that a requested image won't be available in S3
