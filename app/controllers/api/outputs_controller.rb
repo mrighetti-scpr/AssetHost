@@ -45,7 +45,7 @@ class Api::OutputsController < Api::BaseController
 
   def outputs_params
     # 🚨 Remember to add support for is_rich
-    params.require(:output).permit(:name, :content_type, :prerender, render_options: [ :name, properties: [ :name, :value ] ] )
+    params.require(:output).permit(:id, :name, :content_type, :prerender, render_options: [ :name, properties: [ :name, :value ] ] )
   rescue ActionController::ParameterMissing
     {}
   end

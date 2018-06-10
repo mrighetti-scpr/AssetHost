@@ -11,7 +11,7 @@ class PublicController < ActionController::API
 
     if request.headers['If-None-Match']
       a_id, a_print, r_print = request.headers['If-None-Match'].split(":")
-      rendering = asset.outputs.where(fingerprint: r_print)
+      rendering = asset.renderings.where(fingerprint: r_print)
       head(304) and return if rendering && a_id == asset.id
     end
 
@@ -33,7 +33,7 @@ class PublicController < ActionController::API
 
     # do we have a rendered output for this style?
     # if not then create a new one.
-    rendering = asset.outputs.where(name: output.name)
+    rendering = asset.renderings.where(name: output.name)
                              .first_or_create(should_prerender: output.prerender?)
     rendering.render
 
@@ -41,7 +41,7 @@ class PublicController < ActionController::API
     # fire off a new render job that will then give it a fingerprint
     5.times do
       asset.reload
-      rendering = asset.outputs.find_by(name: output.name)
+      rendering = asset.renderings.find_by(name: output.name)
       if rendering.fingerprint.present?
         path = asset.file_key(rendering.name)
         response.headers['Cache-Control'] = "public, max-age=31536000"

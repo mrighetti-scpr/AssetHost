@@ -8,7 +8,7 @@ class Api::BaseController < ActionController::API
 
   rescue_from AuthorizationHelper::UnauthorizedError, with: :forbidden
 
-  rescue_from Mongoid::Errors::Validations, with: :validation_error 
+  rescue_from Mongoid::Errors::Validations, with: :validation_error
 
   private
 

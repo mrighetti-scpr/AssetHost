@@ -6,7 +6,7 @@ class Api::AssetsController < Api::BaseController
 
   before_action :authorize_writes, only: [:create, :update, :destroy]
 
-  before_action :get_asset, only: [:show, :update, :tag]
+  before_action :get_asset, only: [:show, :update, :destroy, :tag]
 
   before_action :get_uploaded_file, only: [:create, :update]
 
@@ -44,18 +44,17 @@ class Api::AssetsController < Api::BaseController
       asset = AssetHostCore.as_asset(params[:url])
     end
     return head(400) if !asset
-    if params[:note].present?
-      asset.notes += "\n#{params[:note]}"
-    end
+    asset.notes += "\n#{params[:note]}"  if params[:note].present?
     asset.request     = request
     asset.caption     = params[:caption] if params[:caption].present?
     asset.owner       = params[:owner]   if params[:owner].present?
     asset.title       = params[:title]   if params[:title].present?
     if asset.update_attributes(upload_params)
-      render json: asset.as_json
-    else
-      render json: asset.errors.full_messages, status: :error
+      # 🚨 Prevents bug with sizes being null
+      asset.reload
+      return render json: asset.as_json 
     end
+    render json: asset.errors.full_messages, status: :error
   rescue URI::InvalidURIError
     head 400
   end
@@ -82,9 +81,14 @@ class Api::AssetsController < Api::BaseController
     end
   end
 
+  def destroy
+    @asset.destroy!
+    render json: @asset.as_json, status: 200
+  end
+
   def tag
     output  = Output.find_by(name: params[:style]) || raise(Mongoid::Errors::DocumentNotFound)
-    ao      = @asset.outputs.where(output_id: output.id).first
+    ao      = @asset.renderings.where(output_id: output.id).first
 
     tag = {
       :id           => @asset.id,

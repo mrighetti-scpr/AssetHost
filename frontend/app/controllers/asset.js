@@ -54,10 +54,12 @@ export default Controller.extend({
   }),
   paperToaster: service(),
   assetUpload:  service(),
+  currentUser:  service(),
+  user:         alias('currentUser.user'),
   replace:      alias('assetUpload.replace'),
   actions: {
     saveAsset(){
-      this.get('model')
+      this.get('asset')
         .save()
         .then(() => {
           this.get('paperToaster').show('Asset saved successfully.', { toastClass: 'application-toast' });
@@ -65,6 +67,24 @@ export default Controller.extend({
         .catch(() => {
           this.get('paperToaster').show('Asset failed to save.',     { toastClass: 'application-toast' });
         });
+    },
+    showDestroyDialog(){
+      this.set('shouldDisplayDestroyDialog', true);
+    },
+    closeDestroyDialog(){
+      this.set('shouldDisplayDestroyDialog', false);
+    },
+    destroyAsset(){
+      this.set('shouldDisplayDestroyDialog', false);
+      this.get('asset')
+          .destroyRecord()
+          .then(() => {
+            this.transitionToRoute('index');
+            this.get('paperToaster').show('Asset deleted successfully.', { toastClass: 'application-toast' });
+          })
+          .catch(() => {
+            this.get('paperToaster').show('Asset failed to delete.',     { toastClass: 'application-toast' });
+          });
     },
     replace(files){
       const file  = files[0],

@@ -51,7 +51,6 @@ class User
     json   = as_json
     output = {}
     output["sub"] = json["id"]
-    json.delete("id")
     output["data"] = json
     output
   end

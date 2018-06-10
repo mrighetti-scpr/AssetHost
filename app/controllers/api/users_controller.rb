@@ -43,7 +43,7 @@ class Api::UsersController < Api::BaseController
   end
 
   def user_params
-    params.require(:user).permit(:username, :password, :is_admin, :is_active, :permissions)
+    params.require(:user).permit(:id, :username, :password, :is_admin, :is_active, :permissions)
   end
 
   def get_user

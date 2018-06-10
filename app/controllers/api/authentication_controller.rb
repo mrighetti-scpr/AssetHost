@@ -5,6 +5,7 @@ class Api::AuthenticationController < Api::BaseController
     conn = Faraday.new(url: ENV["ASSETHOST_CAS_SERVICE_URL"])
     current_port = ((request.port === 80) || (request.port === 443)) ? "" : request.port
     current_host = "#{request.protocol}#{request.host}:#{current_port}"
+    puts "#{current_host}#{request.path}"
     resp = conn.get '/serviceValidate', { ticket: params[:ticket], service: "#{current_host}#{request.path}" } 
     parser = Nori.new(parser: :rexml)
     xml    = parser.parse(resp.body)

@@ -44,8 +44,10 @@ export default Controller.extend({
       const model = this.get('model');
       model.save()
            .then(()  => model.reload())
-           .then(()  => this.get('paperToaster').show('Output saved successfully.'))
-           .catch(() => this.get('paperToaster').show('Failed to save output.'));
+           .then(()  => this.get('paperToaster').show('Output saved successfully.', { toastClass: 'application-toast' }))
+           .catch(() => {
+             this.get('paperToaster').show('Failed to save output.', { toastClass: 'application-toast' })
+           });
     }
   }
 });

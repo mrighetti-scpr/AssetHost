@@ -14,7 +14,6 @@ class Asset
   field :image_content_type, type: String
   field :image_copyright,    type: String
   field :image_description,  type: String
-  field :image_fingerprint,  type: String
   field :image_title,        type: String
   field :image_updated_at,   type: DateTime
   field :image_gravity,      type: String, default: "Center"
@@ -26,7 +25,7 @@ class Asset
   field :version,            type: Integer, default: 2
   field :native,             type: Hash
 
-  embeds_many :outputs, class_name: "Rendering"
+  embeds_many :renderings, class_name: "Rendering"
 
   searchkick index_name: Rails.application.config.elasticsearch_index
 
@@ -35,6 +34,8 @@ class Asset
   }
 
   after_save :replace_original_image, if: -> { self.file && !@reloading }
+
+  before_destroy -> { renderings.each(&:destroy) }
 
   def self.es_search(query=nil, page: 1, per_page: 24)
     Asset.search(query, boost_by_distance: {
@@ -96,22 +97,23 @@ class Asset
     result
   end
 
+  def image_fingerprint
+    # Gets the fingerprint of the "original" rendering.
+    self.renderings.where(name: "original").first.try(:fingerprint)
+  end
+
   ##
   # Ingests data from post-render
   ##
   def image_data= data
 
-    if data[:fingerprint]
-      self.image_fingerprint = data[:fingerprint]
-    end
-    # -- determine metadata -- #
     begin
       if p = data[:metadata]
         self.image_width       = p.image_width
         self.image_height      = p.image_height
-        self.image_title       = p.title || p.headline
+        self.image_title       = [p.title, p.headline].compact.join(" - ")
         self.image_description = p.description
-        self.image_copyright   = [p.by_line,p.credit].join("/")
+        self.image_copyright   = [p.by_line, (p.owner_name || p.credit)].compact.join("/")
         self.image_taken       = p.datetime_original
         self.keywords          = (p.keywords || "").split(", ").map(&:downcase).join(", ")
       end
@@ -159,25 +161,22 @@ class Asset
   end
 
   def file_key rendering_name
-    rendering        = self.outputs.find_or_create_by(name: rendering_name)
-    output_extension = rendering.try(:file_extension) || file_extension || 'jpg'
-    if id && image_fingerprint && output_extension
-      "#{id}_#{image_fingerprint}_#{rendering.fingerprint}.#{output_extension}"
-    end
+    rendering = self.renderings.find_or_create_by(name: rendering_name)
+    rendering.file_key
   end
 
   def file_extension
-    Rack::Mime::MIME_TYPES.invert[image_content_type].gsub(".", "")
+    Rack::Mime::MIME_TYPES.invert[image_content_type].try(:gsub, ".", "")
   end
 
-  def image_url(style)
+  def image_url style
     return if !self.image_fingerprint
     style = style.to_sym
     ext   = case style
             when :original
               file_extension
             else
-              rendering = self.outputs.where(name: style).first_or_initialize.file_extension 
+              rendering = self.renderings.where(name: style).first_or_initialize.file_extension 
               rendering || file_extension || "jpg"
             end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
@@ -223,7 +222,7 @@ class Asset
     # If you want the asset to render or re-render, all you have to do
     # is place a File or StringIO object in the file attribute
     return if !file
-    self.outputs.destroy_all
+    self.renderings.destroy_all
     self.image_data = RenderJob.perform_now(self.id.to_s, "original", file)
     prerender file
     self.file = nil
@@ -243,7 +242,7 @@ class Asset
   def reload_image
     @reloading = true
     # pulls the original image from storage
-    rendering = self.outputs.first_or_create(name: "original")
+    rendering = self.renderings.first_or_create(name: "original")
     self.file = PhotographicMemory.create.get self.file_key(rendering.name)
   end
 

@@ -9,8 +9,7 @@ class RenderJob < ActiveJob::Base
     end
     asset  = Asset.find(asset_id)
     return if !asset || !output
-    # Retrieve the original asset
-    unless file
+    unless file # Retrieve the original asset
       original_filename = asset.file_key("original")
       file              = PhotographicMemory.create.get original_filename
     end
@@ -19,12 +18,12 @@ class RenderJob < ActiveJob::Base
       file:            file,
       id:              asset.id,
       convert_options: convert_arguments(asset, output),
-      style_name:      output.name,
+      classify:        output_name == "original",
       content_type:    content_type
     })
-    rendering    = asset.outputs.find_or_create_by(name: output.name)
+    rendering    = asset.renderings.find_or_create_by(name: output.name)
     rendering.update({
-      fingerprint:  output.name == "original" ? "original" : image_data[:fingerprint],
+      fingerprint:  image_data[:fingerprint],
       width:        image_data[:metadata].ImageWidth,
       height:       image_data[:metadata].ImageHeight,
       content_type: content_type
@@ -41,6 +40,7 @@ class RenderJob < ActiveJob::Base
   ##
   def convert_arguments asset, output
     args = []
+    return args if output.name == "original"
     render_options = output.render_options || []
     ## 🚨 Find a way to make it so that the asset's gravity doesn't always
     ## override the gravity set in the output (if there is one)

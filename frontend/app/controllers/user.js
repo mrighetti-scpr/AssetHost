@@ -12,6 +12,13 @@ export default Controller.extend({
   store:        service(),
   paperToaster: service(),
   actions: {
+    destroyUser(){
+      // const model = this.get('model');
+      // model.save()
+      //      .then(()  => model.reload())
+      //      .then(()  => this.get('paperToaster').show('Output saved successfully.'))
+      //      .catch(() => this.get('paperToaster').show('Failed to save output.'));
+    },
     destroyPermission(permission){
       const permissions = this.get('model.permissions'),
             index         = permissions.indexOf(permission);

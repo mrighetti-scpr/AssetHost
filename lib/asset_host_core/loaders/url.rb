@@ -18,14 +18,16 @@ module AssetHostCore
       end
 
       def load
-        filename = File.basename(@url)
+        filename     = File.basename URI.parse(@url).path
+        content_type = AssetHostUtils.guess_content_type(filename)
+        return if !content_type
         # build asset
         asset = Asset.new(
           file: image_file,
           title: filename,
           url: @url,
           image_file_name: filename,
-          image_content_type: AssetHostUtils.guess_content_type(filename),
+          image_content_type: content_type,
           notes: "Fetched from URL: #{@url}"
         )
         asset.save!
