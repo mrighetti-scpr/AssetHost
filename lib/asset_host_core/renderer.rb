@@ -8,23 +8,7 @@ require "mini_exiftool"
 ##
 # An image processing client that uses ImageMagick's convert and an AWS S3-like API for storage.
 #
-# @example
-#
-# client = Renderer.new(@config)
-# client.put file: image, id: 123
-#
-# @param [Hash]    config
-# @param [String]  config[:environment]          - The application environment.  Is optional and only changes behavior with the string "test", which stubs S3 responses and prevents calls to Rekognition.
-# @param [String]  config[:s3_region]            - The region to use for S3.  Only relevant when actually using AWS S3.
-# @param [String]  config[:s3_endpoint]          - The endpoint to use for S3 calls.  Only required when using your own S3-compatible storage medium.
-# @param [Boolean] config[:s3_force_path_style]  - Forces path style for S3 API calls.  Defaults to true.
-# @param [String]  config[:s3_access_key_id]     - The access key ID for S3 calls.
-# @param [String]  config[:s3_secret_access_key] - The secret access key for S3 calls.
-# @param [string]  config[:s3_signature_version] - The signature version for S3 calls.  Defaults to 's3'.
-# @param [string]  config[:rekognition_access_key_id]     - The access key ID for Rekognition calls.
-# @param [string]  config[:rekognition_secret_access_key] - The secret access key for Rekognition calls.
-# @param [string]  config[:rekognition_region]            - The region for Rekognition calls.
-#
+
 module AssetHostCore
   module Renderer
 
@@ -124,7 +108,7 @@ module AssetHostCore
     end
 
     def self.render_gif file, convert_options=[]
-      opts = Array(convert_options).concat(["-coalesce", "-repage 0x0", "+repage"])
+      opts = Array(convert_options).concat(["-coalesce", "-repage 0x0", "+repage", "-colors 64", "-layers optimize"])
       opts.each do |option|
         if option.match("-crop")
           option.concat " +repage"
