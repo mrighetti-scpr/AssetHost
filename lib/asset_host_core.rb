@@ -1,8 +1,8 @@
-# require 'google/api_client'
 require 'open-uri'
 require 'faraday_middleware'
 require "asset_host_core/config"
 require "asset_host_core/loaders"
+require "asset_host_core/renderer"
 
 module AssetHostCore
   class << self

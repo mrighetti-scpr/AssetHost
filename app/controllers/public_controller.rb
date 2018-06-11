@@ -62,7 +62,7 @@ class PublicController < ActionController::API
   private
 
   def _send_file file_key, content_type
-    file = PhotographicMemory.create.get(file_key)
+    file = AssetHostCore::Renderer.get(file_key)
     send_data file.read, type: content_type, disposition: 'inline'
   rescue Aws::S3::Errors::NoSuchKey => e
     head 404

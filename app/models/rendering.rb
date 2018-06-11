@@ -35,7 +35,7 @@ class Rendering
   end
 
   def delete_file
-    PhotographicMemory.create.delete(file_key) if file_key
+    AssetHostCore::Renderer.delete(file_key) if file_key
   end
 
 end

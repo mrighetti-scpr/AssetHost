@@ -12,14 +12,6 @@ GIT
       rack-protection (= 2.0.0.rc2)
       tilt (~> 2.0)
 
-PATH
-  remote: ../photographic_memory
-  specs:
-    photographic_memory (0.0.3)
-      aws-sdk (~> 2)
-      mini_exiftool (~> 2.8.0)
-      rack (~> 2.0.3)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -320,7 +312,6 @@ DEPENDENCIES
   mini_exiftool (~> 2.8.0)
   mongoid (~> 7.0.1)
   nori (~> 2.6)
-  photographic_memory!
   puma
   rack-cors
   rails-controller-testing (~> 1.0.2)

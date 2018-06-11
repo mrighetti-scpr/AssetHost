@@ -243,7 +243,7 @@ class Asset
     @reloading = true
     # pulls the original image from storage
     rendering = self.renderings.first_or_create(name: "original")
-    self.file = PhotographicMemory.create.get self.file_key(rendering.name)
+    self.file = AssetHostCore::Renderer.get self.file_key(rendering.name)
   end
 
 end

@@ -11,10 +11,10 @@ class RenderJob < ActiveJob::Base
     return if !asset || !output
     unless file # Retrieve the original asset
       original_filename = asset.file_key("original")
-      file              = PhotographicMemory.create.get original_filename
+      file              = AssetHostCore::Renderer.get original_filename
     end
     content_type = output.content_type || asset.image_content_type
-    image_data   = PhotographicMemory.create.put({
+    image_data   = AssetHostCore::Renderer.put({
       file:            file,
       id:              asset.id,
       convert_options: convert_arguments(asset, output),
