@@ -4,14 +4,14 @@
       <figure class="editor-dialog__figure">
         <img class="editor-dialog__image" src={{asset.urls.small}}>
         {{#if asset.size}}
-        <figcaption>Uploaded at: {{asset.size}}</figcaption>
+          <figcaption>Uploaded at: {{asset.size}}</figcaption>
         {{/if}}
       </figure>
       <div class="editor-dialog__form">
-        {{paper-button raised=true label="View in Admin"}}
+        {{paper-button raised=true href=(href-to 'asset' asset.id) target="_blank" label="View in Admin"}}
         <h2>Asset Metadata (Global)</h2>
-        {{paper-input class="editor-dialog__input flex-100" label="Title" value=title onChange=(action (mut title))}}
-        {{paper-input class="editor-dialog__input flex-100" label="Credit" value=credit onChange=(action (mut credit))}}
+        {{paper-input class="editor-dialog__input flex-100" label="Title" value=asset.title onChange=(action (mut asset.title))}}
+        {{paper-input class="editor-dialog__input flex-100" label="Credit" value=asset.credit onChange=(action (mut asset.credit))}}
         {{paper-input 
           class="editor-dialog__input"
           textarea=true 
@@ -19,22 +19,22 @@
           label="Notes" 
           maxlength=150 
           passThru=(hash rows=5 maxRows=5) 
-          value=notes 
-          onChange=(action (mut notes))
+          value=asset.notes 
+          onChange=(action (mut asset.notes))
         }}
       </div>
     </div>
     <div class="layout-row">
       <div class="editor-dialog__form">
         <h2 class="editor-dialog__subsequent-heading">Story Caption:</h2>
-        {{paper-input 
-          textarea=true 
-          block=true 
-          label="Caption" 
-          maxlength=150 
-          passThru=(hash rows=5 maxRows=5) 
-          value=caption
-          onChange=(action (mut caption))
+        {{paper-input
+          textarea=true
+          block=true
+          label="Caption"
+          maxlength=150
+          passThru=(hash rows=5 maxRows=5)
+          value=asset.caption
+          onChange=(action (mut asset.caption))
         }}
       </div>
     </div>
@@ -42,5 +42,8 @@
   {{#paper-dialog-actions class="layout-row"}}
     {{#paper-button onClick=(action "saveAndClose")}}Save Caption{{/paper-button}}
     <span class="flex"></span>
+    {{#paper-checkbox value=asset.shouldPersistCaption onChange=(action (mut asset.shouldPersistCaption))}}
+      Also save caption back to AssetHost for future uses
+    {{/paper-checkbox}}
   {{/paper-dialog-actions}}
 {{/paper-dialog}}

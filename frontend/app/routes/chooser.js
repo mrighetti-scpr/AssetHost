@@ -46,7 +46,7 @@ export default Route.extend({
       const source = this.get('source'),
             origin = this.get('origin');
       if(!(source && origin)) return;
-      const model = parse(stringify(this.controller.get('model')));
+      const model = parse(stringify(this.controller.get('model'))).map(m => delete m.shouldPersistCaption);
       source.postMessage(model, origin);
       window.close();
     }
