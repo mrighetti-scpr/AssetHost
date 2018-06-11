@@ -10,7 +10,6 @@ install:
 
 before_script:
   - cp config/templates/.env.template .env.test
-#   - cp config/templates/secrets.yml.template config/secrets.yml
 
 script: 
   - bundle exec rake db:test:prepare

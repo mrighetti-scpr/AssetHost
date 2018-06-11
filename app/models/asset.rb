@@ -176,8 +176,8 @@ class Asset
             when :original
               file_extension
             else
-              rendering = self.renderings.where(name: style).first_or_initialize.file_extension 
-              rendering || file_extension || "jpg"
+              rendering_fe = self.renderings.where(name: style).first_or_initialize.file_extension 
+              rendering_fe || file_extension || "jpg"
             end
     "#{host}/i/#{self.image_fingerprint}/#{self.id}-#{style}.#{ext}"
   end
