@@ -32,8 +32,10 @@ describe Api::AssetsController, type: :controller do
 
   describe 'POST create' do
     before do
-      FakeWeb.register_uri(:get, %r{imgur\.com},
-        body: load_image('fry.png'), content_type: "image/png")
+      [:head, :get].each do |m|
+        FakeWeb.register_uri(m, %r{imgur\.com},
+          body: load_image('fry.png'), content_type: "image/png")
+      end
     end
 
     it 'returns a bad request if URL is not present' do

@@ -23,7 +23,7 @@ module AssetHostCore
           ENV["ASSETHOST_S3_ACCESS_KEY_ID"],
           ENV["ASSETHOST_S3_SECRET_ACCESS_KEY"]
         ),
-        stub_responses:    ENV["RAILS_ENV"] == "test",
+        stub_responses:    Rails.env.test?,
         signature_version: ENV["ASSETHOST_S3_SIGNATURE_VERSION"] || "s3"
       }.select{|k,v| !v.nil?}
 

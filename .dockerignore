@@ -29,3 +29,5 @@ tmp/*
 .gem/
 .npm/
 
+spec/
+spec/*

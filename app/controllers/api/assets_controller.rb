@@ -57,10 +57,10 @@ class Api::AssetsController < Api::BaseController
     render json: asset.errors.full_messages, status: :error
   rescue URI::InvalidURIError
     head 400
-  rescue
-    # 🚨 
-    asset.destroy if asset
-    head 400
+  # rescue
+  #   # 🚨 
+  #   asset.destroy if asset
+  #   head 400
   end
 
   def update

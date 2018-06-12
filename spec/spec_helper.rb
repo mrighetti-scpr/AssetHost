@@ -1,4 +1,4 @@
-ENV["RAILS_ENV"] ||= 'test'
+ENV["RAILS_ENV"] = "test"
 SPEC_ROOT = File.dirname(__FILE__)
 
 require File.expand_path("../../config/environment", __FILE__)
