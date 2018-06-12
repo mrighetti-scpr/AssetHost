@@ -14,19 +14,22 @@ module AssetHostCore
 
     class RenderError < StandardError; end
 
-    options = {
-      region:           ENV["ASSETHOST_S3_REGION"],
-      endpoint:         ENV["ASSETHOST_S3_ENDPOINT"],
-      force_path_style: ENV["ASSETHOST_S3_FORCE_PATH_STYLE"] || true,
-      credentials: Aws::Credentials.new(
-        ENV["ASSETHOST_S3_ACCESS_KEY_ID"],
-        ENV["ASSETHOST_S3_SECRET_ACCESS_KEY"]
-      ),
-      stub_responses:    ENV["RAILS_ENV"] == "test",
-      signature_version: ENV["ASSETHOST_S3_SIGNATURE_VERSION"] || "s3"
-    }.select{|k,v| !v.nil?}
+    begin
+      options = {
+        region:           ENV["ASSETHOST_S3_REGION"],
+        endpoint:         ENV["ASSETHOST_S3_ENDPOINT"],
+        force_path_style: ENV["ASSETHOST_S3_FORCE_PATH_STYLE"] || true,
+        credentials: Aws::Credentials.new(
+          ENV["ASSETHOST_S3_ACCESS_KEY_ID"],
+          ENV["ASSETHOST_S3_SECRET_ACCESS_KEY"]
+        ),
+        stub_responses:    ENV["RAILS_ENV"] == "test",
+        signature_version: ENV["ASSETHOST_S3_SIGNATURE_VERSION"] || "s3"
+      }.select{|k,v| !v.nil?}
 
-    S3_CLIENT = Aws::S3::Client.new(options)
+      S3_CLIENT = Aws::S3::Client.new(options)
+    rescue
+    end
 
     begin
       REKOGNITION_CLIENT = Aws::Rekognition::Client.new({
@@ -40,6 +43,7 @@ module AssetHostCore
     end
 
     def self.put file:, id:, convert_options: [], classify: true, content_type:
+      return if !S3_CLIENT
       unless convert_options.empty?
         if content_type.match "image/gif"
           output = render_gif file, convert_options
@@ -82,6 +86,7 @@ module AssetHostCore
     end
 
     def self.get key
+      return if !S3_CLIENT
       S3_CLIENT.get_object({
         bucket: ENV["ASSETHOST_S3_BUCKET"],
         key: key
@@ -89,6 +94,7 @@ module AssetHostCore
     end
 
     def self.delete key
+      return if !S3_CLIENT
       S3_CLIENT.delete_object({
         bucket: ENV["ASSETHOST_S3_BUCKET"],
         key: key
