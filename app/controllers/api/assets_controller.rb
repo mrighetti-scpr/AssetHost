@@ -56,11 +56,9 @@ class Api::AssetsController < Api::BaseController
     end
     render json: asset.errors.full_messages, status: :error
   rescue URI::InvalidURIError
-    head 400
-  # rescue
-  #   # 🚨 
-  #   asset.destroy if asset
-  #   head 400
+    render json: { status: 400, error: "The provided URL is not valid"}, status: 400
+  rescue Faraday::ConnectionFailed
+    render json: { status: 503, error: "The server at the given URL failed to return a valid response."}, status: 503
   end
 
   def update
