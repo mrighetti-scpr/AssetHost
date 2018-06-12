@@ -10,11 +10,14 @@ module AssetHostCore
       def self.build_from_url(url)
         uri = URI.parse(url)
         return nil unless uri.is_a?(URI::HTTP)
-        # 🚨 This thing doesn't follow redirects!
-        response  = Net::HTTP.get_response(uri)
+        connection = Faraday.new(uri) do |b|
+          b.use FaradayMiddleware::FollowRedirects
+          b.adapter :net_http
+        end
+        response = connection.head
 
         # Check that it's actually an image we're grabbing
-        self.new(url: url, id: url) if response.content_type.match(/image/)
+        self.new(url: url, id: url) if (response.headers["content-type"] || "").match(/image/)
       end
 
       def load
@@ -37,7 +40,11 @@ module AssetHostCore
       private
 
       def image_file
-        @image_file ||= open(@url)
+        connection = Faraday.new(@url) do |b|
+          b.use FaradayMiddleware::FollowRedirects
+          b.adapter :net_http
+        end
+        @image_file ||= StringIO.new(connection.get.body)
       end
     end
   end
