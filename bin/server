@@ -6,7 +6,8 @@ begin
   if ENV["RAILS_ENV"] == "development"
     commands << Process.spawn("ember s", chdir: "#{Dir.pwd}/frontend/")
   end
-  commands << Process.spawn("caddy") if ENV["RAILS_ENV"] == "production"
+  # commands << Process.spawn("caddy") if ENV["RAILS_ENV"] == "production"
+  commands << Process.spawn("nginx -g \"daemon off;\"")
   commands << Process.spawn("rails s -b 0.0.0.0")
 
   p_threads = commands.map do |command|

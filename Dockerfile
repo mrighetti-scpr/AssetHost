@@ -8,6 +8,7 @@ WORKDIR $HOME
 COPY . .
 
 ENV PATH="${HOME}/bin:${PATH}"
+ENV RAILS_ENV="production"
 
 RUN apk update && apk add --no-cache \
   make \
@@ -26,7 +27,7 @@ RUN apk update && apk add --no-cache \
   libxslt-dev \
   tzdata \
   yaml-dev \
-  caddy \
+  nginx \
   openrc \
   python \
   nodejs \
@@ -49,7 +50,8 @@ RUN apk update && apk add --no-cache \
   && chown -R assethost:assethost log \
   && chmod -R u+X tmp \
   && chown -R assethost:assethost db \
-  && chmod -R u+X db
+  && chmod -R u+X db \
+  && cp nginx.conf /etc/nginx/nginx.conf
 
 USER assethost
 
