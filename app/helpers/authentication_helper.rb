@@ -12,12 +12,14 @@ module AuthenticationHelper
   end
 
   def auth_token
-    @auth_token = Knock::AuthToken.new(payload: entity.to_token_payload).token
+    payload = entity.to_token_payload
+    payload["exp"] = Time.now.to_i + 4 * 3600
+    @auth_token = JWT.encode(payload, Rails.application.config.secret_key_base, "HS256")
   end
 
   def authenticate_from_credentials
     unless entity.present? && entity.authenticate(auth_params[:password])
-      raise Knock.not_found_exception_class
+      raise AuthenticationError
     end
   end
 
@@ -30,9 +32,12 @@ module AuthenticationHelper
   end
 
   def authenticate_from_token
-    # return if !request_token
     raise AuthenticationError if !request_token
-    @current_entity = Knock::AuthToken.new(token: request_token).entity_for(User)
+    decoded = JWT.decode request_token, Rails.application.config.secret_key_base, true
+    payload = decoded[0]
+    @current_entity = User.find(payload["sub"])
+  rescue JWT::ExpiredSignature, JWT::DecodeError, Mongoid::Errors::DocumentNotFound, Mongoid::Errors::InvalidFind
+    raise AuthenticationError
   end
 
   def entity
@@ -40,7 +45,6 @@ module AuthenticationHelper
   end
 
   def auth_params
-    # params.require(:user_token).permit :username, :identification, :password
     {username: params[:username], password: params[:password]}
   end
 

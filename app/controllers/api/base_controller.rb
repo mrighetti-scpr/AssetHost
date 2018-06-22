@@ -1,10 +1,6 @@
 class Api::BaseController < ActionController::API
 
-  rescue_from(Knock.not_found_exception_class_name, 
-              JWT::DecodeError, 
-              Mongoid::Errors::InvalidFind, 
-              AuthenticationHelper::AuthenticationError,
-              with: :deny_access)
+  rescue_from(AuthenticationHelper::AuthenticationError, with: :deny_access)
 
   rescue_from AuthorizationHelper::UnauthorizedError, with: :forbidden
 

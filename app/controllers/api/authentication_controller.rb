@@ -31,8 +31,9 @@ class Api::AuthenticationController < Api::BaseController
   def generate
     authenticate_from_token
     return if !current_user || !current_user.can?("users", "write") || !params[:id]
-    user  = User.find(params[:id])
-    token = Knock::AuthToken.new(payload: { sub: user.id, exp: 999999999999999 }).token
+    user    = User.find(params[:id])
+    payload = { sub: user.id }
+    token = JWT.encode(payload, Rails.application.config.secret_key_base, "HS256")
     render json: {jwt: token}.to_json
   end
 

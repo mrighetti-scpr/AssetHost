@@ -27,7 +27,6 @@ gem "yt", "~> 0.28.0"
 gem "brightcove-api", "~> 1.0.12"
 gem "aws-sdk", "~> 2"
 
-gem "knock"
 gem "jwt", "~> 1.5"
 gem "kaminari", "~> 1.1.1"
 gem "kaminari-mongoid"
@@ -36,7 +35,7 @@ gem "nori", "~> 2.6"
 # Use ActiveModel has_secure_password
 gem "bcrypt", "~> 3.1.7"
 
-gem "dotenv-rails", require: false
+gem "dotenv", require: false
 
 group :development, :test do
   ## These are grouped here because, theoretically,
