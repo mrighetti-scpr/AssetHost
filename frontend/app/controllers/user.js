@@ -13,11 +13,11 @@ export default Controller.extend({
   paperToaster: service(),
   actions: {
     destroyUser(){
-      // const model = this.get('model');
-      // model.save()
-      //      .then(()  => model.reload())
-      //      .then(()  => this.get('paperToaster').show('Output saved successfully.'))
-      //      .catch(() => this.get('paperToaster').show('Failed to save output.'));
+      const model = this.get('model');
+      model.destroyRecord()
+           .then(()  => model.reload())
+           .then(()  => this.get('paperToaster').show('User deleted successfully.', { toastClass: 'application-toast' }))
+           .catch(() => this.get('paperToaster').show('Failed to delete user.', { toastClass: 'application-toast' }));
     },
     selectAllToken(){
       const el = document.querySelector('#input-user__api-token');
@@ -36,7 +36,11 @@ export default Controller.extend({
       });
     },
     saveUser(){
-
+      const model = this.get('model');
+      model.save()
+           .then(()  => model.reload())
+           .then(()  => this.get('paperToaster').show('User saved successfully.', { toastClass: 'application-toast' }))
+           .catch(() => this.get('paperToaster').show('Failed to save user.', { toastClass: 'application-toast' }));
     },
     generateToken(){
       const user = this.get('model');
