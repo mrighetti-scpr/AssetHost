@@ -9,7 +9,7 @@
   class=toolbarClass
   as |toolbar|}}
    {{#toolbar.tools class="toolbar-component__tools"}}
-     <h2>AssetHost</h2>
+     <h2>{{#link-to "index"}}AssetHost{{/link-to}}</h2>
      {{#unless hasSimplifiedToolbar}}{{#if session.isAuthenticated}}
       {{#if (can user "assets" "read")}}
         <div class="toolbar-component__search-box">

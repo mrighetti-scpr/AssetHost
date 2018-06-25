@@ -15,7 +15,7 @@
     {{/unless}}
     {{#if model.apiToken}}
       <br>
-      {{paper-input label="API Token" value=model.apiToken onChange=null}}
+      {{paper-input id="user__api-token" label="API Token" value=model.apiToken onChange=null onClick=(action "selectAllToken")}}
     {{/if}}
     <h3>Permissions</h3>
     {{paper-button raised=true label="Add permission" onClick=(action "addPermission")}}

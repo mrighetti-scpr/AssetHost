@@ -25,11 +25,11 @@ export default Controller.extend(MousewheelFix, {
   upload:       alias('assetUpload.upload'),
   actions: {
     getPage(){
+      this.set('isLoadingPage', true);
       this.get('search').getPage()
-        .then(() => { 
-          this.get('progress').done(100);
-          this.set('isLoadingPage', false);
-        });
+        .then(() => this.get('progress').done(100))
+        .catch(() => {})
+        .then(() => this.set('isLoadingPage', false));
     },
     uploadAsset(file){
       get(this, 'upload').perform(file);

@@ -19,6 +19,11 @@ export default Controller.extend({
       //      .then(()  => this.get('paperToaster').show('Output saved successfully.'))
       //      .catch(() => this.get('paperToaster').show('Failed to save output.'));
     },
+    selectAllToken(){
+      const el = document.querySelector('#input-user__api-token');
+      if(!el) return;
+      el.select();
+    },
     destroyPermission(permission){
       const permissions = this.get('model.permissions'),
             index         = permissions.indexOf(permission);
