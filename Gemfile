@@ -57,7 +57,8 @@ group :test do
   gem "capybara", "~> 2.18.0"
   gem 'database_cleaner'
   gem "factory_girl", "~> 4.8.0"
-  gem "fakeweb", "~> 1.3.0"
+  # gem "fakeweb", "~> 1.3.0"
+  gem "fakeweb", github: "chrisk/fakeweb", ref: "2b08c1ff2714ec13a12f3497d67fcefce95c2cbe" 
   gem "launchy", ">= 2.1.1"
   gem "rspec", ">= 3.7.0"
   gem "rspec-rails", ">= 3.7.2"
