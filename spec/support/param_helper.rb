@@ -11,7 +11,8 @@ module ParamHelper
   end
 
   def api_request(method, path, params={})
-    headers = { 'Authorization' => Knock::AuthToken.new({payload: { sub: @user.id }}) }
+    token = JWT.encode({ sub: @user.id }, Rails.application.config.secret_key_base, "HS256")
+    headers = { 'Authorization' => "Bearer #{token}" }
     self.send method, path, {params: params, headers: headers}
   end
 end

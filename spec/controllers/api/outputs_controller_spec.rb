@@ -10,7 +10,7 @@ describe Api::OutputsController, type: :controller do
       ability:  "read"
     }
     @user.save
-    token = Knock::AuthToken.new({payload: { sub: @user.id }}).token
+    token = JWT.encode({ sub: @user.id }, Rails.application.config.secret_key_base, "HS256")
     request.env["HTTP_AUTHORIZATION"] = "Bearer #{token}"
   end
 
