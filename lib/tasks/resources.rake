@@ -5,7 +5,7 @@ namespace :resources do
     puts "Precompiling resources."
     Dir.chdir("#{Dir.pwd}/frontend/") do
       if ENV["RAILS_ENV"] == "production"
-        system "ember build -prod"
+        system "ember build --environment=production"
       else
         system "ember build"
       end

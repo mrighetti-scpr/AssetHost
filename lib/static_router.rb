@@ -13,6 +13,7 @@ module ActionDispatch
       end
 
       def call(env)
+        super if @file_handler.nil?
         env["PATH_INFO"] = @file_handler.match?(path)
         @file_handler.call(env)
       end

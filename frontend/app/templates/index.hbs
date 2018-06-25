@@ -25,7 +25,13 @@
   </div>
 {{/file-dropzone}}
 
-{{asset-list id="index__list" class="application-pane" assets=search.results message=message}}
+{{asset-list 
+  id="index__list" 
+  class="application-pane" 
+  assets=search.results 
+  message=message
+  onClick=(action "editAsset")
+}}
 
 {{#infinite-scroller use-document=true trigger-at="75%" on-load-more=(action 'getPage')}}
 {{/infinite-scroller}}
@@ -33,3 +39,58 @@
 {{#if isLoadingPage}}
   {{paper-progress-circular id="index__loading-indicator" diameter=96}}
 {{/if}}
+
+{{#if showEditorDialog}}
+  {{!-- {{editor-dialog asset=selectedAsset id="index__editor-dialog" class="flex-80" onClose=(action "closeEditorDialog" "cancel") clickOutsideToClose=true}} --}}
+  {{#paper-dialog onClose=(action "closeEditorDialog") clickOutsideToClose=true}}
+    {{#paper-dialog-content}}
+      <div class="layout-row">
+        <figure class="editor-dialog__figure">
+          <img class="editor-dialog__image" src={{selectedAsset.urls.small}}>
+          {{#if selectedAsset.size}}
+            <figcaption>Uploaded at: {{selectedAsset.size}}</figcaption>
+          {{/if}}
+        </figure>
+        <div class="editor-dialog__form">
+          {{paper-button raised=true href=(href-to 'asset' selectedAsset.id) target="_blank" label="View in Admin"}}
+          <h2>Asset Metadata (Global)</h2>
+          {{paper-input class="editor-dialog__input flex-100" label="Title" value=selectedAsset.title onChange=(action (mut selectedAsset.title))}}
+          {{paper-input class="editor-dialog__input flex-100" label="Credit" value=selectedAsset.credit onChange=(action (mut selectedAsset.credit))}}
+          {{paper-input 
+            class="editor-dialog__input"
+            textarea=true 
+            block=true 
+            label="Notes" 
+            maxlength=150 
+            passThru=(hash rows=5 maxRows=5) 
+            value=selectedAsset.notes 
+            onChange=(action (mut selectedAsset.notes))
+          }}
+        </div>
+      </div>
+      <div class="layout-row">
+        <div class="editor-dialog__form">
+          <h2 class="editor-dialog__subsequent-heading">Story Caption:</h2>
+          {{paper-input
+            textarea=true
+            block=true
+            label="Caption"
+            maxlength=150
+            passThru=(hash rows=5 maxRows=5)
+            value=selectedAsset.caption
+            onChange=(action (mut selectedAsset.caption))
+          }}
+        </div>
+      </div>
+    {{/paper-dialog-content}}
+    {{#paper-dialog-actions class="layout-row"}}
+      {{#paper-button onClick=(action "saveAndClose")}}Save Metadata{{/paper-button}}
+      <span class="flex"></span>
+      {{!-- {{#paper-checkbox value=asset.shouldPersistCaption onChange=(action (mut asset.shouldPersistCaption))}}
+        Also save caption back to AssetHost for future uses
+      {{/paper-checkbox}} --}}
+    {{/paper-dialog-actions}}
+  {{/paper-dialog}}
+
+{{/if}}
+

@@ -35,6 +35,7 @@ RUN apk update && apk add --no-cache \
   && gem install bundler \
   && bundle install \
   && npm install --prefix ./frontend \
+  && npm install -g ember-cli \
   && rm frontend/public/ember-cli-live-reload.js \
   && bundle exec rake resources:precompile RAILS_ENV=production \
   && rm -rf frontend/ \
