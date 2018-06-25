@@ -5,11 +5,15 @@ import { computed }          from '@ember/object';
 export default Controller.extend({
   session:      service(),
   paperToaster: service(),
-  ssoURL:       computed(function(){
+  API:          service('api'),
+  ssoURL:       computed('API', function(){
     const origin    = (typeof location === "object") ? location.origin : "http://localhost:3000",
-    // const origin = "http://localhost:3000",
           callback  = encodeURIComponent(`${origin}/api/authenticate/cas`);
-    return `https://login.scprdev.org/login?service=${callback}&renew=false`;
+    return this.API.fetch('authenticate/cas/url')
+                   .then(json => {
+                      if(!json.url) return;
+                      return `${json.url}/login?service=${callback}&renew=false`;
+                   });
   }),
   actions: {
     authenticate(identification, password){
@@ -19,6 +23,10 @@ export default Controller.extend({
             toastClass: 'application-toast application-toast--top-center' 
           });
         });
+    },
+    goToSSOLogin(promise){
+      if(!promise || !window) return;
+      promise.then(url => window.location.href = url);
     }
   }
 });

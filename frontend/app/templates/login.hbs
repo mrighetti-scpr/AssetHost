@@ -3,13 +3,17 @@
   <div id="login__form" class="login-pane__form">
     {{paper-input class="login-pane__form-field" label="Username" value=model.username onChange=(action (mut model.username))}}
     {{paper-input class="login-pane__form-field" label="Password" type="password" value=model.password onChange=(action (mut model.password))}}
-    {{paper-button 
-      class="login-pane__form-submit"
-      raised=true
-      label="Submit"
-      type="submit"
-    }}
-    {{paper-button label="SSO Login" href=ssoURL tagName="a"}}
+    <div id="login__form-buttons" class="login-pane__buttons">
+      {{paper-button 
+        class="login-pane__form-submit login-pane__button"
+        raised=true
+        label="Submit"
+        type="submit"
+      }}
+      {{#if (await ssoURL)}}
+        {{paper-button class="login-pane__button" raised=true warn=true label="SSO Login" onClick=(action "goToSSOLogin" ssoURL) }}
+      {{/if}}
+    </div>
   </div>
 </form>
 

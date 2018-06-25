@@ -3,6 +3,7 @@ require_relative "../lib/static_router"
 
 Rails.application.routes.draw do
   get '/api/authenticate/cas'      => 'api/authentication#cas'
+  get '/api/authenticate/cas/url'  => 'api/authentication#cas_url'
   post '/api/authenticate'         => 'api/authentication#create'
   get  '/api/authenticate/:id'     => 'api/authentication#generate'
   post '/api/authenticate/refresh' => 'api/authentication#update'
