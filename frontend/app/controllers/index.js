@@ -42,20 +42,16 @@ export default Controller.extend(MousewheelFix, {
       this.set('showEditorDialog', true);
     },
     saveAndClose(){
-      const asset = this.get('selectedAsset')
+      const asset = this.get('selectedAsset');
       if(!asset) return;
-      this.get('store')
-          .findRecord('asset', asset.id)
-          .then(record => {
-            return record.save()
-                         .then(() => {
-                          this.set('showEditorDialog', false);
-                          this.get('paperToaster').show('Asset saved successfully.', { toastClass: 'application-toast' });
-                         });
-          })
-          .catch(() => {
-            this.get('paperToaster').show('Failed to save asset.', { toastClass: 'application-toast' });
-          });
+      asset.save()
+           .then(() =>{
+             this.set('showEditorDialog', false);
+             this.get('paperToaster').show('Asset saved successfully.', { toastClass: 'application-toast' });
+           })
+           .catch(() => {
+             this.get('paperToaster').show('Failed to save asset.', { toastClass: 'application-toast' });
+           });
     },
     closeEditorDialog(){
       this.set('showEditorDialog', false);

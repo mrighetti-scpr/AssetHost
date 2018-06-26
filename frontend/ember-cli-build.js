@@ -7,6 +7,9 @@ module.exports = function(defaults) {
     sassOptions: {
       extension: 'sass'
     },
+    'ember-service-worker': {
+      versionStrategy: 'every-build'
+    },
     'esw-cache-fallback': {
       patterns: [
         '/api/assets(.*)',

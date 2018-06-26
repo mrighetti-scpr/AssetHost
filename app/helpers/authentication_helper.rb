@@ -13,7 +13,7 @@ module AuthenticationHelper
 
   def auth_token
     payload = entity.to_token_payload
-    payload["exp"] = Time.now.to_i + 4 * 3600
+    payload["exp"] = 30.days.from_now.to_i
     @auth_token = JWT.encode(payload, Rails.application.config.secret_key_base, "HS256")
   end
 

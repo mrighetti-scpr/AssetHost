@@ -45,9 +45,7 @@ The fastest way to get an instance of AssetHost up and running is to deploy to [
 
 [![Deploy to Docker Cloud](https://files.cloud.docker.com/images/deploy-to-dockercloud.svg)](https://cloud.docker.com/stack/deploy/?repo=https%3A%2F%2Fgithub.com%2Fscpr%2Fassethost)
 
-For running AssetHost on a dev machine, it's highly recommended to use [Docker](https://www.docker.com/) w/ [Docker Compose](https://docs.docker.com/compose/) to run things like MongoDB, Elasticsearch, and Redis.  This allows the developer to use precise versions of those services so that the production environment can be closely replicated.
-
-#### Prerequisites
+If you aren't deploying with Docker, or if you want to run AssetHost on a development machine, you will need to install the following prerequisites:
 
 - [Docker](https://www.docker.com/) w/ [Docker Compose](https://docs.docker.com/compose/)
 - [Node.js](https://nodejs.org/) <~ 9.8.0
@@ -58,30 +56,19 @@ For running AssetHost on a dev machine, it's highly recommended to use [Docker](
 - [Exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/)
 - S3-compatible storage medium([Riak CS](https://github.com/basho/riak_cs), [Fake S3](https://github.com/jubos/fake-s3), or [AWS S3](https://aws.amazon.com/s3/) itself.)
 
+For running AssetHost on a dev machine, it's highly recommended to use [Docker](https://www.docker.com/) w/ [Docker Compose](https://docs.docker.com/compose/) to run things like MongoDB, Elasticsearch, and Redis.  This allows the developer to use precise versions of those services so that the production environment can be closely replicated.
+
 #### Instructions
 
-1. Install your prerequisites if you haven't already done so.
+1. Install your prerequisites if you haven't already done so.  Make sure MongoDB, Elasticsearch, and Redis are running.
 2. Clone this repo and enter its directory in your command line terminal.
 3. Install the Ruby package manager [Bundler](https://bundler.io) by running `gem install bundler`.
-4. Run `docker-compose up -d` to download and run services such as MongoDB, Elasticsearch, and Redis.
-5. Once your database services are up, run `bin/setup`.  This will install dependencies and initialize databases.
-6. If all goes well, run `bin/server` to start the Rails server along with the Ember CLI build server, which will run in the background to rebuild frontend code on changes.
-<!-- 3. Build the server context image by running `docker-compose build ruby`.  This will install dependencies such as Ruby, Node.js, Imagemagick, etc.  This can take several minutes.  You'll only have to do this once.
-4. Run `docker-compose run --rm ruby bin/setup`.  This pulls in dependencies for Rails and Ember, and performs other setup procedures.  As with the build step, this may take some time.
-5. To start the web server, run `docker-compose run --rm --service-ports ruby bin/server`.  The AssetHost web application will be available at http://localhost:8080
-6. In a separate shell, `cd frontend` and run `npm install`. -->
-
-<!-- The `bin/server` command in step #5 does few things at once: -->
-
-<!-- - Runs the Ember CLI server if the ASSETHOST_EMBER environment variable is set to `true`.  This server detects changes to the frontend code(Ember app inside `frontend/`) and rebuilds the app. -->
-<!-- - Initiates the Rails API server. -->
-<!-- - Runs [Caddy](https://caddyserver.com/) to serve static files so that Rails doesn't have to.  Settings for Caddy can be modified in `Caddyfile` at the root of the project directory. -->
+4. Run `bin/setup`.  This will install dependencies and initialize the database.
+5. If all goes well, run `bin/server` to start the Rails server along with the Ember CLI build server, which will run in the background to rebuild frontend code on changes.
 
 The web application will be available at [localhost:3000](http://localhost:3000).
 
 You will be prompted to log in.  The database has been initialized with a user named **admin** with **password** as the password.
-
-<!-- To enter the Rails console, run `docker-compose run --rm ruby bin/rails c`. -->
 
 
 #### Further Development Notes
@@ -121,7 +108,7 @@ Local filesystem storage may be implemented in the future.
 
 ## Rich Media Support
 
-Rich media assets are delivered as specially-tagged img tags, and are replaced on the client-side via an AssetHost.Client plugin.
+Rich media assets are delivered as specially-tagged img tags, and are replaced on the client-side via an `client.js`.
 
 
 ### Brightcove Video
