@@ -77,8 +77,7 @@
 
     {{#paper-dialog-actions class="layout-row"}}
       <span class="flex"></span>
-      {{#paper-button primary=true onClick=(action "closeAssetDialog" "cancel")}}View in Admin{{/paper-button}}
-      {{#paper-button primary=true onClick=(action "closeAssetDialog" "ok" dogName)}}Select Asset{{/paper-button}}
+      {{paper-button primary=true href=(href-to 'asset' selectedAsset.id) target="_blank" label="View in Admin"}}
       {{#paper-button primary=true onClick=(action "closeAssetDialog" "ok" dogName)}}Close{{/paper-button}}
     {{/paper-dialog-actions}}
 
