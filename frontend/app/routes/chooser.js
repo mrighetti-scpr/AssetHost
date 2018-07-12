@@ -43,8 +43,8 @@ export default Route.extend({
   actions: {
     saveAndClose(){
       if(typeof window === 'undefined') return;
-      const source = this.get('source'),
-            origin = this.get('origin');
+      const source = this.source,
+            origin = this.origin;
       if(!(source && origin)) return;
       const model = parse(stringify(this.controller.get('model'))).map(m => delete m.shouldPersistCaption);
       source.postMessage(model, origin);
