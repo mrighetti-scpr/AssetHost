@@ -1,4 +1,5 @@
 import Route                 from '@ember/routing/route';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import { on }                from '@ember/object/evented';
 import { inject as service } from '@ember/service';
 import { Promise }           from 'rsvp';
@@ -7,7 +8,8 @@ import EmberObject           from '@ember/object';
 
 const { stringify, parse } = JSON;
 
-export default Route.extend({
+export default Route.extend(AuthenticatedRouteMixin, {
+  search: service(),
   toolbar: service(),
   simplifyToolbar: on('activate', function(){
     this.set('toolbar.isSimplified', true);
@@ -15,6 +17,10 @@ export default Route.extend({
   unsimplifyToolbar: on('deactivate', function(){
     this.set('toolbar.isSimplified', false);
   }),
+  activate(){
+    this._super(...arguments);
+    this.get('search').getPage();
+  },
   model(){
     if(typeof window === 'undefined') return A();
     if(!window.opener) return A();
