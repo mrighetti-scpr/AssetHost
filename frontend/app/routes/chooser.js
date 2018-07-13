@@ -52,7 +52,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
       const source = this.source,
             origin = this.origin;
       if(!(source && origin)) return;
-      const model = parse(stringify(this.controller.get('model'))).map(m => delete m.shouldPersistCaption);
+      const model = this.controller.get('model').toArray();
       source.postMessage(model, origin);
       window.close();
     }
