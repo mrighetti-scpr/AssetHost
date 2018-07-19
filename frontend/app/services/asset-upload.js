@@ -4,6 +4,9 @@ import { bind } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 
 function pushToStore(asset, response, store){
+  // Capture the localFileURL from the placeholder record
+  const localFileURL = asset.get('localFileURL');
+
   // Unload the placeholder loading record
   asset.unloadRecord();
 
@@ -16,7 +19,7 @@ function pushToStore(asset, response, store){
   const pushedAsset = store.push({ data: normalizedRecord });
 
   // Set the image to the localFileURL so that there isn't a grey box during the switch
-  pushedAsset.set('localFileURL', asset.get('localFileURL'));
+  pushedAsset.set('localFileURL', localFileURL);
 };
 
 function uploadURL(asset, url){
