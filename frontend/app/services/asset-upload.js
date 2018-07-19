@@ -3,26 +3,42 @@ import { task }      from 'ember-concurrency';
 import { bind } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 
+function pushToStore(asset, response, store){
+  // Unload the placeholder loading record
+  asset.unloadRecord();
+
+  // Normalize the API response and push it to the store
+  const attributes = Object.assign({}, response.body),
+        id         = attributes.id,
+        type       = 'asset';
+  delete attributes.id;
+  const normalizedRecord = { id, type, attributes };
+  const pushedAsset = store.push({ data: normalizedRecord });
+
+  // Set the image to the localFileURL so that there isn't a grey box during the switch
+  pushedAsset.set('localFileURL', asset.get('localFileURL'));
+};
+
 function uploadURL(asset, url){
+  const store = this.get('store');
   asset.set('localFileURL', url);
   const API = this.get('API');
   return API.post('assets', { data: { url } })
-           .then(resp => asset.setProperties(resp));
+           .then(response => pushToStore(asset, response, store));
 }
 
 function uploadFile(asset, file){
+  const { jwt } = this.get('session.data.authenticated');
+  const store = this.get('store');
   file.readAsDataURL().then(function (url) {
     asset.set('localFileURL', url);
   });
-  const { jwt } = this.get('session.data.authenticated');
   return this.get('API').upload('assets', file, {
     fileKey: 'image',
     headers: {
       'Authorization': `Bearer ${jwt}`
     }
-  }).then(response => {
-    asset.setProperties(response.body);
-  });
+  }).then(response => pushToStore(asset, response, store));
 }
 
 function replaceFile(asset, file){
@@ -54,6 +70,7 @@ export default Service.extend({
   session: service(),
   API:     service('api'),
   upload: task(function * (file, _asset) {
+    // Create a placeholder record to indicate "loading"
     const asset = _asset || this.store.createRecord('asset', {
       created_at: new Date(),
       isUploading: true
