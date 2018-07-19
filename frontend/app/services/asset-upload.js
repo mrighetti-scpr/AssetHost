@@ -27,7 +27,7 @@ function uploadURL(asset, url){
   asset.set('localFileURL', url);
   const API = this.get('API');
   return API.post('assets', { data: { url } })
-           .then(response => pushToStore(asset, response, store));
+           .then(body => pushToStore(asset, { body }, store));
 }
 
 function uploadFile(asset, file){
