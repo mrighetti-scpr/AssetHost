@@ -55,7 +55,7 @@
           {{paper-button raised=true href=(href-to 'asset' selectedAsset.id) target="_blank" label="View in Admin"}}
           <h2>Asset Metadata (Global)</h2>
           {{paper-input class="editor-dialog__input flex-100" label="Title" value=selectedAsset.title onChange=(action (mut selectedAsset.title))}}
-          {{paper-input class="editor-dialog__input flex-100" label="Credit" value=selectedAsset.credit onChange=(action (mut selectedAsset.credit))}}
+          {{paper-input class="editor-dialog__input flex-100" label="Credit" value=selectedAsset.owner onChange=(action (mut selectedAsset.owner))}}
           {{paper-input 
             class="editor-dialog__input"
             textarea=true 
