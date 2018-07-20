@@ -118,6 +118,18 @@ export default Controller.extend({
     },
     setGravity(gravity){
       this.set('asset.image_gravity', gravity[1]);
+    },
+    updateTakenAt(date){
+      // Build a new Date object
+      const newDate = new Date(date);
+
+      // Because we're building a date object from a YYYY-MM-DD (which has no information about timezones),
+      // the ISOString will display as a day earlier in LA. We have to shift it so that it matches the date the user chose.
+      var utcShift = new Date(newDate.getTime() + newDate.getTimezoneOffset() * 60000);
+
+      // Set `taken_at` for displaying on the frontend. Set `image_taken` for putting the new date to the server.
+      this.set('asset.taken_at', utcShift.toISOString());
+      this.set('asset.image_taken', utcShift);
     }
   }
 });

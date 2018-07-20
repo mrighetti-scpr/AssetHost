@@ -61,18 +61,14 @@
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row">
           <div class="asset-editor__attribute-name">Owner</div>
-          {{paper-input class="asset-editor__attribute-value" value=asset.owner onChange=(mut asset.owner)}}
-        </div>
-        <div class="asset-editor__attributes-row">
-          <div class="asset-editor__attribute-name">URL</div>
-          {{paper-input class="asset-editor__attribute-value" value='' onChange=null}}
+          {{paper-input class="asset-editor__attribute-value" value=asset.owner onChange=(action (mut asset.owner))}}
         </div>
       </div>
       <h2>Metadata</h2>
       <div class="asset-editor__attributes">
         <div class="asset-editor__attributes-row">
           <div class="asset-editor__attribute-name">Image taken</div>
-          {{paper-input class="asset-editor__attribute-value" type="date" value='' onChange=null}}
+          {{paper-input class="asset-editor__attribute-value" type="date" value=asset.takenAtFormatted onChange=(action "updateTakenAt")}}
         </div>
         <div class="asset-editor__attributes-row">
           <div class="asset-editor__attribute-name">Image Gravity</div>

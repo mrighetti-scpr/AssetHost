@@ -15,6 +15,7 @@ export default DS.Model.extend({
   notes:           attr('string'),
   created_at:      attr('date'),
   taken_at:        attr('date'),
+  image_taken:     attr('date'),
   native:          attr(),
   image_file_size: attr(),
   url:             attr('string'),
@@ -28,6 +29,21 @@ export default DS.Model.extend({
     return (this.get('keywords') || '')
       .split(/\s*,\s*/g)
       .filter(k => k.length);
+  }),
+  takenAtFormatted:     computed('taken_at', function(){
+    // We need to format the date to YYYY-MM-DD to make it work with the ember-paper date picker
+    const takenAt = this.get('taken_at');
+    if (takenAt) {
+      var d = new Date(takenAt),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+
+      return [year, month, day].join('-');
+    }
   }),
   tileURL:         computed('localFileURL', 'urls.lsquare', function(){
     const lsquare = this.get('urls.lsquare'),
