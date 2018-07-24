@@ -1,3 +1,30 @@
+{{#file-dropzone name="assets" as |dropzone queue|}}
+  <div id="index__drop-zone" class="drop-zone {{if dropzone.active 'drop-zone--active'}}">
+    {{#if dropzone.active}}
+      {{#if dropzone.valid}}
+        Drop to upload
+      {{else}}
+        Invalid
+      {{/if}}
+    {{else if queue.files.length}}
+      Uploading {{queue.files.length}} files. ({{queue.progress}}%)
+    {{else}}
+      <h4 class="drop-zone__heading">Upload Images</h4>
+      <p class="drop-zone__text">
+        {{#if dropzone.supported}}
+          Drag and drop images onto this area to upload them or
+        {{/if}}
+        {{#file-upload name="assets"
+                       accept="image/*"
+                       multiple=true
+                       onfileadd=(action "uploadAsset")}}
+          <a id="upload-image" class="md-default-theme md-button md-raised" tabindex=0>Add an Image.</a>
+        {{/file-upload}}
+      </p>
+    {{/if}}
+  </div>
+{{/file-dropzone}}
+
 <div id="chooser__pane" class="application-pane">
   <div id="chooser__asset-selector" class="chooser__asset-selector">
     <h3>Selected Assets:</h3>
@@ -22,7 +49,8 @@
             {{/card.actions}}
             {{#card.title as |title|}}
               {{#title.media size="md"}}
-                <div class="asset-bucket__item-thumb card-media" style={{image-background-style asset.urls.lsquare asset.image_gravity}}>
+                <div class="asset-bucket__item-thumb card-media">
+                  <img src={{ asset.urls.lsquare }} />
                 </div>
               {{/title.media}}
               {{#title.text class="asset-bucket__text" as |text|}}
@@ -78,6 +106,7 @@
     {{#paper-dialog-actions class="layout-row"}}
       <span class="flex"></span>
       {{paper-button primary=true href=(href-to 'asset' selectedAsset.id) target="_blank" label="View in Admin"}}
+      {{#paper-button primary=true onClick=(action "addAsset" selectedAsset)}}Select Asset{{/paper-button}}
       {{#paper-button primary=true onClick=(action "closeAssetDialog" "ok" dogName)}}Close{{/paper-button}}
     {{/paper-dialog-actions}}
 

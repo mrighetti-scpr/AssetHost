@@ -4,6 +4,11 @@
   padding: 0
 
 .asset-bucket__item-thumb
+  animation-name: loading-pulse
+  animation-direction: alternate
+  animation-duration: 0.5s
+  animation-iteration-count: infinite
+  animation-timing-function: ease-in-out
   height: 100%
 
 .asset-bucket__actions
@@ -14,4 +19,10 @@
 
 .asset-bucket__text
   margin-left: 10px
+
+@keyframes loading-pulse
+  from
+    background-color: $color-gray-light
+  to
+    background-color: $color-gray-lightest
 

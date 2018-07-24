@@ -22,6 +22,11 @@ export default Route.extend(AuthenticatedRouteMixin, {
   upload:      alias('assetUpload.upload'),
   search:      service(),
   activate(){
+    // Check if we're in an AssetHost pop-up, and if we are,
+    // automatically transition to the chooser page
+    if (window.opener) {
+      this.transitionTo('chooser');
+    }
     this._super(...arguments);
     this.set('onPaste', bind(this, onPaste));
     if(typeof window === 'object') window.addEventListener('paste', this.get('onPaste'));

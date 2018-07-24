@@ -36,6 +36,13 @@ export default IndexController.extend({
     closeAssetDialog(){
       this.set('showAssetDialog', false);
     },
+    addAsset(asset){
+      const item = new EmberObject(asset.toJSON());
+      item.id = asset.get('id');
+      const model = this.get('model');
+      model.addObject(item);
+      this.set('showAssetDialog', false);
+    },
     removeAsset(asset){
       const model = this.get('model'),
             index = model.indexOf(asset);
