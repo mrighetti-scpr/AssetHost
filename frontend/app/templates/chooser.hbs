@@ -49,7 +49,8 @@
             {{/card.actions}}
             {{#card.title as |title|}}
               {{#title.media size="md"}}
-                <div class="asset-bucket__item-thumb card-media" style={{image-background-style asset.urls.lsquare asset.image_gravity}}>
+                <div class="asset-bucket__item-thumb card-media">
+                  <img src={{ asset.urls.lsquare }} />
                 </div>
               {{/title.media}}
               {{#title.text class="asset-bucket__text" as |text|}}
