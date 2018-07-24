@@ -11,7 +11,7 @@
         {{paper-button raised=true href=(href-to 'asset' asset.id) target="_blank" label="View in Admin"}}
         <h2>Asset Metadata (Global)</h2>
         {{paper-input class="editor-dialog__input flex-100" label="Title" value=asset.title onChange=(action (mut asset.title))}}
-        {{paper-input class="editor-dialog__input flex-100" label="Credit" value=asset.credit onChange=(action (mut asset.credit))}}
+        {{paper-input class="editor-dialog__input flex-100" label="Credit" value=asset.owner onChange=(action (mut asset.owner))}}
         {{paper-input 
           class="editor-dialog__input"
           textarea=true 
@@ -40,10 +40,7 @@
     </div>
   {{/paper-dialog-content}}
   {{#paper-dialog-actions class="layout-row"}}
-    {{#paper-button onClick=(action "saveAndClose")}}Save Caption{{/paper-button}}
+    {{#paper-button onClick=(action "saveAndClose")}}Save Metadata{{/paper-button}}
     <span class="flex"></span>
-    {{#paper-checkbox value=asset.shouldPersistCaption onChange=(action (mut asset.shouldPersistCaption))}}
-      Also save caption back to AssetHost for future uses
-    {{/paper-checkbox}}
   {{/paper-dialog-actions}}
 {{/paper-dialog}}
