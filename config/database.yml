@@ -22,6 +22,7 @@ default: &default
 development:
   <<: *default
   database: <%= ENV['ASSETHOST_DATABASE_NAME'] || "AssetHost_development" %>
+  port: 27017
   users:
     <<: *default
     database: <%= ENV['ASSETHOST_DATABASE_NAME'] || "AssetHost_development" %>

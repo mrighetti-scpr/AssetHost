@@ -20,7 +20,7 @@ function pushToStore(asset, response, store){
 
   // Set the image to the localFileURL so that there isn't a grey box during the switch
   pushedAsset.set('localFileURL', localFileURL);
-};
+}
 
 function uploadURL(asset, url){
   const store = this.get('store');

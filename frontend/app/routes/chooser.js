@@ -6,8 +6,6 @@ import { Promise }           from 'rsvp';
 import { A }                 from '@ember/array';
 import EmberObject           from '@ember/object';
 
-const { stringify, parse } = JSON;
-
 export default Route.extend(AuthenticatedRouteMixin, {
   search: service(),
   toolbar: service(),
