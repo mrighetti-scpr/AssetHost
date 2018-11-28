@@ -5,8 +5,6 @@ ENV HOME /home/assethost
 
 WORKDIR $HOME
 
-COPY . .
-
 ENV PATH="${HOME}/bin:${PATH}"
 ENV RAILS_ENV="production"
 
@@ -31,8 +29,11 @@ RUN apk update && apk add --no-cache \
   openrc \
   python \
   nodejs \
-  && addgroup -S assethost && adduser -S -g assethost assethost \
-  && gem install bundler \
+  && addgroup -S assethost && adduser -S -g assethost assethost
+
+COPY . .
+
+RUN gem install bundler \
   && bundle install \
   && npm install --prefix ./frontend \
   && npm install -g ember-cli \

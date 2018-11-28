@@ -22,12 +22,9 @@ class PublicController < ActionController::API
 
     return head(404) if !output
 
-    response.headers["Expires"] = 1.year.from_now.httpdate
-    response.headers["Pragma"]='no-cache'
-    response.headers["Cache-Control"]='no-cache'
-
     # do the fingerprints match? If not, redirect them to the correct URL
     if asset.image_fingerprint && params[:aprint] != asset.image_fingerprint
+      response.headers['Cache-Control'] = 'private'
       redirect_to image_path(
         :aprint   => asset.image_fingerprint,
         :id       => asset.id,
@@ -48,18 +45,20 @@ class PublicController < ActionController::API
       rendering = asset.renderings.find_by(name: output.name)
       if rendering.fingerprint.present?
         file_key = asset.file_key(rendering.name)
-        response.headers['Cache-Control'] = "no-cache, max-age=31536000"
-        response.headers['ETag']          = "#{asset.id}:#{asset.image_fingerprint}:#{rendering.fingerprint}"
+
+        response.headers['Expires'] = 1.year.from_now.httpdate
+        response.headers['Cache-Control'] = 'public, max-age=31536000'
+        expires_in 1.year, public: true
+        response.headers['ETag'] = "#{asset.id}:#{asset.image_fingerprint}:#{rendering.fingerprint}"
         _send_file(file_key, rendering.content_type) and return
       else
         # nope... sleep!
         sleep 0.5
       end
     end
-
+    response.headers['Cache-Control'] = 'private'
     # crap.  totally failed.
     redirect_to asset.image_url(output.name) and return
-
   end
 
 
