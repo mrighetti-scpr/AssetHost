@@ -2,7 +2,7 @@ FROM ruby:2.3.4-alpine
 MAINTAINER Ben Titcomb <btitcomb@scpr.org>
 
 ENV HOME /home/assethost
-
+RUN mkdir $HOME
 WORKDIR $HOME
 
 ENV PATH="${HOME}/bin:${PATH}"
@@ -31,13 +31,21 @@ RUN apk update && apk add --no-cache \
   nodejs \
   && addgroup -S assethost && adduser -S -g assethost assethost
 
-COPY . .
+COPY Gemfile* $HOME/
 
 RUN gem install bundler \
-  && bundle install \
-  && npm install --prefix ./frontend \
-  && npm install -g ember-cli \
-  && bundle exec rake resources:precompile RAILS_ENV=production \
+  && bundle install
+
+ENV BUNDLE_GEMFILE=$HOME/Gemfile \
+    BUNDLE_JOBS=2
+
+COPY frontend $HOME/frontend
+RUN npm install --prefix ./frontend \
+  && npm install -g ember-cli
+
+COPY . .
+
+RUN bundle exec rake resources:precompile RAILS_ENV=production \
   && rm -rf frontend/ \
   && rm -rf tmp/* && rm -rf log/* \
   && ln -sf /dev/stdout log/access.log \

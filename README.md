@@ -131,5 +131,5 @@ For the purpose of improving ease of searchability, AssetHost can tie into Amazo
 
 AssetHost is being developed to serve the media asset needs of [KPCC](https://scpr.org) and Southern California Public Radio, a member-supported public radio network that serves Los Angeles and Orange County on 89.3, the Inland Empire on 89.1, and the Coachella Valley on 90.3.
 
-AssetHost development is currently led by Ben Titcomb and was originally written by Eric Richardson & Bryan Ricker.
+AssetHost development has been developed by Ben Titcomb and was originally written by Eric Richardson & Bryan Ricker.
 
