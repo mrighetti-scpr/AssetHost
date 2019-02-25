@@ -62,6 +62,9 @@ production:
   database: <%= ENV['ASSETHOST_DATABASE_NAME'] || "AssetHost_production" %>
   username: <%= ENV['ASSETHOST_DATABASE_USERNAME'] || "AssetHost" %>
   password: <%= ENV['ASSETHOST_DATABASE_PASSWORD'] %>
+  connect_timeout: <%= ENV['ASSETHOST_DB_CONNECT_TIMEOUT'] %>
+  read_timeout: <%= ENV['ASSETHOST_DB_READ_TIMEOUT'] %>
+  reconnect: <% ENV['ASSETHOST_DB_RECONNECT'] %>
   users:
     <<: *default
     host: <%= ENV['ASSETHOST_USER_DATABASE_HOST_NAME'] %>
