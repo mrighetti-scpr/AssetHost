@@ -47,20 +47,9 @@ class Asset < ActiveRecord::Base
 
 
   def self.es_search(query=nil, page: 1, per_page: 24)
-    Asset.search(query, boost_by_distance: {
-      taken_at: {
-        origin: Time.zone.now.iso8601,
-        scale: '26w',
-        offset: '13w',
-        decay: 0.8
-      },
-      long_edge: {
-        origin: 4200,
-        scale: 300,
-        offset: 3000,
-        decay: 0.7
-      }
-    }, page: page, per_page: per_page)
+    Asset.search(query,
+                 fields: [:title, :caption, :keywords],
+                 page: page, per_page: per_page)
   end
 
 
@@ -413,9 +402,14 @@ class Asset < ActiveRecord::Base
         s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
         s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
       })
-      self.image_data = uploader.put file: file, id: self.id, style_name: 'original', content_type: image_content_type
-      # ^^ ingests the fingerprint, exif metadata, and anything else we get back from the render result
-      self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image 
+      self.image_data = uploader.put(
+        file: file,
+        id: self.id,
+        style_name: 'original',
+        content_type: image_content_type,
+        key: file_key
+      )
+      self.outputs.destroy_all # clear old AssetOutputs if there are any, and only after we successfully save the original image
       self.file = nil # prevents recursive saving/rendering
       sync_exif_data
       self.save

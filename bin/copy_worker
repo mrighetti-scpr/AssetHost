@@ -1,0 +1,4 @@
+#!/bin/sh
+
+QUEUE=migrate_queue JOBS_PER_FORK=$JOBS_PER_FORK rake resque:work
+

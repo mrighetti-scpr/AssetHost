@@ -69,11 +69,7 @@ class AssetOutput < ActiveRecord::Base
 
   def render
     unless fingerprint.present?
-      if prerender?
-        RenderJob.perform_now(self.id)
-      else
-        RenderJob.perform_later(self.id)
-      end
+      RenderJob.enqueue_uniq(self.id)
     end
   end
 
@@ -86,7 +82,7 @@ class AssetOutput < ActiveRecord::Base
 
     if finger && imgfinger
       # -- delete our old cache -- #
-      resp = Rails.cache.delete("img:"+[self.asset.id,imgfinger,self.output.code].join(":"))
+      Rails.cache.delete("img:"+[self.asset.id,imgfinger,self.output.code].join(":"))
 
       # -- delete our AssetOutput -- #
       path = self.asset.image.path(self)

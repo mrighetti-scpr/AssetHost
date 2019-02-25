@@ -73,19 +73,13 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Use a different cache store in production
-  memcached_servers = ((Rails.application.secrets.memcached || {})['servers'] || "").split(",")
-  if memcached_servers.any?
-    config.cache_store = :mem_cache_store, *memcached_servers
-  end
-  # NOTE: In your .env file, these servers should be in the variable ASSETHOST_MEMCACHED_SERVERS
-  # as a comma-delimited list of hostnames & ports.  e.x. 123.345.6.789:11212,234.567.8.90:11212
+  config.cache_store = :redis_store, "redis://rails-redis:6379/0/cache", { expires_in: 90.minutes }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   config.assets.precompile += %w( client.js )
-
 
 end
 

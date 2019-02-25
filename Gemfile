@@ -15,7 +15,7 @@ gem 'railties', '~> 5.0.2'
 gem 'sprockets-rails', '~> 3.2.0'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
 
-gem "photographic_memory", github: "scpr/photographic_memory"
+gem "photographic_memory", "0.0.3", github: "scpr/photographic_memory"
 
 gem 'jquery-rails', '~> 4.2.2'
 gem 'jbuilder', '~> 2.5'
@@ -23,9 +23,11 @@ gem 'jwt', '~> 0.1.4'
 gem 'responders', '~> 2.3.0'
 
 gem "paperclip", "5.2.1"
-gem "searchkick", '~> 2.5.0'
+gem "searchkick", "4.0.2" #, '~> 2.5.0'
 gem "cocaine", "0.5.8"
+gem "redis-rails", "5.0.2"
 gem "resque", "~> 1.27.2"
+gem "resque-multi-job-forks", "~> 0.5.0"
 gem 'sinatra', github: 'sinatra/sinatra', branch: 'master', require: false, ref: "34521720b6028c2fa696cf85109345a89f306c99"
 # ^^ we need this for the resque interface to work, sadly
 gem "mini_exiftool", "~> 2.8.0"
@@ -39,6 +41,8 @@ gem "simple_form", "~> 3.4.0"
 gem "kaminari", "~> 0.14.1"
 
 gem "aws-sdk", "~> 2"
+
+gem 'asset_host_kpcc', github: 'scpr/asset_host_kpcc'
 
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'

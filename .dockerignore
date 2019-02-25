@@ -20,3 +20,5 @@ config/secrets.yml
 # We don't need the git repo to be
 # a part of the image.
 .git
+
+migrate_assets.rb

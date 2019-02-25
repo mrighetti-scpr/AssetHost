@@ -1,4 +1,4 @@
 #!/bin/sh
 
-QUEUE=$ASSETHOST_RESQUE_QUEUE rake resque:work
+QUEUE=$ASSETHOST_RESQUE_QUEUE JOBS_PER_FORK=$JOBS_PER_FORK rake resque:work
 

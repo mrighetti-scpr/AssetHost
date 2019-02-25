@@ -64,7 +64,8 @@ production:
   password: <%= ENV['ASSETHOST_DATABASE_PASSWORD'] %>
   connect_timeout: <%= ENV['ASSETHOST_DB_CONNECT_TIMEOUT'] %>
   read_timeout: <%= ENV['ASSETHOST_DB_READ_TIMEOUT'] %>
-  reconnect: <% ENV['ASSETHOST_DB_RECONNECT'] %>
+  reconnect: <%= ENV['ASSETHOST_DB_RECONNECT'] || "true" %>
+  pool: <%= ENV['ASSETHOST_DB_POOL'] || 5 %>
   users:
     <<: *default
     host: <%= ENV['ASSETHOST_USER_DATABASE_HOST_NAME'] %>

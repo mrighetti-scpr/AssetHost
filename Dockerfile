@@ -1,4 +1,4 @@
-FROM ruby:2.3.4-alpine
+FROM ruby:2.4-alpine3.9
 MAINTAINER Ben Titcomb <btitcomb@scpr.org>
 
 RUN apk update && apk add --no-cache \
@@ -36,6 +36,8 @@ ENV PATH="${HOME}/bin:${PATH}"
 RUN bundle install
 
 RUN cp config/templates/secrets.yml.template config/secrets.yml
+
+RUN bundle exec rails g asset_host:asset_host_kpcc:install
 
 RUN bundle exec rake resources:precompile RAILS_ENV=production
 

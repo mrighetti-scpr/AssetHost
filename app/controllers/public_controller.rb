@@ -70,12 +70,20 @@ class PublicController < ApplicationController
     5.times do
       asset_output.reload
       if asset_output.fingerprint.present?
-        # path = asset.file_key(output.code)
         path = asset.file_key(asset_output)
-        Rails.cache.write("img:#{asset.id}:#{asset.image_fingerprint}:#{output.code}", path)
-        _send_file(path) and return
+        sent_file = _send_file(path)
+        if sent_file
+          Rails.cache.write("img:#{asset.id}:#{asset.image_fingerprint}:#{output.code}",
+                            path,
+                            expires_in: 30.minutes)
+          return
+        else
+          RenderJob.enqueue_uniq(asset_output.id)
+          sleep 0.5
+        end
       else
         # nope... sleep!
+        RenderJob.enqueue_uniq(asset_output.id)
         sleep 0.5
       end
     end
@@ -96,13 +104,14 @@ class PublicController < ApplicationController
       s3_access_key_id:     Rails.application.secrets.s3['access_key_id'],
       s3_secret_access_key: Rails.application.secrets.s3['secret_access_key']
     })
-    file       = downloader.get(filename)
-    send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
-  rescue Aws::S3::Errors::NoSuchKey
-    # It's possible that a requested image won't be available in S3
-    # even though we already have a fingerprint.  Sometimes a URL
-    # might also be malformed.  This error doesn't really help us
-    # here.
+    begin
+      file       = downloader.get(filename)
+    rescue Aws::S3::Errors::NoSuchKey
+    end
+
+    if file
+      send_data file.read, type: AssetHostUtils.guess_content_type(filename), disposition: 'inline'
+    end
   end
 
 end
