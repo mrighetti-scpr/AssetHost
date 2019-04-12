@@ -25,12 +25,12 @@ gem "faraday", "~> 0.9.2"
 gem "faraday_middleware", "~> 0.9.0"
 gem "yt", "~> 0.28.0"
 gem "brightcove-api", "~> 1.0.12"
-gem "aws-sdk", "~> 2"
 
 gem "jwt", "~> 1.5"
 gem "kaminari", "~> 1.1.1"
 gem "kaminari-mongoid"
 gem "nori", "~> 2.6"
+gem "resque-multi-job-forks", "~> 0.5.0"
 
 # Use ActiveModel has_secure_password
 gem "bcrypt", "~> 3.1.7"

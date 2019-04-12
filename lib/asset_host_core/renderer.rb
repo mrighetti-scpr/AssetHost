@@ -46,7 +46,9 @@ module AssetHostCore
       return if !S3_CLIENT
       unless convert_options.empty?
         if content_type.match "image/gif"
-          output = render_gif file, convert_options
+          # TEMPORARY (lyang): rendering gif is too slow. Disabling for now.
+          # output = render_gif file, convert_options
+          output = file.read
         else
           output = render_jpg file, convert_options
         end

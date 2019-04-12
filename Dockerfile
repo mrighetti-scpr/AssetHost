@@ -1,8 +1,7 @@
 FROM ruby:2.3.4-alpine
-MAINTAINER Ben Titcomb <btitcomb@scpr.org>
+MAINTAINER SCPR Developers <scprdev@scpr.org>
 
 ENV HOME /home/assethost
-RUN mkdir $HOME
 WORKDIR $HOME
 
 ENV PATH="${HOME}/bin:${PATH}"
@@ -45,7 +44,7 @@ RUN npm install --prefix ./frontend \
 
 COPY . .
 
-RUN bundle exec rake resources:precompile RAILS_ENV=production \
+RUN bundle exec rake resources:precompile \
   && rm -rf frontend/ \
   && rm -rf tmp/* && rm -rf log/* \
   && ln -sf /dev/stdout log/access.log \
