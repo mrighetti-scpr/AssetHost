@@ -23,6 +23,7 @@ class AssetOutput < ActiveRecord::Base
     gravity = asset.image_gravity.blank? ? 'center' : asset.image_gravity
 
     options = [
+      "-quiet",
       "-gravity #{gravity}",
       "-strip",
       "-quality 95"
