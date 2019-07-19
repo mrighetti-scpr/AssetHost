@@ -20,8 +20,10 @@ class AssetOutput < ActiveRecord::Base
 
   def convert_options
     # arguments that get passed to imagemagick
+    gravity = asset.image_gravity.blank? ? 'center' : asset.image_gravity
+
     options = [
-      "-gravity #{asset.image_gravity || 'center'}",
+      "-gravity #{gravity}",
       "-strip",
       "-quality 95"
     ]
