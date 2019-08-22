@@ -12,10 +12,10 @@
       <h4 class="drop-zone__heading">Upload Images</h4>
       <p class="drop-zone__text">
         {{#if dropzone.supported}}
-          Drag and drop images onto this area to upload them or
+          Drag and drop images (NO GIFS) onto this area to upload them or
         {{/if}}
         {{#file-upload name="assets"
-                       accept="image/*"
+                       accept="image/jpeg,image/jpg,image/png"
                        multiple=true
                        onfileadd=(action "uploadAsset")}}
           <a id="upload-image" class="md-default-theme md-button md-raised" tabindex=0>Add an Image.</a>
