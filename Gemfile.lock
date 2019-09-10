@@ -379,7 +379,7 @@ DEPENDENCIES
   rspec-its (~> 1.2.0)
   rspec-rails (>= 3.6.0.beta2)
   sass-rails (~> 5.0)
-  searchkick
+  searchkick (= 4.0.2)
   simple_form (~> 3.4.0)
   sinatra!
   spring (~> 2.0.1)
