@@ -67,5 +67,5 @@ USER assethost
 
 EXPOSE 8080
 
-CMD server
+CMD server -e production
 
