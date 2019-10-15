@@ -47,6 +47,9 @@ gem 'asset_host_kpcc', github: 'scpr/asset_host_kpcc'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 
+# New Relic APM
+gem 'newrelic_rpm', '~> 4.0', '>= 4.0.0.332'
+
 group :development, :test do
   ## These are grouped here because, theoretically,
   ## your assets should already be precompiled when
