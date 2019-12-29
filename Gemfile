@@ -37,7 +37,7 @@ gem "google-api-client", "~> 0.6.3"
 gem "brightcove-api", "~> 1.0.12"
 
 gem "bootstrap-sass", "~> 2.3.1"
-gem "simple_form", "~> 3.4.0"
+gem "simple_form", "~> 5.0.0"
 gem "kaminari", "~> 0.14.1"
 
 gem "aws-sdk", "~> 2"
