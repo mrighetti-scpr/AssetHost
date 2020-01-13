@@ -1,4 +1,6 @@
 #!/bin/sh
 
-nginx -g "daemon off;" & rails s $1 $2 $3 $4 $5 $6
+rails s $1 $2 $3 $4 $5 $6 &
+sleep 5
+nginx -g "daemon off;"
 
