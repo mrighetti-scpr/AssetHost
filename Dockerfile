@@ -67,5 +67,5 @@ USER assethost
 
 EXPOSE 8080
 
-CMD server -e production
+CMD rails s -e production -p 8080
 
